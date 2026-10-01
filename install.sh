@@ -16,7 +16,7 @@ fi
 
 if [ -z "$TOKEN" ]; then
   echo "Thiếu GitHub PAT (Fine-grained, Contents read trên $REPO)." >&2
-  echo "  curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_..." >&2
+  echo "  export FLOWGRID_GITHUB_TOKEN=github_pat_... && curl -fsSL -H \"Authorization: Bearer \$FLOWGRID_GITHUB_TOKEN\" https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh | bash -s -- \"\$FLOWGRID_GITHUB_TOKEN\"" >&2
   exit 1
 fi
 
