@@ -1,0 +1,199 @@
+<!-- flowgrid-catalog -->
+**[Danh mục tài liệu](https://github.com/ShanYuCoder/flowgrid/blob/main/CATALOG.md)**
+<!-- /flowgrid-catalog -->
+
+# FlowGrid
+
+**FlowGrid** là nền tảng **CLI + harness** dành cho team phát triển phần mềm khi làm việc với **agent AI** (Cursor, Claude Code, Gemini/Antigravity, Codex, OpenCode, Hermes, Kiro, Kilo Code, … — chọn ở bước `flowgrid init`).
+
+- **Workflow cho team** — các phase phát triển theo quy chuẩn: **design**; phát triển **code + test**; **wire**.
+- **Quản lý artifact** — quy trình và SSOT trên disk cho dự án phần mềm:
+  - **Spec / requirement** (docs-hub — SSOT):
+    - user story, bundle spec;
+    - thiết kế UI, action;
+    - QA: open question;
+    - artifact khác: technical debt, technical derived, call external service, …
+  - **Document testcase** (tests-docs):
+    - testcase, test suite;
+    - scenario test.
+- **Toolkit T-shaped** — hỗ trợ member mở rộng lane khi làm việc với AI:
+  - **Dev** — skill dev chuyên sâu, kèm chút kỹ năng BA: nhờ AI phân tích / grill → spec đạt khoảng **70–80%** so với BA thông thường.
+  - **BA** — phân tích, tạo requirement spec: nhờ AI code **prototype** theo yêu cầu, **không** cần nhờ dev.
+  - **QA / Test** — skill manual test: nhờ AI sinh automation **E2E**; dev review bổ sung lỗ hổng còn thiếu theo document testcase.
+
+FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạng artifact** và **lệnh kiểm định** vào repo để agent và member đi **cùng một lane**, **từng bước một**.
+
+## Tổng quan
+
+- **CLI (`flowgrid`)** — cài tool; `init` theo loại dự án; chạy audit, gate, codegen; `doctor`; sync harness.
+- **Harness (skills + MCP)** — sau `init`, agent gọi slash command (vd. `/spec`, `/testcase`) theo `SKILL.md` đã sync; MCP server `flowgrid` nối engine docs / test / codegen với workspace.
+- **Script audit** — kiểm tra **lượng** trên artifact (schema, field bắt buộc, trace testcase ↔ bundle) bằng Node thuần; output JSON `gaps[]`; bổ trợ grill **chất** của member và agent.
+- **Workflow theo phase phát triển** — bám vòng đời thực tế **một tính năng**:
+  - **Phân tích** — yêu cầu, phạm vi, kiến trúc (overview, module, luồng nghiệp vụ).
+  - **Đặc tả** — bundle, user story, API contract trên **docs-hub**.
+  - **Prototype UI** — feedback sớm, thống nhất hành vi trước code production.
+  - **Backend** — spec API; sinh / xử lý service theo adapter stack (NestJS, FastAPI, …).
+  - **Tests-docs** — scenario, ma trận `TC-*.yaml`; gate trước khi coi testcase **đóng**.
+  - **E2E automation** — sinh Playwright từ testcase; regression trên **e2e-root** (repo FE); giảm **IT thủ công** lặp trước release.
+  - **Wire** — ghép FE với API thật; audit đối chiếu tests-docs ↔ spec E2E.
+- **Skill ↔ vai trò member (T-shaped)** — mỗi phase gắn skill và vai trò gợi ý; AI **hỗ trợ đúng việc, đúng người** — **không** gom cả repo một lần:
+  - **Lead / BA** — phạm vi, kiến trúc, grill nghiệp vụ (`/overview`, `/grill-bqa`, …).
+  - **Dev FE** — prototype, wire, unit / E2E lane code.
+  - **Dev BE** — contract, implementation API, align FE–BE (`audit fe-be`).
+  - **QA** — testcase trên **tests-docs**, grill testcase, theo dõi coverage E2E.
+  - **Member** — vẫn **review, grill, chốt**; agent chuẩn hóa YAML/Markdown, gợi ý patch, chạy codegen — **không** tự quyết thay product owner.
+- **Ba loại artifact trên disk** — có thể nhiều repo, nối bằng env:
+  - **docs-hub** — `*.bundle.yaml`, IR, kiến trúc & function (`FLOWGRID_DOCS_ROOT`).
+  - **tests-docs** — `cases/**`, `TC-*.yaml`, scenario (`FLOWGRID_TESTS_DOC`, `--tests-docs`).
+  - **Code** — FE / BE / fullstack; test tự động trên **e2e-root** (`--e2e-root`), tách khỏi hub testcase.
+
+## Phase · vai trò · skill
+
+| Phase (tóm tắt) | Vai trò thường gặp | Hỗ trợ FlowGrid (ví dụ) |
+| --- | --- | --- |
+| Phân tích & phạm vi | Lead / BA | `/overview`, `/architecture`, `/module` |
+| Đặc tả chức năng | BA / Dev | `/spec`, `/grill-bqa`, `flowgrid audit spec` |
+| Prototype UI | Dev FE | `/prototype`, portal/codegen adapters |
+| Backend & contract | Dev BE | `/api-spec`, `/api`, `audit api`, `audit fe-be` |
+| Testcase (tests-docs) | QA / Dev | `/testcase`, `/scenario`, `cases:gate` |
+| E2E automation | QA / Dev | `testcase:gen`, Playwright trên **e2e-root** |
+| Tích hợp & kiểm tra trước release | Dev FE + QA | `/wire`, `flowgrid audit e2e` |
+
+`flowgrid audit *` và `cases:gate` dùng ở các mốc trên để phát hiện lệch artifact trước khi sang phase kế tiếp.
+
+---
+
+## Cài đặt
+
+**Yêu cầu:** Node.js **≥ 24**.
+
+### 1. Cài FlowGrid CLI
+
+**Khuyến nghị — pnpm global từ npm** (cùng một lệnh trên **Linux**, **macOS**, **WSL** và **Windows PowerShell** / Terminal):
+
+```text
+pnpm add -g @shanyucoder/flowgrid
+```
+
+(Gõ trong bash, zsh, **PowerShell**, CMD hoặc Windows Terminal — cùng một lệnh. Tarball npm đã có `dist/`; runtime **không** kéo VitePress/esbuild — `pnpm add` / `pnpm add -g` thường không cần `--allow-build`.)
+
+Cài từ **GitHub** vẫn cần `--allow-build=@shanyucoder/flowgrid` (build TypeScript lúc cài). Hub docs/tests dùng VitePress qua `npx` + `devDependencies` sau `flowgrid init`.
+
+**Chưa có bản trên npm** (hoặc cần bản Git cụ thể):
+
+```text
+pnpm add -g github:ShanYuCoder/flowgrid --allow-build=@shanyucoder/flowgrid
+```
+
+pnpm 10+ cần `--allow-build` khi cài **từ GitHub** (build TypeScript lúc cài).
+
+| Môi trường | PATH sau `pnpm add -g` |
+| --- | --- |
+| **Linux / macOS** | Chạy `pnpm setup` nếu shell báo thiếu bin; thường là `~/.local/share/pnpm`. |
+| **WSL** | Giống Linux — dùng Node/pnpm **trong WSL**, không trộn với Node cài trên Windows host trừ khi cố ý. |
+| **Windows (PowerShell, CMD, Windows Terminal)** | **`pnpm setup`** → terminal mới → `pnpm add -g @shanyucoder/flowgrid@0.1.4` (hoặc `@latest` sau publish). **Node ≥ 24** bắt buộc (`node -v`). `flowgrid --version` — bản **≤ 0.1.2** có thể im lặng trên Windows. |
+
+**WSL / Git Bash** có thể dùng lệnh pnpm ở trên; **không** bắt buộc `install.sh` nếu đã cài global qua pnpm.
+
+**npx (không cài global):**
+
+```text
+cd your-project
+npx -p @shanyucoder/flowgrid flowgrid init
+```
+
+Luôn có từ **`flowgrid`** trước `init` — `npx @shanyucoder/flowgrid` (thiếu bin) không phải quy trình khuyến nghị. Global: `npm install -g @shanyucoder/flowgrid` → `cd your-project` → `flowgrid init`.
+
+Thay `init` bằng `doctor`, `harness sync`, … GitHub: `npx -p github:ShanYuCoder/flowgrid flowgrid init`.
+
+**npm (global):**
+
+```text
+npm install -g @shanyucoder/flowgrid
+```
+
+Cài từ Git: `npm install -g github:ShanYuCoder/flowgrid` (npm 11+: có thể cần `npm install-scripts approve @shanyucoder/flowgrid`).
+
+**Dev dependency trong repo dự án:**
+
+```text
+pnpm add -D @shanyucoder/flowgrid
+pnpm exec flowgrid doctor
+```
+
+Từ Git: `pnpm add -D github:ShanYuCoder/flowgrid --allow-build=@shanyucoder/flowgrid`.
+
+Đội toolkit publish npm: [PUBLISH-NPM.md](https://github.com/ShanYuCoder/flowgrid/blob/main/PUBLISH-NPM.md) (root, không build VitePress).
+
+**Phát triển toolkit (clone repo):**
+
+Linux / macOS / WSL:
+
+```bash
+git clone https://github.com/ShanYuCoder/flowgrid.git && cd flowgrid
+pnpm install && sh install-local.sh
+```
+
+Windows (PowerShell):
+
+```powershell
+git clone https://github.com/ShanYuCoder/flowgrid.git; cd flowgrid
+pnpm install; pnpm link --global
+```
+
+**Tùy chọn — script bash** (Linux / macOS / WSL / Git Bash — clone + `~/.local/bin`, **không** thay pnpm global):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh | bash
+```
+
+**Cập nhật** (npm hoặc GitHub — không cần gỡ cài lại):
+
+```text
+flowgrid update
+```
+
+Tự nhận cách cài (pnpm global, npm global, `install.sh`, hoặc clone dev) và chạy lệnh phù hợp. Ghim ref: `FLOWGRID_REF=v0.1.0 flowgrid update`. Xem trước: `flowgrid update --check`.
+
+**Gỡ:** `pnpm remove -g @shanyucoder/flowgrid` (mọi OS) · hoặc `npm uninstall -g @shanyucoder/flowgrid` · script bash: `bash install.sh --uninstall`.
+
+### 2. Khởi tạo repo (`flowgrid init`)
+
+```bash
+cd your-project
+flowgrid init
+```
+
+| Bước | Câu hỏi init | Ý nghĩa / gợi ý nhập |
+| --- | --- | --- |
+| **1** | **Select Agents/Skills to integrate** | Agent IDE/CLI (Cursor, Claude, …). Copy **skills** + **MCP** (`flowgrid`) vào thư mục agent. Có thể bỏ trống, sync sau: `flowgrid harness sync`. |
+| **2** | **Select project type** | **Document** — docs-hub. **Frontend** / **Backend** / **Fullstack** — code (+ pointer docs/tests). **Test** — tests-docs. |
+| **3** | **Base Architecture Profile** | **Standard** (Nuxt4, Next.js, NestJS, FastAPI, …) hoặc **Custom** (+ **Golden Sample** tùy chọn). |
+| **4** | **Frontend / Backend technology** | Adapter codegen (`nuxt4`, `nextjs`, `nestjs`, `fastapi`, …). Fullstack: FE + BE (mặc định Nest). |
+| **5** | **Docs-hub location** (FE / BE / Fullstack) | **This repository** — scaffold `docs/` (integration/hook surfaces trên repo BE). **Other** — path pointer → `FLOWGRID_DOCS_ROOT`. **Document**: cwd = hub. |
+| **6** | **Tests-docs location** (FE / BE / Fullstack) | **This repository** — scaffold `tests/` (+ `/test-api`, `testcase:gen:api` cho hook). **Other** — path pointer → `FLOWGRID_TESTS_DOC`. **Test**: cwd = hub. |
+| **7** | **Languages** (chỉ **Document**) | **Đa ngôn ngữ global** dự án (i18n toàn hệ thống, không phải bản dịch từng file docs): vd. `vi,en,ja` + locale mặc định; một ngôn ngữ thì nhập một. |
+| **8** | **Installation Plan** + **Proceed?** | Xem lại và xác nhận. |
+| **9** | *(sau confirm)* | `.flowgrid/`, scaffold, harness, MCP, `artifactgraph/`. |
+| **10** | **Optional toolkits** | Tuỳ chọn **Codegraph** — chỉ chạy nếu CLI `codegraph` đã cài trên PATH; không có thì bỏ qua, làm sau: `codegraph init` + `platform-dna codegraph:wire`. |
+
+Sau init: **`.flowgrid/config.json`**; dùng slash skill (vd. `/spec`) trong agent đã chọn.
+
+```mermaid
+flowchart LR
+  A[Chọn agents] --> B[Project type]
+  B --> C[Base profile]
+  C --> D[Stack FE/BE]
+  D --> E[Docs root]
+  E --> F[Tests root]
+  F --> G[Xác nhận plan]
+  G --> H[.flowgrid + MCP + skills]
+```
+
+Wizard tương tác: chạy `flowgrid init` trên repo dự án. Bảng bước, `flowgrid doctor` / `harness sync`: [docs/references/cli-and-commands.md](/references/cli-and-commands.md) (Audit & Harness · MCP).
+
+### 3. Kiểm tra
+
+```bash
+flowgrid doctor
+```
