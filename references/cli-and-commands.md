@@ -31,7 +31,7 @@ pnpm add -g @shanyucoder/flowgrid
 | **Cập nhật CLI** | `flowgrid update` — npm `@latest` nếu cài từ registry; GitHub / `install.sh` / clone dev nếu không |
 | **Kiểm tra trước update** | `flowgrid update --check` |
 
-Gỡ: `pnpm remove -g @shanyucoder/flowgrid` (mọi OS) · `flowgrid uninstall` · `bash install.sh --uninstall` (nếu dùng script).
+Gỡ: `flowgrid uninstall`.
 
 Chi tiết bước `init`: [README § Cài đặt](/readme).
 
