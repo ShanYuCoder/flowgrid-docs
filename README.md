@@ -3,6 +3,7 @@
 Hướng dẫn, workflow, references cho FlowGrid MCP toolkit (repo toolkit private).
 
 - **Mục lục:** [CATALOG.md](./CATALOG.md)
+- **VitePress local:** `pnpm install` → `pnpm dev` (hoặc từ repo flowgrid: `pnpm docs:dev`)
 - **Cài CLI (bản build):** [install.sh](./install.sh) + GitHub PAT (Fine-grained, Contents read trên `ShanYuCoder/flowgrid`)
 
 ```bash
