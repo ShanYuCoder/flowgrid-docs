@@ -4,8 +4,9 @@
   "description": "Public FlowGrid documentation site (VitePress)",
   "type": "module",
   "scripts": {
+    "catalog": "node ../engines/docs/publish.mjs",
     "dev": "vitepress dev .",
-    "build": "vitepress build .",
+    "build": "pnpm run catalog && vitepress build .",
     "preview": "vitepress preview ."
   },
   "engines": {
