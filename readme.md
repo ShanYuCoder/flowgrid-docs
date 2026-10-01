@@ -69,7 +69,7 @@ FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạ
 
 ### 1. Cài FlowGrid CLI
 
-Cài global **`@shanyucoder/flowgrid`** từ **GitHub Release** repo **`ShanYuCoder/flowgrid`**. Maintainer cấp **Fine-grained PAT** — **Contents: Read** trên repo đó.
+Cài **FlowGrid CLI** từ **GitHub Release** repo **`ShanYuCoder/flowgrid`**. Maintainer cấp **Fine-grained PAT** — **Contents: Read** trên repo đó.
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
@@ -97,8 +97,7 @@ curl -fsSL \
 **Gỡ:**
 
 ```bash
-npm uninstall -g @shanyucoder/flowgrid
-# hoặc: flowgrid uninstall
+flowgrid uninstall
 ```
 
 ### 2. Khởi tạo repo (`flowgrid init`)
