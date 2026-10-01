@@ -6,7 +6,8 @@ import { withMermaid } from 'vitepress-plugin-mermaid';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const docsDir = path.resolve(__dirname, '..');
-const repoReadme = path.resolve(docsDir, '../README.md');
+/** When `docs` is a submodule inside flowgrid, sync toolkit README for /readme route. */
+const flowgridReadme = path.resolve(docsDir, '../README.md');
 const docsReadme = path.join(docsDir, 'readme.md');
 
 /** Sync root README into docs for VitePress route /readme (not committed). */
@@ -14,8 +15,8 @@ const catalogGithub =
   'https://github.com/ShanYuCoder/flowgrid-docs/blob/main/CATALOG.md';
 
 function syncReadmeForVitepress() {
-  if (!fs.existsSync(repoReadme)) return;
-  let text = fs.readFileSync(repoReadme, 'utf8');
+  if (!fs.existsSync(flowgridReadme)) return;
+  let text = fs.readFileSync(flowgridReadme, 'utf8');
   const publishNpmGithub =
     'https://github.com/ShanYuCoder/flowgrid/blob/main/PUBLISH-NPM.md';
 

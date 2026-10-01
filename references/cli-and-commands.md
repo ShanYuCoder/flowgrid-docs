@@ -301,7 +301,7 @@ Cần `.flowgrid/config.json` có `stack` + `commands` (merge từ `stacks/*.jso
 | `flowgrid split_all` · `pnpm spec:split:all` | Mọi `*.bundle.yaml` dưới surfaces | Split từng file |
 | `flowgrid render` · `pnpm flowgrid:render` | `ir/spec.yaml` (skip màn chưa split) | `ir/generated/*.md` + **`qa/index.md`** (bảng Data Dictionary chuẩn) |
 | `flowgrid publish` · `pnpm flowgrid:publish` | MD đã có + OpenAPI | **`CATALOG.md`** + link **đầu** README |
-| `flowgrid dev` · `pnpm docs:dev` | VitePress | Sidebar: surfaces (kèm `ir/generated`) + **QA** cuối |
+| `flowgrid dev` · `pnpm docs:dev` (toolkit: `pnpm -C docs dev`) | VitePress | Sidebar: surfaces (kèm `ir/generated`) + **QA** cuối |
 
 GitHub: README → `CATALOG.md` (platform / product / QA) → click mở trang MD. Không lục YAML.
 
