@@ -69,24 +69,36 @@ FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạ
 
 ### 1. Cài FlowGrid CLI
 
-Cài **bản build** từ GitHub Release (repo toolkit private). Maintainer cấp **Fine-grained GitHub PAT** — quyền **Contents: Read** trên `ShanYuCoder/flowgrid`.
+Cài global **`@shanyucoder/flowgrid`** từ **GitHub Release** repo **`ShanYuCoder/flowgrid`**. Maintainer cấp **Fine-grained PAT** — **Contents: Read** trên repo đó.
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_XXXXX
+export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
+
+curl -fsSL \
+  -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
+  https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh \
+  | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
 Ghim version Release:
 
 ```bash
-FLOWGRID_REF=v0.1.15 curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_XXXXX
+export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
+export FLOWGRID_REF=v0.1.15
+
+curl -fsSL \
+  -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
+  https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh \
+  | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
-**Cập nhật:** chạy lại lệnh trên khi có Release mới, hoặc `flowgrid update` nếu CLI đã nhận diện được nguồn cài.
+**Cập nhật:** chạy lại lệnh cài khi có Release mới, hoặc `flowgrid update`.
 
 **Gỡ:**
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- --uninstall
+npm uninstall -g @shanyucoder/flowgrid
+# hoặc: flowgrid uninstall
 ```
 
 ### 2. Khởi tạo repo (`flowgrid init`)
