@@ -1,45 +1,5 @@
-import fs from 'node:fs';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import { defineConfig } from 'vitepress';
 import { withMermaid } from 'vitepress-plugin-mermaid';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const docsDir = path.resolve(__dirname, '..');
-/** When `docs` is a submodule inside flowgrid, sync toolkit README for /readme route. */
-const flowgridReadme = path.resolve(docsDir, '../README.md');
-const docsReadme = path.join(docsDir, 'readme.md');
-
-/** Sync root README into docs for VitePress route /readme (not committed). */
-const catalogGithub =
-  'https://github.com/ShanYuCoder/flowgrid-docs/blob/main/CATALOG.md';
-
-function syncReadmeForVitepress() {
-  if (!fs.existsSync(flowgridReadme)) return;
-  let text = fs.readFileSync(flowgridReadme, 'utf8');
-  const publishNpmGithub =
-    'https://github.com/ShanYuCoder/flowgrid/blob/main/PUBLISH-NPM.md';
-
-  text = text.replace(
-    /\]\(CATALOG\.md\)/g,
-    `](${catalogGithub})`,
-  );
-  text = text.replace(
-    /\]\(PUBLISH-NPM\.md\)/g,
-    `](${publishNpmGithub})`,
-  );
-  text = text.replace(
-    /\]\(docs\/references\/([^)]+)\)/g,
-    '](/references/$1)',
-  );
-  text = text.replace(
-    /\]\(templates\/shared\/([^)]+)\)/g,
-    '](https://github.com/ShanYuCoder/flowgrid/blob/main/templates/shared/$1)',
-  );
-  fs.writeFileSync(docsReadme, text);
-}
-
-syncReadmeForVitepress();
 
 const skillGroups = [
   {
@@ -199,17 +159,6 @@ export default withMermaid(
     },
     mermaid: {},
     vite: {
-      plugins: [
-        {
-          name: 'flowgrid-sync-readme',
-          configureServer() {
-            syncReadmeForVitepress();
-          },
-          buildStart() {
-            syncReadmeForVitepress();
-          },
-        },
-      ],
       optimizeDeps: {
         include: ['mermaid', 'fastdom'],
       },

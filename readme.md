@@ -1,5 +1,5 @@
 <!-- flowgrid-catalog -->
-**[Danh mục tài liệu](https://github.com/ShanYuCoder/flowgrid/blob/main/CATALOG.md)**
+**[Danh mục tài liệu](CATALOG.md)**
 <!-- /flowgrid-catalog -->
 
 # FlowGrid
@@ -65,97 +65,29 @@ FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạ
 
 ## Cài đặt
 
-**Yêu cầu:** Node.js **≥ 24**.
+**Yêu cầu:** Node.js **≥ 24** (Linux / macOS / WSL / Git Bash).
 
 ### 1. Cài FlowGrid CLI
 
-**Khuyến nghị — pnpm global từ npm** (cùng một lệnh trên **Linux**, **macOS**, **WSL** và **Windows PowerShell** / Terminal):
-
-```text
-pnpm add -g @shanyucoder/flowgrid
-```
-
-(Gõ trong bash, zsh, **PowerShell**, CMD hoặc Windows Terminal — cùng một lệnh. Tarball npm đã có `dist/`; runtime **không** kéo VitePress/esbuild — `pnpm add` / `pnpm add -g` thường không cần `--allow-build`.)
-
-Cài từ **GitHub** vẫn cần `--allow-build=@shanyucoder/flowgrid` (build TypeScript lúc cài). Hub docs/tests dùng VitePress qua `npx` + `devDependencies` sau `flowgrid init`.
-
-**Chưa có bản trên npm** (hoặc cần bản Git cụ thể):
-
-```text
-pnpm add -g github:ShanYuCoder/flowgrid --allow-build=@shanyucoder/flowgrid
-```
-
-pnpm 10+ cần `--allow-build` khi cài **từ GitHub** (build TypeScript lúc cài).
-
-| Môi trường | PATH sau `pnpm add -g` |
-| --- | --- |
-| **Linux / macOS** | Chạy `pnpm setup` nếu shell báo thiếu bin; thường là `~/.local/share/pnpm`. |
-| **WSL** | Giống Linux — dùng Node/pnpm **trong WSL**, không trộn với Node cài trên Windows host trừ khi cố ý. |
-| **Windows (PowerShell, CMD, Windows Terminal)** | **`pnpm setup`** → terminal mới → `pnpm add -g @shanyucoder/flowgrid@0.1.4` (hoặc `@latest` sau publish). **Node ≥ 24** bắt buộc (`node -v`). `flowgrid --version` — bản **≤ 0.1.2** có thể im lặng trên Windows. |
-
-**WSL / Git Bash** có thể dùng lệnh pnpm ở trên; **không** bắt buộc `install.sh` nếu đã cài global qua pnpm.
-
-**npx (không cài global):**
-
-```text
-cd your-project
-npx -p @shanyucoder/flowgrid flowgrid init
-```
-
-Luôn có từ **`flowgrid`** trước `init` — `npx @shanyucoder/flowgrid` (thiếu bin) không phải quy trình khuyến nghị. Global: `npm install -g @shanyucoder/flowgrid` → `cd your-project` → `flowgrid init`.
-
-Thay `init` bằng `doctor`, `harness sync`, … GitHub: `npx -p github:ShanYuCoder/flowgrid flowgrid init`.
-
-**npm (global):**
-
-```text
-npm install -g @shanyucoder/flowgrid
-```
-
-Cài từ Git: `npm install -g github:ShanYuCoder/flowgrid` (npm 11+: có thể cần `npm install-scripts approve @shanyucoder/flowgrid`).
-
-**Dev dependency trong repo dự án:**
-
-```text
-pnpm add -D @shanyucoder/flowgrid
-pnpm exec flowgrid doctor
-```
-
-Từ Git: `pnpm add -D github:ShanYuCoder/flowgrid --allow-build=@shanyucoder/flowgrid`.
-
-Đội toolkit publish npm: [PUBLISH-NPM.md](https://github.com/ShanYuCoder/flowgrid/blob/main/PUBLISH-NPM.md) (root, không build VitePress).
-
-**Phát triển toolkit (clone repo):**
-
-Linux / macOS / WSL:
+Cài **bản build** từ GitHub Release (repo toolkit private). Maintainer cấp **Fine-grained GitHub PAT** — quyền **Contents: Read** trên `ShanYuCoder/flowgrid`.
 
 ```bash
-git clone https://github.com/ShanYuCoder/flowgrid.git && cd flowgrid
-pnpm install && sh install-local.sh
+curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_XXXXX
 ```
 
-Windows (PowerShell):
-
-```powershell
-git clone https://github.com/ShanYuCoder/flowgrid.git; cd flowgrid
-pnpm install; pnpm link --global
-```
-
-**Tùy chọn — script bash** (Linux / macOS / WSL / Git Bash — clone + `~/.local/bin`, **không** thay pnpm global):
+Ghim version Release:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh | bash
+FLOWGRID_REF=v0.1.15 curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_XXXXX
 ```
 
-**Cập nhật** (npm hoặc GitHub — không cần gỡ cài lại):
+**Cập nhật:** chạy lại lệnh trên khi có Release mới, hoặc `flowgrid update` nếu CLI đã nhận diện được nguồn cài.
 
-```text
-flowgrid update
+**Gỡ:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- --uninstall
 ```
-
-Tự nhận cách cài (pnpm global, npm global, `install.sh`, hoặc clone dev) và chạy lệnh phù hợp. Ghim ref: `FLOWGRID_REF=v0.1.0 flowgrid update`. Xem trước: `flowgrid update --check`.
-
-**Gỡ:** `pnpm remove -g @shanyucoder/flowgrid` (mọi OS) · hoặc `npm uninstall -g @shanyucoder/flowgrid` · script bash: `bash install.sh --uninstall`.
 
 ### 2. Khởi tạo repo (`flowgrid init`)
 
@@ -190,7 +122,7 @@ flowchart LR
   G --> H[.flowgrid + MCP + skills]
 ```
 
-Wizard tương tác: chạy `flowgrid init` trên repo dự án. Bảng bước, `flowgrid doctor` / `harness sync`: [docs/references/cli-and-commands.md](/references/cli-and-commands.md) (Audit & Harness · MCP).
+Wizard tương tác: chạy `flowgrid init` trên repo dự án. Bảng bước, `flowgrid doctor` / `harness sync`: [CLI & commands](/references/cli-and-commands.md) (Audit & Harness · MCP).
 
 ### 3. Kiểm tra
 

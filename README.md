@@ -1,11 +1,10 @@
 # FlowGrid — tài liệu (public)
 
-Hướng dẫn, workflow, references cho FlowGrid MCP toolkit (repo toolkit private).
+Repo Markdown + VitePress cho toolkit FlowGrid (mã nguồn CLI: repo private `ShanYuCoder/flowgrid`).
 
-- **Mục lục:** [CATALOG.md](./CATALOG.md)
-- **VitePress local:** `pnpm install` → `pnpm dev` (hoặc từ repo flowgrid: `pnpm docs:dev`)
-- **Cài CLI (bản build):** [install.sh](./install.sh) + GitHub PAT (Fine-grained, Contents read trên `ShanYuCoder/flowgrid`)
+| Tài liệu | Mô tả |
+| --- | --- |
+| **[readme.md](./readme.md)** | Giới thiệu, **cài CLI** (curl + PAT), `flowgrid init` |
+| **[CATALOG.md](./CATALOG.md)** | Mục lục toàn bộ trang |
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/install.sh | bash -s -- github_pat_XXXXX
-```
+**VitePress (local):** `pnpm install` → `pnpm dev`
