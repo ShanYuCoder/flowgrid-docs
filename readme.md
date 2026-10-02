@@ -73,22 +73,25 @@ Cài **FlowGrid CLI** từ **GitHub Release** repo **`ShanYuCoder/flowgrid`**. M
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
+export FLOWGRID_REF=latest
 
 curl -fsSL \
   -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
-  https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh \
+  -H "Accept: application/octet-stream" \
+  -L "https://github.com/ShanYuCoder/flowgrid/releases/${FLOWGRID_REF}/download/install.sh" \
   | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
-Ghim version Release:
+Ghim tag Release:
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
-export FLOWGRID_REF=v0.1.15
+export FLOWGRID_REF=v0.2.1
 
 curl -fsSL \
   -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
-  https://raw.githubusercontent.com/ShanYuCoder/flowgrid/main/install.sh \
+  -H "Accept: application/octet-stream" \
+  -L "https://github.com/ShanYuCoder/flowgrid/releases/download/${FLOWGRID_REF}/install.sh" \
   | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
