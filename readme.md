@@ -76,7 +76,7 @@ Hai kênh — chọn một:
 
 ### 1a. npm (registry public)
 
-Cài global qua npm client. `flowgrid update` khi đã cài từ registry.
+Cài global qua npm client. Trên pnpm, nếu `@latest` không nâng bản: cài `@shanyucoder/flowgrid@<version>` (vd. `0.2.3`) hoặc `flowgrid update`. Tag `latest` trên npmjs là bản mới nhất; global pnpm có thể vẫn trỏ bản đã cài.
 
 ### 1b. GitHub private (PAT + curl)
 
