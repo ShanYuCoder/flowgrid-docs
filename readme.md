@@ -110,7 +110,7 @@ flowgrid init
 | Bước | Câu hỏi init | Ý nghĩa / gợi ý nhập |
 | --- | --- | --- |
 | **1** | **Select Agents/Skills to integrate** | Agent IDE/CLI (Cursor, Claude, …). Copy **skills** + **MCP** (`flowgrid`) vào thư mục agent. Có thể bỏ trống, sync sau: `flowgrid harness sync`. |
-| **2** | **Select project type** | **Document** — docs-hub. **Frontend** / **Backend** / **Fullstack** — code (+ pointer docs/tests). **Test** — tests-docs. |
+| **2** | **Select project type** | **Document** — docs-hub. **Frontend** / **Backend** / **Fullstack** — code (+ pointer docs/tests). **Test** — tests-docs. **Khuyến nghị:** fork/clone [base tham khảo](#base-tham-khảo-phối-hợp-tốt-nhất-với-flowgrid-init) cùng lane — phối hợp FlowGrid ổn nhất (path, registries, audit, codegen). |
 | **3** | **Base Architecture Profile** | **Standard** (Nuxt4, Next.js, NestJS, FastAPI, …) hoặc **Custom** (+ **Golden Sample** tùy chọn). |
 | **4** | **Frontend / Backend technology** | Adapter codegen (`nuxt4`, `nextjs`, `nestjs`, `fastapi`, …). Fullstack: FE + BE (mặc định Nest). |
 | **5** | **Docs-hub location** (FE / BE / Fullstack) | **This repository** — scaffold `docs/` (integration/hook surfaces trên repo BE). **Other** — path pointer → `FLOWGRID_DOCS_ROOT`. **Document**: cwd = hub. |
@@ -119,6 +119,45 @@ flowgrid init
 | **8** | **Installation Plan** + **Proceed?** | Xem lại và xác nhận. |
 | **9** | *(sau confirm)* | `.flowgrid/`, scaffold, harness, MCP, `artifactgraph/`. |
 | **10** | **Optional toolkits** | Tuỳ chọn **Codegraph** — chỉ chạy nếu CLI `codegraph` đã cài trên PATH; không có thì bỏ qua, làm sau: `codegraph init` + `platform-dna codegraph:wire`. |
+
+#### Base tham khảo (phối hợp tốt nhất với `flowgrid init`)
+
+Các repo dưới đây là **golden sample** public — layout, registries, harness skill/MCP và convention artifact đã được căn theo lane FlowGrid. **Tham khảo (fork/clone) base đúng lane** thường cho kết quả tốt hơn repo trống + init một mình: wizard **project type** / **adapter** khớp thư mục, `flowgrid audit *` và codegen ít báo lệch path, và team docs · QA · dev dùng chung vocab (`CMP-*`, `TC-*`, bundle, scenario).
+
+**Bộ ba multi-repo (mẫu khuyến nghị):**
+
+| Lane | Vai trò | Base |
+| --- | --- | --- |
+| R2 — docs-hub | Spec, kiến trúc, grill design | [base_docs](https://github.com/ShanYuCoder/base_docs) |
+| R3 — tests-docs | Scenario, `TC-*.yaml`, coverage E2E | [base-test-docs](https://github.com/ShanYuCoder/base-test-docs) |
+| Code | FE / BE / fullstack theo stack | Một repo trong bảng [Base code theo adapter](#base-code-theo-adapter) bên dưới |
+
+Trên repo **code**, bước init **5–6** chọn **Other** (hoặc env `FLOWGRID_DOCS_ROOT`, `FLOWGRID_TESTS_DOC`) để trỏ sang hub docs và tests-docs — giống cách các base trên đã thiết kế để chạy song song.
+
+**Quy trình gợi ý:** fork base → `cd` repo → `flowgrid init` (type + stack như bảng) → `flowgrid doctor` → làm việc bằng slash skill (`/spec`, `/testcase`, …). Repo mới hoàn toàn: vẫn có thể `init` trên cwd trống, nhưng so layout với base tương ứng khi scaffold xong.
+
+| Project type (bước 2) | Base tham khảo |
+| --- | --- |
+| **Document** (docs-hub) | [ShanYuCoder/base_docs](https://github.com/ShanYuCoder/base_docs) |
+| **Test** (tests-docs) | [ShanYuCoder/base-test-docs](https://github.com/ShanYuCoder/base-test-docs) |
+
+##### Base code theo adapter
+
+Bước 2 chọn **Frontend** / **Backend** / **Fullstack**, bước 3–4 chọn profile + adapter; repo mẫu khớp stack:
+
+| Vai trò | Adapter / stack (init) | Base tham khảo |
+| --- | --- | --- |
+| Frontend | `nuxt4` | [base-nuxt4](https://github.com/ShanYuCoder/base-nuxt4) |
+| Frontend | `nextjs` | [base-nextjs](https://github.com/ShanYuCoder/base-nextjs) |
+| Frontend | `dotnet-line` | [base-line](https://github.com/ShanYuCoder/base-line) |
+| Backend | `nestjs` | *(monorepo fullstack)* [base-nextjs-nestjs](https://github.com/ShanYuCoder/base-nextjs-nestjs) hoặc [base-nuxt4-nestjs](https://github.com/ShanYuCoder/base-nuxt4-nestjs) — API trong `server/` / `apps/api` |
+| Backend | `fastapi` | [base-fast-api](https://github.com/ShanYuCoder/base-fast-api) |
+| Backend | `laravel` | [base-laravel](https://github.com/ShanYuCoder/base-laravel) |
+| Backend | `dotnet-integration` | [base-donet](https://github.com/ShanYuCoder/base-donet) |
+| Fullstack | `nextjs` + `nestjs` | [base-nextjs-nestjs](https://github.com/ShanYuCoder/base-nextjs-nestjs) |
+| Fullstack | `nuxt4` + `nestjs` | [base-nuxt4-nestjs](https://github.com/ShanYuCoder/base-nuxt4-nestjs) |
+
+Tất cả base code ở bảng trên **public trên GitHub** (org `ShanYuCoder`) — có thể xem README từng repo để biết lệnh dev/test và pilot feature (vd. Auth) trước khi `init` dự án thật.
 
 Sau init: **`.flowgrid/config.json`**; dùng slash skill (vd. `/spec`) trong agent đã chọn.
 
