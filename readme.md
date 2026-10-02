@@ -67,41 +67,46 @@ FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạ
 
 **Yêu cầu:** Node.js **≥ 24** (Linux / macOS / WSL / Git Bash).
 
-### 1. Cài FlowGrid CLI
+Hai kênh — chọn một:
 
-Cài **FlowGrid CLI** từ **GitHub Release** repo **`ShanYuCoder/flowgrid`**. Maintainer cấp **Fine-grained PAT** — **Contents: Read** trên repo đó.
+| Kênh | Nguồn |
+| --- | --- |
+| **npm (public)** | `@shanyucoder/flowgrid` — [npmjs.com](https://www.npmjs.com/package/@shanyucoder/flowgrid) |
+| **GitHub (private)** | PAT + script bootstrap bên dưới (repo `flowgrid` private) |
+
+### 1a. npm (registry public)
+
+Cài global qua npm client. `flowgrid update` khi đã cài từ registry.
+
+### 1b. GitHub private (PAT + curl)
+
+**Không** `raw.githubusercontent.com/ShanYuCoder/flowgrid/...`. Bootstrap (public) tải `install.sh` qua GitHub API, rồi cài tarball từ Release.
+
+PAT: **Contents: Read** trên `ShanYuCoder/flowgrid`.
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
 export FLOWGRID_REF=latest
 
 curl -fsSL \
-  -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
-  -H "Accept: application/octet-stream" \
-  -L "https://github.com/ShanYuCoder/flowgrid/releases/${FLOWGRID_REF}/download/install.sh" \
+  https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/scripts/install-from-release.sh \
   | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
-Ghim tag Release:
+Ghim tag:
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
-export FLOWGRID_REF=v0.2.1
+export FLOWGRID_REF=v0.2.3
 
 curl -fsSL \
-  -H "Authorization: Bearer $FLOWGRID_GITHUB_TOKEN" \
-  -H "Accept: application/octet-stream" \
-  -L "https://github.com/ShanYuCoder/flowgrid/releases/download/${FLOWGRID_REF}/install.sh" \
+  https://raw.githubusercontent.com/ShanYuCoder/flowgrid-docs/main/scripts/install-from-release.sh \
   | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
-**Cập nhật:** chạy lại lệnh cài khi có Release mới, hoặc `flowgrid update`.
+**Cập nhật (GitHub):** chạy lại bootstrap khi có Release mới.
 
-**Gỡ:**
-
-```bash
-flowgrid uninstall
-```
+**Gỡ:** `flowgrid uninstall`
 
 ### 2. Khởi tạo repo (`flowgrid init`)
 
