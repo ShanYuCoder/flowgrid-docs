@@ -2,6 +2,8 @@
 
 **Phạm vi (SSOT):** khảo cổ code cũ, `/legacy` + `/spec`, `/adopt`, common catalog — **không** copy-paste sang codebase mới.
 
+**Hướng dẫn từng bước + sơ đồ:** [3 Ngữ cảnh Triển khai § Case 2 Modernization](./use-cases-guide.md#case-2-modernization--re-platform-code-cũ-làm-nguồn-adopt--legacy).
+
 **Drill prep cùng custom-base + `/spec`:** [spec-ssot-prep.md](./spec-ssot-prep.md) — brownfield = nhánh **C** (`/adopt`) + (nếu stack lệch) nhánh **B** [custom-base](./custom-base.md) trước leaf bundle.
 
 **Không viết ở đây:** layout legacy-dynamics → [artifacts/docs.md](../artifacts/docs.md) · skill `/legacy` → [references/skills/legacy.md](../references/skills/legacy.md).

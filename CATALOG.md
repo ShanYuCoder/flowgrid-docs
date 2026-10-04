@@ -19,6 +19,7 @@
   - [Workflow — Legacy & brownfield](workflows/legacy-brownfield.md)
   - [Workflow — QA inbox (đơn giản)](workflows/qa-team.md)
   - [Workflow — Chuẩn bị SSOT spec (prep drill)](workflows/spec-ssot-prep.md)
+  - [Workflow — Hướng dẫn 3 Ngữ cảnh Triển khai (Greenfield, Modernization, Maintain)](workflows/use-cases-guide.md)
   - [Workflow — Test (tests-docs & E2E)](workflows/test.md)
   - [Workflow — Wire (hội tụ FE ↔ BE)](workflows/wire.md)
 - references

@@ -67,18 +67,7 @@ FlowGrid **không** thay IDE hay model. Nó gắn **quy trình**, **định dạ
 
 **Yêu cầu:** Node.js **≥ 24** (Linux / macOS / WSL / Git Bash).
 
-Hai kênh — chọn một:
-
-| Kênh | Nguồn |
-| --- | --- |
-| **npm (public)** | `@shanyucoder/flowgrid` — [npmjs.com](https://www.npmjs.com/package/@shanyucoder/flowgrid) |
-| **GitHub (private)** | PAT + script bootstrap bên dưới (repo `flowgrid` private) |
-
-### 1a. npm (registry public)
-
-Cài global qua npm client. Trên pnpm, nếu `@latest` không nâng bản: cài `@shanyucoder/flowgrid@<version>` (vd. `0.2.3`) hoặc `flowgrid update`. Tag `latest` trên npmjs là bản mới nhất; global pnpm có thể vẫn trỏ bản đã cài.
-
-### 1b. GitHub private (PAT + curl)
+### GitHub private (PAT + curl)
 
 **Không** `raw.githubusercontent.com/ShanYuCoder/flowgrid/...`. Bootstrap (public) tải `install.sh` qua GitHub API, rồi cài tarball từ Release.
 
@@ -115,18 +104,19 @@ cd your-project
 flowgrid init
 ```
 
-| Bước | Câu hỏi init | Ý nghĩa / gợi ý nhập |
+| Bước | Ý nghĩa & Phân tích | Chi tiết từng lựa chọn |
 | --- | --- | --- |
-| **1** | **Select Agents/Skills to integrate** | Agent IDE/CLI (Cursor, Claude, …). Copy **skills** + **MCP** (`flowgrid`) vào thư mục agent. Có thể bỏ trống, sync sau: `flowgrid harness sync`. |
-| **2** | **Select project type** | **Document** — docs-hub. **Frontend** / **Backend** / **Fullstack** — code (+ pointer docs/tests). **Test** — tests-docs. **Khuyến nghị:** fork/clone [base tham khảo](#base-tham-khảo-phối-hợp-tốt-nhất-với-flowgrid-init) cùng lane — phối hợp FlowGrid ổn nhất (path, registries, audit, codegen). |
-| **3** | **Base Architecture Profile** | **Standard** (Nuxt4, Next.js, NestJS, FastAPI, …) hoặc **Custom** (+ **Golden Sample** tùy chọn). |
-| **4** | **Frontend / Backend technology** | Adapter codegen (`nuxt4`, `nextjs`, `nestjs`, `fastapi`, …). Fullstack: FE + BE (mặc định Nest). |
-| **5** | **Docs-hub location** (FE / BE / Fullstack) | **This repository** — scaffold `docs/` (integration/hook surfaces trên repo BE). **Other** — path pointer → `FLOWGRID_DOCS_ROOT`. **Document**: cwd = hub. |
-| **6** | **Tests-docs location** (FE / BE / Fullstack) | **This repository** — scaffold `tests/` (+ `/test-api`, `testcase:gen:api` cho hook). **Other** — path pointer → `FLOWGRID_TESTS_DOC`. **Test**: cwd = hub. |
-| **7** | **Languages** (chỉ **Document**) | **Đa ngôn ngữ global** dự án (i18n toàn hệ thống, không phải bản dịch từng file docs): vd. `vi,en,ja` + locale mặc định; một ngôn ngữ thì nhập một. |
-| **8** | **Installation Plan** + **Proceed?** | Xem lại và xác nhận. |
-| **9** | *(sau confirm)* | `.flowgrid/`, scaffold, harness, MCP, `artifactgraph/`. |
-| **10** | **Optional toolkits** | Tuỳ chọn **Codegraph** — chỉ chạy nếu CLI `codegraph` đã cài trên PATH; không có thì bỏ qua, làm sau: `codegraph init` + `platform-dna codegraph:wire`. |
+| **1. Select Agents/Skills to integrate** | **Tích hợp Harness & MCP vào Agent IDE/CLI**<br>Copy toàn bộ Kỹ năng (skills), quy chuẩn (rules) và cấu hình MCP (`flowgrid`) vào thư mục của Agent AI mà dự án sử dụng. Giúp Agent AI tự động nhận biết slash command, context và tool API FlowGrid.<br>*Nếu bỏ trống:* Bỏ qua copy harness/MCP (chỉ tạo `.flowgrid/` + scaffold), có thể sync sau bằng `flowgrid harness sync`. | • **`gemini`**: Gemini CLI / VS Code → copy `.agents/` (`mcp.json` + skills)<br>• **`antigravity`**: Google Antigravity IDE → copy `.antigravity/` (`mcp_config.json` + skills)<br>• **`cursor`**: Cursor IDE → copy `.cursor/mcp.json` + rules<br>• **`claude`**: Claude Code CLI<br>• **`codex`**: Codex CLI<br>• **`opencode`**: OpenCode<br>• **`hermes`**: Hermes Agent<br>• **`kiro`**: Kiro<br>• **`kilo`**: Kilo Code |
+| **2. Select project type** | **Khai báo phân loại Repository (Lane)**<br>Định hình loại repo để FlowGrid áp dụng đúng quy chuẩn harness, tự động scaffold cấu trúc thư mục, và giúp các lệnh `audit`, `codegen`, `doctor` cũng như Agent AI nhận diện đúng vai trò trong hệ thống.<br>*Khuyến nghị:* Fork/clone base tham khảo chuẩn cùng lane trước khi `init`. | • **`Frontend`**: Repo chứa mã nguồn UI (Vue, React, Nuxt, Next,...)<br>• **`Backend`**: Repo chứa mã nguồn Server/API (NestJS, FastAPI, Go,...)<br>• **`Fullstack`**: Repo chứa cả Frontend & Backend trong cùng codebase<br>• **`Document`**: Repo trung tâm chứa tài liệu kiến trúc, specs, API contract (`docs-hub`)<br>• **`Test`**: Repo trung tâm chứa kịch bản kiểm thử, catalog testcase (`tests-docs hub`) |
+| **3. Base Architecture Profile** *(Chỉ xuất hiện khi type ≠ Document)* | **Lựa chọn mức độ chuẩn hóa kiến trúc**<br>Xác định xem dự án đi theo kiến trúc khung chuẩn adapter của FlowGrid (Greenfield) hay sử dụng kiến trúc tùy biến / kế thừa sẵn có (Brownfield / Legacy). | • **`standard`**: Base kiến trúc chuẩn (Nuxt4, Next.js, NestJS, FastAPI,...). Tự động chạy `registry:sync` quét đồng bộ components & capabilities.<br>• **`custom`**: Base tùy biến / dự án sẵn có lệch khung chuẩn. Cấu hình sau init hoặc học qua Golden Sample (`custom-base`). |
+| **4. Frontend / Backend technology (Adapter)** *(Tùy thuộc project type)* | **Chọn Adapter mã nguồn sinh Code & Quét Registry**<br>Khai báo framework mã nguồn chính xác để CLI và Agent AI sinh code (codegen), quét registry (`components/ui`, API endpoints) và kiểm tra audit đúng cú pháp framework đó. | **Dành cho Frontend / Fullstack:**<br>• `nuxt4`: Nuxt 4 (Vue 3)<br>• `nextjs`: Next.js (React)<br>• `custom`: Vue/React/Angular khác<br><br>**Dành cho Backend / Fullstack:**<br>• `nestjs`: NestJS (TypeScript)<br>• `fastapi`: FastAPI (Python)<br>• `custom`: Go, Express, Spring Boot, Python khác |
+| **5. Documentation (docs-hub) location** *(Dành cho FE, BE, Fullstack)* | **Trỏ vị trí tài liệu kiến trúc (`docs-hub`)**<br>Khai báo nơi lưu trữ tài liệu spec/design. Nếu tài liệu nằm chung repo thì chọn In-repo để scaffold thư mục `docs/`. Nếu nằm ở repo `base_docs` riêng thì chọn Pointer trỏ đường dẫn. | • **`This repository`** (In-repo): Tạo & scaffold trực tiếp thư mục `docs/` trong repo này.<br>• **`Other location`** (Pointer): Nhập path tương đối/tuyệt đối trỏ sang repo Docs-hub ngoài (`FLOWGRID_DOCS_ROOT`). |
+| **6. Tests-docs hub location** *(Dành cho FE, BE, Fullstack)* | **Trỏ vị trí kịch bản kiểm thử (`tests-docs`)**<br>Khai báo nơi chứa kế hoạch testcase/QA specs (`TC-*.yaml`). Tương tự docs-hub, có thể tạo thư mục `tests/` nội bộ hoặc trỏ sang repo `base-test-docs` tách biệt. | • **`This repository`** (In-repo): Tạo & scaffold thư mục `tests/` trong repo này.<br>• **`Other location`** (Pointer): Nhập path tương đối/tuyệt đối trỏ sang repo Tests-docs ngoài (`FLOWGRID_TESTS_DOC`). |
+| **7. Automation / Playwright e2e-root** *(Dành cho FE, BE, Fullstack)* | **Định vị đường dẫn code Test tự động (Automation Code)**<br>Phân định rõ vị trí chứa code kiểm thử chạy được (Playwright TS, Page Objects, API E2E request specs) nhằm tách biệt với kịch bản mô tả YAML (tests-docs). | • **`Mặc định FE / Fullstack`**: `tests/e2e` (Playwright *.spec.ts & Page Objects)<br>• **`Mặc định Backend`**: `tests/api-e2e` (Playwright API E2E / Newman / request specs)<br>• **`Custom path`**: Đường dẫn tùy chỉnh do người dùng tự nhập |
+| **8. Product i18n (đa ngôn ngữ sản phẩm)** *(Chỉ khi scaffold Docs-hub)* | **Cấu hình đa ngôn ngữ sản phẩm (gồm 2 sub-step)**<br>Khai báo danh sách ngôn ngữ hỗ trợ cho sản phẩm (vd: Việt, Anh, Nhật) và ngôn ngữ mặc định. Cấu hình này lưu tại `.flowgrid/product-i18n.yaml` làm căn cứ để Agent sinh các bản dịch dictionary/i18n cho UI.<br>*Quy trình 2 sub-step:*<br>• Sub-step 1: Nhập danh sách locale hỗ trợ.<br>• Sub-step 2: Chọn ngôn ngữ mặc định (*tự động bỏ qua nếu ở sub-step 1 chỉ nhập 1 ngôn ngữ*). | • **Sub-step 1 — Danh sách locale**: Nhập mã BCP-47 phân cách bằng dấu phẩy (mặc định: `vi`; nhập `vi,en,ja` nếu đa ngôn ngữ).<br>• **Sub-step 2 — Ngôn ngữ mặc định**: Chọn 1 ngôn ngữ trong danh sách trên làm default (*bỏ qua nếu Sub-step 1 chỉ nhập 1 ngôn ngữ*). |
+| **9. Docs prose language** *(Khi scaffold Docs-hub hoặc Tests-hub)* | **Ngôn ngữ mô tả tài liệu & testcase**<br>Quy định ngôn ngữ tự nhiên (narrative/prose) được Agent AI sử dụng khi viết nội dung tài liệu spec, mô tả kịch bản testcase và hướng dẫn QA. | • **`vi`** (Mặc định): Viết văn bản mô tả bằng Tiếng Việt (các tiêu đề, keys, struct names luôn giữ Tiếng Anh).<br>• **Mã ngôn ngữ khác**: Nhập locale mong muốn (vd: `en` cho Tiếng Anh hoàn toàn). |
+| **10. Installation Plan & Confirm** | **Rà soát & Xác nhận kế hoạch khởi tạo**<br>CLI hiển thị tổng hợp lại toàn bộ thông tin đã chọn (Project Type, Base Profile, Adapters, Paths, Locales, Agents) để người dùng rà soát trước khi thực thi ghi file. | • **`Proceed with initialization? (Yes)`**: Đồng ý khởi tạo. Ghi cấu hình, sinh scaffold và copy harness.<br>• **`No / Cancel`**: Hủy bỏ wizard, không ghi đè hay thay đổi bất kỳ file nào. |
+| **11. Post-init execution** *(Tự động chạy sau confirm)* | **Ghi cấu hình & Khởi tạo tài nguyên trên đĩa**<br>Thực thi khởi tạo các tài nguyên hệ thống theo đúng thông số đã xác nhận. | • Ghi file `.flowgrid/config.json` & tạo `platform-repos.local.json`.<br>• Copy harness, skills, MCP config vào thư mục Agent chọn ở Bước 1.<br>• Scaffold cấu trúc thư mục `docs/`, `tests/` (nếu chọn In-repo).<br>• Kích hoạt `codegraph init` (nếu CLI `codegraph` đã có trên PATH). |
 
 #### Base tham khảo (phối hợp tốt nhất với `flowgrid init`)
 

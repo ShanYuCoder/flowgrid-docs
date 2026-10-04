@@ -14,6 +14,8 @@ FlowGrid kết hợp **script deterministic** và **agent** trên cùng SSOT —
 
 ## Ba ngữ cảnh triển khai
 
+*Xem tài liệu hướng dẫn từng bước chi tiết + sơ đồ luồng:* **[Hướng dẫn Workflow 3 Ngữ cảnh Triển khai](../workflows/use-cases-guide.md)**.
+
 | Ngữ cảnh | Đặc điểm | Lane gợi ý |
 | --- | --- | --- |
 | **Greenfield** | Dự án mới, stack chuẩn adapter | `flowgrid init` (standard) → **`registry:sync`** index base → `/architecture` → `/spec` (đọc `design.registry.json` FE) → prototype → testcase/E2E |

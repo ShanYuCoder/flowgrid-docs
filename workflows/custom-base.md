@@ -2,6 +2,8 @@
 
 **Phạm vi (SSOT):** dự án **không** dùng base mặc định (Nuxt4+shadcn, Nest CQRS, …) — đồng bộ template, DSL registry, ArtifactGraph qua **Golden Sample**.
 
+**Hướng dẫn từng bước + sơ đồ:** [3 Ngữ cảnh Triển khai § Case 3 Maintain Custom Base](./use-cases-guide.md#️-case-3-maintain--custom-base-base-dự-án-tùy-biến--golden-sample).
+
 **Trước `/spec`:** nhánh **B** trong [spec-ssot-prep.md](./spec-ssot-prep.md). Brownfield: làm sau `/adopt` hoặc song song lead — cùng drill SSOT với [legacy-brownfield.md](./legacy-brownfield.md).
 
 **Không viết ở đây:** lệnh `build-template-code` chi tiết → [references/cli-and-commands.md](../references/cli-and-commands.md) · skill → [references/skills/build-templates.md](../references/skills/build-templates.md).

@@ -26,6 +26,7 @@ Requirement thô (bullet / ảnh / legacy code)
 
 - **Một session = một slash command** — đổi phase → chat mới.
 - Grill & gate: [grill-and-human-review.md](./grill-and-human-review.md) · [gates.md](./gates.md) · [đóng một function (`W-*`)](./gates.md#close-one-function).
+- **Hướng dẫn 3 Ngữ cảnh Triển khai (Greenfield, Modernization, Maintain):** [use-cases-guide.md](./use-cases-guide.md).
 - **Prep SSOT spec (drill chung):** [spec-ssot-prep.md](./spec-ssot-prep.md) · Brownfield: [legacy-brownfield.md](./legacy-brownfield.md) · Custom base: [custom-base.md](./custom-base.md).
 
 ### YAML vs Markdown (hai lớp)
