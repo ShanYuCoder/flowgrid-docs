@@ -123,6 +123,24 @@ flowchart LR
 
 ---
 
+## Shared API Architecture & Conflict Prevention (Team Interlock) {#shared-api-architecture}
+
+Để giải quyết triệt để bài toán **tranh chấp ID & conflict git** khi 2+ Member phát triển các màn hình dùng chung API song song (ví dụ: màn Detail `W-01` và màn Edit `W-02` cùng gọi `GET /api/v1/orders/{id}`), FlowGrid áp dụng mô hình 2 tầng kết hợp:
+
+### 1. Top-Down Module API (PM/Leader Pre-Allocation)
+- Khi PM/Leader tạo Spec tầng Module (`CMP-*.module.yaml` qua `/module`), Leader **có thể quy hoạch trước API dùng chung** chứa danh sách các API cốt lõi của Module đó.
+- Các API này được lưu tập trung ngay từ đầu để làm khung tham chiếu chung.
+
+### 2. Centralized Shared API Storage (Contract-First Reference)
+- **Tách biệt định nghĩa API khỏi thư mục Feature**: Toàn bộ API dùng chung không lưu lẻ tẻ trong thư mục màn hình `CMP-*/api/`, mà đưa về 2 thư mục quản lý tập trung trên Docs-hub:
+  - `surfaces/common/yaml/`: **Global System Common APIs** — Upload file, OTP, Master Data,...
+  - `common/yaml/<slug>/`: **Domain Shared APIs** (ở cấp LCA module) — Detail `GET /orders/{id}`, Create `POST /orders`, Update `PUT /orders/{id}`,...
+- **Contract-First Pre-Design**: BE Lead / Tech Lead thiết kế chi tiết DTO và Schema contract tại các file API tập trung này **trước** khi giao việc cho FE Member.
+- **Reference Binding**: Trong các Leaf Spec (`W-*.bundle.yaml`), FE Member **chỉ tái sử dụng bằng `#reuse-api` + `reuseFrom`** trỏ tới API chung. Thư mục Feature màn hình (`CMP-*`) chỉ chứa UI layout spec và Private API (nếu có).
+- **Zero-Conflict Git Merge**: Nhờ file API chung đã được pre-design ở vị trí tập trung, Member A và Member B làm 2 màn hình song song chỉ đọc/link tới file đó mà không sửa nó, đảm bảo PR merge 100% không conflict.
+
+---
+
 ## Hai chế độ entry {#entry-modes}
 
 | Chế độ | `feature.source` | Input grill-api | `audit fe-be` |

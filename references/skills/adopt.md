@@ -15,7 +15,7 @@
 - Khởi tạo duy nhất file chỉ mục `adoption-inventory.md` nằm ngay ở thư mục gốc (workspace root).
 - Mã sản phẩm theo [`product-id-convention.md`](../../../harness/docs/extracts/product-id-convention.md) (`surfaceCode`, không bỏ `{SURF}` trong `CMP-*` / `W-*` / `API-*`).
 - Liệt kê dạng bullet list (không checkbox, không ghi chi tiết spec) định danh danh mục:
-  - Surfaces (Bề mặt hệ thống)
+  - **Surfaces (Bề mặt hệ thống)** — **Phân loại 2 chiều bắt buộc**: Role/Portal Domain (`admin`/`ADM`, `chain`/`CHN`, `merchant`/`MER`, `customer`/`CUS`, `driver`/`DRV`, `staff`/`STF`, `partner`/`PRT`) kết hợp Channel/Platform (`web`, `app`, `desktop`, `api-gateway`, `pos`) kèm `surfaceCode` 2-4 ký tự in hoa.
   - Modules (`CMP-*`)
   - Screens (`W-*`) & APIs (`API-*`) kèm đường dẫn file code cũ tương ứng (`ID -> Legacy File Path`)
   - **User flows (`FLOW-*`)** — **Bắt buộc quét sâu và toàn diện (Deep Tracing)**: Không chỉ liệt kê 1–2 luồng cơ bản mà phải quét toàn bộ 5 nhóm luồng:

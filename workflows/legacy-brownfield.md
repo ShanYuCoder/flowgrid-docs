@@ -15,7 +15,7 @@
 ## Nguyên tắc
 
 1. **Legacy chưa được yêu cầu sửa** → giữ nguyên 1:1, không refactor rủi ro regression.
-2. **Codebase mới** → **cấm** copy-paste class/file lẻ; tái sử dụng **Common catalog** (`CMN-*`, `UI-CMN-*`, …).
+2. **Codebase mới** → **cấm** copy-paste class/file lẻ; tái sử dụng **Common catalog** (`CMN-*`, `CMN-UI-*`, …).
 3. Nguồn path: `PROJECT-MAPS` / `.flowgrid/config.json` lúc `flowgrid init` — không đoán đường dẫn repo (xem [cli-and-commands](../references/cli-and-commands.md) mục repo split).
 
 ---
@@ -44,14 +44,14 @@ sequenceDiagram
     Agent->>Legacy: scan routers, components, services
     Agent->>Inv: W-*, API-*, FLOW-* (tier A/B/C cross-surface) + common candidates
     opt >= 5 CMN candidates
-        Agent->>Member: common-refactor-plan.md (phased)
+        Agent->>Member: common-plan.md (phased)
     end
     loop each CMN in approved phase
-        Agent->>Agent: common-spec → codegen common → DSL registry
+        Agent->>Agent: /common (Markdown) → custom-base
     end
 ```
 
-Pipeline CMN: `common-spec` → codegen common → đăng ký registry — whole-page duplicate **warning**, không tạo CMN cho cả page.
+Pipeline CMN: `/common` (Markdown) → custom-base — whole-page duplicate **warning**, không tạo CMN cho cả page.
 
 ---
 
@@ -69,7 +69,7 @@ Nếu FE **custom base:** hoàn tất [custom-base](./custom-base.md) **trước
 
 Handoff diagram Design: [design.md#design-cycle](./design.md#design-cycle).
 
-- **Index + Common (khuyến nghị):** scan router/component/service → `adoption-inventory.md` + common candidates (CMN-*); ≥5 candidate → `common-refactor-plan.md` theo phase.
+- **Index + Common (khuyến nghị):** scan router/component/service → `adoption-inventory.md` + common candidates (CMN-*); ≥5 candidate → `common-plan.md` theo phase.
 - **Deep User Flow Scan (bắt buộc):** Truy vết sâu qua 5 nhóm luồng (`FLOW-*`): Journeys đa bước, State machine chuyển trạng thái/duyệt, Phân nhánh theo Role/Điều kiện, Async/Webhooks và Dialog sub-flows (Tier A cross-surface + Tier B/C).
 - Whole-page duplicate: **warning** — không tạo CMN cho cả page.
 

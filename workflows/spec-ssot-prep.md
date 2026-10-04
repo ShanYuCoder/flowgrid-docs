@@ -88,16 +88,19 @@ Modifier **`/legacy /spec`:** bắt buộc inventory + `legacy.evidence` / `infe
 | Cấm | Làm đúng |
 |-----|----------|
 | Copy class/file legacy sang spec/code mới | Map `CMN-*` + DSL/registry; whole-page duplicate → một bundle polymorphic (`mode: create \| edit`) |
+| Member tự ý định nghĩa trùng API ID giữa các màn hình | PM/Leader quy hoạch trước API dùng chung tại cấp module hoặc global; dùng `#reuse-api` + `reuseFrom` để tái sử dụng. |
+| Khai báo file API chung bên trong folder feature `CMP-*/api/` | Đưa API chung ra thư mục LCA cấp module `common/yaml/<slug>/` hoặc `surfaces/common/yaml/`; trong leaf spec dùng `#reuse-api` + `reuseFrom` |
 | `#needs-component` ảo khi component đã có trên base | Prep registry (A/B) trước `/spec` |
 | Author spec không audit | `audit spec` mỗi vòng grill; DB drift → `/api-update` sau chốt wizard |
 | Bỏ `/adopt` rồi đoán path legacy | `/adopt` một lần ở root; trace qua ID |
 
 ---
 
-## Checklist lead (trước mở hàng loạt `/spec`)
+## Checklist lead (trước mở hàng loạt `/spec` song song)
 
 - [ ] **A hoặc B:** FE registry sync / `build-template-code` pass; agent map được `#ui:` / `#shell:` từ registry thật.
 - [ ] **C (nếu brownfield):** `adoption-inventory.md` + `audit legacy` không blocker; handoff prompt có `W-*` → `/legacy /spec`.
+- [ ] **Shared API Catalog:** Các API dùng chung đã được định nghĩa tại `common/yaml/` (cấp module hoặc global) và sẵn sàng để reference qua `#reuse-api`. Không khai báo API Catalog trong `CMP-*.module.yaml`.
 - [ ] Phase 0: module + `db-erd` LCA cho entity mới.
 - [ ] Member brief: một session = một command; prep xong mới mở leaf grill.
 

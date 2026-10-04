@@ -70,7 +70,7 @@ flowchart TD
 
 ```mermaid
 flowchart TD
-  P["portal:gen /prototype"] --> S["Scan #needs-component:*"]
+  P["gen /prototype"] --> S["Scan #needs-component:*"]
   S --> F{"Component exists?"}
   F -->|no| B["Build Mo* / Data*"]
   B --> P
@@ -80,11 +80,11 @@ flowchart TD
   W -->|no| OK["Done"]
 ```
 
-`portal:gen` **không** tự implement Mo* — placeholder + HANDOFF; lặp với `/prototype` đến khi không còn `#needs-component` unresolved.
+`gen` **không** tự implement Mo* — placeholder + HANDOFF; lặp với `/prototype` đến khi không còn `#needs-component` unresolved.
 
 ### Promote design registry (cuối `/prototype`)
 
-Component **tái sử dụng** hoặc shell/widget chuẩn (không domain-only) phải **promote** `registries/design.registry.json` (`planned` → `implemented`, `aliasIndex`, `portal:registry` pass), rồi grill spec lại với `#widget:` / `#shell:` thay `#needs-*`. Domain-only / `#wire-only` giữ trong feature — không promote.
+Component **tái sử dụng** hoặc shell/widget chuẩn (không domain-only) phải **promote** `registries/design.registry.json` (`planned` → `implemented`, `aliasIndex`, `registry` pass), rồi grill spec lại với `#widget:` / `#shell:` thay `#needs-*`. Domain-only / `#wire-only` giữ trong feature — không promote.
 
 Tiêu chí promote, map hashtag và review PR: [artifacts/dsl.md — Registry & promote](../artifacts/dsl.md#registry--promote).
 
@@ -100,12 +100,23 @@ Tiêu chí promote, map hashtag và review PR: [artifacts/dsl.md — Registry & 
 | Thứ tự | Việc | Vai trò | Skill / gate (ví dụ) |
 |--------|------|---------|----------------------|
 | 0b | ERD / ownership (khi entity hoặc bảng mới) | Lead / Dev data | `/db-erd` → `common/db-erd.md` — xem [architecture-data.md](./architecture-data.md) |
-| 1 | Phân tích phạm vi, module, luồng | Lead / BA | `/overview`, `/module`, `/user-flow` |
-| 2 | Spec bundle + IR (gồm **bind/db** trên field) | BA / Dev | `/spec`, `/legacy /spec`, đọc ERD LCA, `audit spec`, `split` + `render` |
+| 1 | Phân tích phạm vi, module, luồng & **Module API** | Lead / BA | `/overview`, `/module` (chốt `W-*`), `/user-flow` |
+| 2 | Spec bundle + IR (gồm **bind/db** & **link apiBindings**) | BA / Dev | `/spec`, `/legacy /spec`, đọc ERD LCA, tái sử dụng `#reuse-api`, `split` + `render` |
 | 3 | Grill nghiệp vụ / kỹ thuật / hòa giải | BA + Dev | `/grill-bqa`, `/grill-dev`, `/grill-docs` (optional) — sau mỗi patch bundle: **split lại** |
 | 4 | Chốt codegen readiness (docs hub) | Dev | `flowgrid gen:dry` trên `ir/design.yaml` (FE repo, `FLOWGRID_DOCS_ROOT`) |
-| 5 | Prototype UI (mock API) + promote registry Mo* tái dùng | Dev FE | `flowgrid gen` → `/prototype` → `portal:registry` / `flowgrid registry` validate |
+| 5 | Prototype UI (mock API) + promote registry Mo* tái dùng | Dev FE | `flowgrid gen` → `/prototype` → `flowgrid registry` validate |
 | 6 | Grill prototype (checklist UI) | Dev FE / BA | `/grill-prototype` **sau** bước 5 — layout, copy VI, mock boundary, testIds (không Playwright) |
+
+### Module API Catalog Pre-Allocation & Centralized Reference Binding
+
+Để chống conflict git giữa các Member phát triển các màn hình song song (ví dụ: màn Detail và màn Edit cùng dùng chung API chi tiết):
+
+1. **PM / Leader Pre-Allocation**:
+   - Khi chạy `/module` cho `CMP-*`, Leader có thể quy hoạch trước danh mục API chung tại thư mục `common/yaml/`.
+2. **BE Lead Contract-First Pre-Design**:
+   - Tách toàn bộ API dùng chung khỏi thư mục feature `CMP-*/api/`. Lưu tập trung tại thư mục LCA cấp module `common/yaml/<slug>/` hoặc `surfaces/common/yaml/`.
+3. **FE Member Reference Binding**:
+   - Trong Leaf Spec (`W-*.bundle.yaml`), FE Member **chỉ tái sử dụng** bằng `#reuse-api` + `reuseFrom`. Thư mục Feature `CMP-*` chỉ chứa UI Spec và Private API (nếu có). Thao tác này giúp PR của các Member làm song song **100% sạch conflict**.
 
 Song song (không chặn emerald): sau grill round 1 có thể bắt đầu `/testcase` trên tests-docs hub ([gates.md](./gates.md)).
 
