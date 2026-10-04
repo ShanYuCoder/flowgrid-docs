@@ -102,12 +102,13 @@ Mở session Agent AI trên repository code cũ (Brownfield codebase):
   - *Tầng 2 (Cross-flow Audit):* Phân tích luồng liên thông giữa các màn hình, quy tắc validation ẩn và phân quyền.
 - Sinh tài liệu khảo cổ lưu vào `legacy/` (bản đồ tính năng hiện tại, danh sách API cũ).
 
-#### Bước 2: Trích xuất Common Catalog (`/adopt`)
-Chạy kỹ năng **`/adopt`** trên codebase cũ để phát hiện các đoạn code / UI / DTO lặp lại:
-- Gom nhóm thành các linh kiện tái sử dụng chuẩn hóa:
+#### Bước 2: Quét sâu User Flow & Trích xuất Common Catalog (`/adopt`)
+Chạy kỹ năng **`/adopt`** trên codebase cũ để lập chỉ mục toàn bộ hệ thống:
+- **Truy vết sâu User Flow (`FLOW-*`)**: Quét qua 5 nhóm luồng (Hành trình đa bước, State machine chuyển trạng thái/duyệt, Phân nhánh theo Role/Điều kiện, Async/Webhooks, và Dialog Sub-flows). Phân tier **A** (Cross-surface), **B** (Surface-shared), **C** (Module/Cluster).
+- **Trích xuất Common Catalog (`CMN-*`)**: Phát hiện các đoạn code / UI / DTO lặp lại:
   - **`CMN-*`**: Business logic / DTO / Service xử lý chung.
   - **`UI-CMN-*`**: Reusable UI Components (Filter Bar, DataGrid, Modal, Export button).
-- Xuất dữ liệu catalog vào registry dùng chung của hệ thống mới (`registries/common.registry.json`).
+- Xuất dữ liệu chỉ mục và catalog vào `adoption-inventory.md` tại root workspace và registry dùng chung (`registries/common.registry.json`).
 
 #### Bước 3: Khởi tạo Repo Hệ thống Mới (`flowgrid init`)
 Tạo repo cho hệ thống mới và khởi tạo FlowGrid:

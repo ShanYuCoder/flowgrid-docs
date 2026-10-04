@@ -69,10 +69,8 @@ Nếu FE **custom base:** hoàn tất [custom-base](./custom-base.md) **trước
 
 Handoff diagram Design: [design.md#design-cycle](./design.md#design-cycle).
 
-### `/adopt` — chế độ quét
-
 - **Index + Common (khuyến nghị):** scan router/component/service → `adoption-inventory.md` + common candidates (CMN-*); ≥5 candidate → `common-refactor-plan.md` theo phase.
-- **Index only:** W-*, API-*, FLOW-* (section 4: tier A cross-surface + B/C khi có).
+- **Deep User Flow Scan (bắt buộc):** Truy vết sâu qua 5 nhóm luồng (`FLOW-*`): Journeys đa bước, State machine chuyển trạng thái/duyệt, Phân nhánh theo Role/Điều kiện, Async/Webhooks và Dialog sub-flows (Tier A cross-surface + Tier B/C).
 - Whole-page duplicate: **warning** — không tạo CMN cho cả page.
 
 Skill chi tiết: [legacy](../references/skills/legacy.md) · [adopt](../references/skills/adopt.md).

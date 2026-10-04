@@ -18,7 +18,13 @@
   - Surfaces (Bề mặt hệ thống)
   - Modules (`CMP-*`)
   - Screens (`W-*`) & APIs (`API-*`) kèm đường dẫn file code cũ tương ứng (`ID -> Legacy File Path`)
-  - **User flows (`FLOW-*`)** — bắt buộc khi có hành trình nhiều bước / nhiều app; phân tier **A** (cross-surface → `architecture/03-user-flows/`), **B** (surface `common/user-flows/`), **C** (module/cluster). Mẫu: extract `tpl-adoption-inventory.md`.
+  - **User flows (`FLOW-*`)** — **Bắt buộc quét sâu và toàn diện (Deep Tracing)**: Không chỉ liệt kê 1–2 luồng cơ bản mà phải quét toàn bộ 5 nhóm luồng:
+    1. *Hành trình đa bước (Multi-step Journeys)*: Đăng ký/Onboarding, Checkout/Thanh toán, Search-Filter-Detail-Action, Quên MK/OTP.
+    2. *Luồng chuyển trạng thái & Phê duyệt (State Machine)*: State transitions (`Draft → Pending → Approved/Rejected → Completed`).
+    3. *Luồng phân nhánh theo vai trò & Điều kiện (Role/Permission Branching)*: Phân nhánh Admin vs User, ngưỡng phê duyệt giá trị giao dịch.
+    4. *Luồng bất đồng bộ & Tích hợp hệ thống (Async & Webhooks)*: Webhooks, background worker queues, notification/email, WebSocket.
+    5. *Luồng Sub-modal & Dialog*: Dialog xác nhận, drawer actions làm thay đổi state màn hình cha.
+    - Phân tier **A** (cross-surface → `architecture/03-user-flows/`), **B** (surface `common/user-flows/`), **C** (module/cluster). Mẫu: extract `tpl-adoption-inventory.md`.
 - Cuối file tổng hợp danh sách gợi ý Handoff Prompts cho bước tiếp theo.
 
 ## Description / Ý nghĩa
