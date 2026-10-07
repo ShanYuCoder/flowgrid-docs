@@ -8,7 +8,7 @@ Repo Markdown + VitePress cho toolkit FlowGrid (mã nguồn CLI: repo private `S
 
 | Tài liệu | Mô tả |
 | --- | --- |
-| **[readme.md](./readme.md)** | Giới thiệu, **cài CLI** (curl + PAT), `flowgrid init` |
+| **[readme.md](./readme.md)** | Giới thiệu, **cài CLI** (curl + PAT), `flowgrid setup` |
 | **[CATALOG.md](./CATALOG.md)** | Mục lục toàn bộ trang |
 
 **Không** đặt `plans/` trong repo docs — kế hoạch nội bộ toolkit nằm ở `plans/` root repo **flowgrid** (private).

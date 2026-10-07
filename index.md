@@ -20,8 +20,8 @@ features:
   - title: 'Overview'
     details: Toolkit là gì, phạm vi, bốn nhánh SSOT.
     link: /overview/
-  - title: 'Artifacts'
-    details: docs-hub, tests-docs, code, DNA.
+  - title: 'Cấu trúc Workspace'
+    details: Skeleton SSOT trên disk (overview, architecture, surfaces, registries, qa).
     link: /artifacts/
   - title: 'Workflows'
     details: Phase tổng, design / backend / test / wire, grill & gate.
@@ -35,5 +35,5 @@ features:
 
 <div class="tip custom-block">
   <p class="custom-block-title">Khung tài liệu SSOT</p>
-  <p>Site này gồm <strong>overview</strong>, <strong>artifacts</strong>, <strong>workflows</strong>, <strong>references</strong> (CLI + skills). Slash skills đầy đủ sync vào repo dự án sau <code>flowgrid init</code>; bản đọc trên web nằm dưới <strong>References → Skills</strong>.</p>
+  <p>Site này gồm <strong>overview</strong>, <strong>cấu trúc workspace</strong>, <strong>workflows</strong>, <strong>references</strong> (CLI + skills). Slash skills đầy đủ sync vào repo dự án sau <code>flowgrid setup</code>; bản đọc trên web nằm dưới <strong>References → Skills</strong>.</p>
 </div>

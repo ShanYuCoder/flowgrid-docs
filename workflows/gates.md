@@ -110,9 +110,9 @@ Bảng chi tiết bước → lệnh: [§ Đóng một function](#close-one-func
 
 ## Đóng một function (`W-*`) {#close-one-function}
 
-Chuỗi gợi ý trước khi coi **một leaf** (màn / API seq) đã khớp artifact — không thay checklist release cả sản phẩm. Macro team: [index.md](./index.md#full-cycle).
+Chuỗi gợi ý trước khi coi **một leaf** (màn / API seq) đã khớp artifact — không thay checklist release cả sản phẩm. Macro team: [Workflow tổng quan](./index.md).
 
-**Prerequisite (dự án, một lần):** [spec-ssot-prep.md](./spec-ssot-prep.md) — `registry:sync` / custom-base · brownfield `/adopt` — trước hàng loạt `/spec`.
+**Prerequisite (dự án, một lần):** [phase-0-setup.md](./phase-0-setup.md) — Khởi tạo workspace, `registry:sync` hoặc khảo cổ mã nguồn trước hàng loạt `/spec`.
 
 | # | Mốc | Lệnh / skill | Đọc kết quả |
 | --- | --- | --- | --- |

@@ -20,7 +20,8 @@
 - Nội dung file viết bằng ngôn ngữ tự nhiên, phi kỹ thuật (Non-technical language). Không sa đà vào code. VD: "Dialog xác nhận xoá phải luôn làm mờ nền đen đằng sau (block background)".
 
 ## Chú ý quan trọng
-- **Tuyệt đối cấm:** `/common` **chỉ** Markdown (`patterns/`, không `common/yaml`). Sinh code molecule chung **không** qua hub — UI pattern đã trong FE base; component/template mới → [custom-base](../../workflows/custom-base.md). `/common-spec` và `/gen-common` **deprecated**.
+- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/`). Không viết `common/yaml`. `/common-spec` và `/gen-common` đã deprecated.
+- Code `CMN-*` chỉ xuất hiện sau khi member duyệt plan adopt: [adopt-common](../../workflows/adopt-common.md). Template codegen mới đi [custom-base](../../workflows/custom-base.md).
 
 ---
 

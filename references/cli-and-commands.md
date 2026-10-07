@@ -139,6 +139,7 @@ FlowGrid chịu trách nhiệm phân tích kịch bản kiểm thử định d�
 | `flowgrid repo-maps check` | So config hub pointers vs `platform-repos.local.json`. |
 | `flowgrid repo-maps align` | Wizard chốt lệch; cập nhật **cả** config + local map. |
 | `flowgrid repo-maps sync --from-config` | Ghi map từ `.flowgrid/config.json` (sau init). |
+| `flowgrid repo-maps fanout` | Từ docs-hub, chép danh sách repo (vai trò + công nghệ, và legacy nếu có) sang các checkout đã cài FlowGrid. |
 
 ### Bộ Code (Sinh Mã Nguồn & Unit Test)
 FlowGrid kế thừa trọn vẹn sức mạnh sinh mã nguồn và Unit Test đa ngôn ngữ (NodeJS, Python, PHP, C#, v.v.).
@@ -151,7 +152,8 @@ FlowGrid kế thừa trọn vẹn sức mạnh sinh mã nguồn và Unit Test đ
 | `flowgrid api-unit-gen` | Sinh mã nguồn Unit Test cho API (Backend). |
 | `flowgrid contract-gen` | Sinh mã nguồn Type/DTO dùng chung cho Fullstack. |
 | `flowgrid gen-css` | Cập nhật CSS Variables từ Design Tokens. |
-| `flowgrid build-template-code` | Trích xuất DNA từ Golden Sample và tạo bộ Template + DSL Registry cho dự án khác Base. |
+| `flowgrid build-template-code --sample=<dir>` | Phân tích thư mục module (kể cả repo ngoài). Ghi plan, chưa ghi template. |
+| `flowgrid build-template-code --yes` | Member đã tiếp tục. Ghi template (`.hbs` / `.stub` / `.j2` / `.scriban`) vào repo đúng lane. |
 
 *(Tất cả lệnh trên đều có thể truyền thêm `:dry` để xem trước thay vì ghi file, ví dụ: `flowgrid api-unit-gen:dry`)*
 
@@ -186,7 +188,7 @@ Chuyên thiết kế testplan và kịch bản E2E Playwright.
 
 ### 5. Common/Shared Skills (`harness/common/` & `harness/shared/`)
 Kỹ năng dùng chung bắt buộc cho mọi Agent.
-- **Cốt lõi:** `artifactgraph`, `platform-mark`, `docs-mark`, `configure-repo-maps`, `legacy`.
+- **Cốt lõi:** `artifactgraph`, `platform-mark`, `docs-mark`, `adopt`, `legacy`.
 - Các file chuẩn giao tiếp: `SSOT_AGENT_PROTOCOL.md`, `AGENTS.md`.
 
 ---

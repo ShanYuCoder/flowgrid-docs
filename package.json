@@ -1,7 +1,8 @@
 {
   "name": "@shanyucoder/flowgrid-docs",
   "private": true,
-  "description": "Public FlowGrid docs (VitePress): team SDLC, T-shaped skills, DSL specs, docs-hub, tests-docs, MCP toolkit, AI agents.",
+  "description": "Public FlowGrid docs (VitePress): team SDLC, T-shaped skills, DSL specs, ssot-docs, MCP toolkit, AI agents.",
+  "author": "shanyucoder <tvvu.150591@gmail.com>",
   "keywords": [
     "flowgrid",
     "mcp",

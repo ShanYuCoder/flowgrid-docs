@@ -1,7 +1,6 @@
 # Skill: `/build-templates`
 
-> [!WARNING] Đang phát triển (WIP)
-> Kỹ năng này hiện tại vẫn đang trong giai đoạn phát triển và thử nghiệm ban đầu (chưa hoàn thiện 100% mượt mà). Hãy cẩn thận kiểm tra lại kết quả khi sử dụng.
+> Golden sample là một **thư mục module**. Phân tích trước, ghi template khi member tiếp tục (`--yes`).
 
 ## Tên
 `build-templates`
@@ -16,21 +15,26 @@
 - Các file Component dùng chung (Breadcrumb, Layout, Form, Table) trong mã nguồn Frontend.
 
 ## Output (Kết quả mong đợi)
-- Sinh ra các file giao diện EJS (`.ejs`) bên trong thư mục `.flowgrid/templates/` (ví dụ: `default-layout.ejs`).
-- Đồng bộ template codegen và `design.registry.json` trên FE base (không author `surfaces/common/yaml` trên hub).
+- Bước phân tích ghi `.flowgrid/template-plan.json`.
+- Bước `--yes` ghi template vào repo đúng lane, dưới `.flowgrid/adapters/custom/templates/`:
+  - Nuxt, Next, Nest → `.hbs`
+  - Laravel → `.stub`
+  - FastAPI → `.j2`
+  - .NET → `.scriban`
+- FE ghi `design.registry.json`. BE ghi `codegen.registry.json`.
 
 ## Description / Ý nghĩa
 - Để hệ thống có thể tự động sinh code (gencode) cho cả Frontend, Backend, và Test E2E, FlowGrid hiện đang cần gắn liền với một bộ base có sẵn của các công nghệ như Nuxt4, Next.js, Python FastAPI, Laravel... với các cấu trúc thư mục, file mẫu, và common code định sẵn.
 - **Vấn đề đặt ra:** Khi áp dụng vào các dự án có sẵn, đôi khi dự án đó không tuân thủ đúng base tiêu chuẩn của công nghệ, hoặc dùng chung công nghệ nhưng lại khác cấu trúc layout, thư viện dùng chung. Ví dụ: base FE mặc định của FlowGrid dùng `shadcn-ui`, nhưng một dự án khác lại dùng `vuetify`.
-- **Giải pháp của `/build-templates`:** Kỹ năng này sẽ làm nhiệm vụ "đọc vị" base code thực tế của dự án đích. Sau đó, nó tự động build lại toàn bộ các template (`.ejs`, v.v.) để cung cấp đầu vào chuẩn xác cho các script sinh code (codegen, testgen). Nhờ đó, tính năng sinh code sẽ "nhập gia tùy tục" và tuân thủ đúng chuẩn của dự án hiện tại thay vì ép buộc dùng base mặc định.
+- **Giải pháp của `/build-templates`:** Đọc một thư mục module (kể cả repo ngoài hệ thống), lập plan, rồi khi member tiếp tục thì ghi template đúng công nghệ vào repo FE hoặc BE tương ứng.
 
 ## Các Skill liên quan
-- **Trước đó:** Yêu cầu chạy `/configure-repo-maps` nếu chưa liên kết thư mục mã nguồn.
-- **Sau đó:** Chạy lệnh `pnpm docs:render` để biên dịch thử và xem kết quả giao diện các template EJS mới.
+- **Trước đó:** Yêu cầu chạy `/adopt` nếu chưa liên kết thư mục mã nguồn.
+- **Sau đó:** `/spec` dùng registry vừa ghi. Template đã có được giữ. `--force` chỉ khi member muốn ghi đè.
 
 ## Chú ý quan trọng
-- **Không tự ý ghi đè:** Nếu các file template EJS đã tồn tại và có dấu hiệu chỉnh sửa bằng tay của con người, Agent phải hỏi ý kiến User trước khi ghi đè, hoặc chỉ vá phần chênh lệch.
-- Không được phép thay đổi hoặc xóa các thẻ neo HTML Comment (Ví dụ: `<!-- flowgrid-anchor: ... -->`) trong file EJS vì hệ thống bộ docs dựa vào đó để nhét nội dung động vào.
+- Phân tích (`--sample`) không ghi template. Hỏi một lần rồi mới `--yes`.
+- Không ghi đè template đã sửa tay nếu member chưa yêu cầu `--force`.
 
 ---
 

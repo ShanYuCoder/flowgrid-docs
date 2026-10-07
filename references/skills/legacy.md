@@ -4,55 +4,34 @@
 `legacy`
 
 ## Cách dùng (Command/Trigger)
-- Gọi qua slash command như một **Skill Modifier** (Bộ bổ trợ kỹ năng).
-- Phải dùng kết hợp với một skill chuyên môn khác. Ví dụ: `/legacy /spec`, `/legacy /overview`, hoặc `/legacy /user-flow`.
+- Gọi qua slash command: `/legacy` hoặc dùng kết hợp `/legacy /spec`.
+- Dành riêng cho kịch bản **Rebase / Modernization** (đập đi xây mới từ code cũ).
 
 ## Input (Dữ liệu đầu vào)
-- Dữ liệu đầu vào của base skill (skill đi kèm).
-- Mã nguồn và tài liệu của hệ thống cũ, được trỏ từ `legacy-repos.local.json`.
+- **Thư mục đọc:** `source-legacy/` (**Strictly READ-ONLY**).
+- Bản danh sách ánh xạ chức năng từ `extract-legacyion-inventory.md`.
 
 ## Output (Kết quả mong đợi)
-- Thay đổi hành vi của base skill sang **Chế độ Khảo cổ (Archaeology Mode)**.
-- Thay vì sáng tạo logic mới, Agent chỉ trích xuất, ánh xạ và ghi nhận thực tế từ hệ thống cũ.
-- Áp dụng metadata cụ thể cho legacy (ví dụ: `specOrigin: legacy`) vào các file thiết kế (bundle YAML).
-- Tham chiếu cấu trúc dữ liệu cũ thông qua `legacy.dynamics.yaml` thay vì sử dụng tiêu chuẩn mới.
+- **Thư mục ghi:** `source-code/` (và các file spec SSOT tương ứng).
+- Đọc hiểu 100% logic nghiệp vụ lõi (controllers, services, validation rules, state machine) từ mã nguồn cũ.
+- Tái cấu trúc và xuất sang dạng Leaf Bundle spec chuẩn (`.bundle.yaml`, `ir/`, `01-backend-spec.yaml`) và code mới đặt trong `source-code/`.
+
+## Quy tắc bắt buộc [CỰC KỲ QUAN TRỌNG]
+- **`source-legacy/` là STRICTLY READ-ONLY:** Tuyệt đối cấm sửa đổi, thêm mới hay xóa bất kỳ file nào trong thư mục này.
+- **Cấm copy-paste rác kỹ thuật:** Không bê nguyên xi code cũ sang hệ thống mới. Chỉ kế thừa logic nghiệp vụ và viết lại theo kiến trúc mới chuẩn mực.
+- **Ghi toàn bộ vào `source-code/`:** Mọi output codegen và specs đều được lưu trữ trực tiếp vào thư mục mã nguồn mới.
 
 ## Description / Ý nghĩa
-- Bản thân `/legacy` không phải là một luồng công việc độc lập. Nó đóng vai trò "công tắc" chuyển bối cảnh (Context Shift) của Agent.
-- Khi bật công tắc này, hệ thống FlowGrid hiểu rằng nhiệm vụ hiện tại không phải là xây tính năng mới, mà là "khai quật" và hệ thống hóa lại các tính năng, API, hoặc luồng dữ liệu từ một nền tảng cũ kỹ để chuẩn bị cho quá trình chuyển đổi (migration) hoặc thay thế.
-- Giúp bảo vệ tính toàn vẹn của Spec, ngăn chặn Agent "cầm đèn chạy trước ô tô" tự chế logic khi khảo sát hệ thống cũ.
+- Trong các dự án đập đi xây lại, thách thức lớn nhất là làm sao để giữ trọn vẹn nghiệp vụ phức tạp của hệ thống cũ mà không bị "nhiễm độc" bởi cấu trúc code tệ hại trước đây.
+- `/legacy` là công cụ lọc sạch nghiệp vụ: đọc logic từ code cũ, lọc bỏ rác kỹ thuật, và chuyển hóa thành kiến trúc mới tinh gọn và sạch sẽ trong `source-code/`.
 
 ---
 
 ## Example prompt (mẫu gọi)
 
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Nguồn sự thật là code/docs legacy, chưa có spec.
-
-**Cách gọi:** modifier **`/legacy`** + skill bộ docs **`/spec`** (hoặc skill khác: `/module`, `/business-process-trace`, …).  
-**Prerequisite:** source path do user cung cấp hoặc cấu hình repo đích.
-
 ```text
 /legacy /spec
 
-Owner surface: {admin-web}
-Module: {CMP-…}
-Function slug: {hotel-list}
-Nguồn legacy: resolve từ platform-repos / legacy-repos — không đoán path ([repo split map](../cli-and-commands.md#repo-split-map)).
-
-Scope:
-- Chỉ đọc/phân tích code; KHÔNG sửa production code
-- Inventory compact trước; không đọc cả repo
-- 1 màn = 1 leaf `CMP-*/<NN…>/` (bundle + ir/ + api/seq)
-
-Output:
-- surfaces/<surface>/CMP-*/<NN…>/
-- legacy-dynamics/…/_legacy.dynamics.yaml khi cần archaeology
-- pnpm flowgrid:render && pnpm flowgrid:publish
-- Evidence: inferredFromCode | qa — không bịa business intent
-
-Handoff: gap lớn → /grill-with-docs · refine → /spec · UI → /prototype
+Màn hình: Quản lý khách hàng (Customer Management)
+Hãy đọc logic cũ tại source-legacy/app/Http/Controllers/CustomerController.php để trích xuất toàn bộ nghiệp vụ, validation và API sang spec mới cho hệ thống trong source-code/.
 ```
-
----

@@ -3,9 +3,18 @@ import { withMermaid } from 'vitepress-plugin-mermaid';
 
 const skillGroups = [
   {
-    text: 'AI Skills (Phase 1)',
+    text: 'AI Skills (Setup & Discovery)',
+    items: [
+      { text: '/init', link: '/references/skills/init' },
+      { text: '/extract-legacy', link: '/references/skills/extract-legacy' },
+    ],
+  },
+  {
+    text: 'AI Skills (Phase 1 — Design)',
     items: [
       { text: '/spec', link: '/references/skills/spec' },
+      { text: '/trace (Maintain)', link: '/references/skills/trace' },
+      { text: '/legacy (Rebase)', link: '/references/skills/legacy' },
       { text: '/grill-bqa', link: '/references/skills/grill-bqa' },
       { text: '/grill-dev', link: '/references/skills/grill-dev' },
       { text: '/grill-docs', link: '/references/skills/grill-docs' },
@@ -103,6 +112,8 @@ const skillSidebarGroups = skillGroups.map((group) => ({
 export default withMermaid(
   defineConfig({
     title: 'FlowGrid Docs',
+    ignoreDeadLinks: true,
+    srcExclude: ['README.md'],
     description:
       'Enterprise Disciplined AI Engineering Platform (Graph, DNA, Docs, Test, Codegen)',
     themeConfig: {
@@ -114,16 +125,8 @@ export default withMermaid(
         { text: 'README', link: '/readme' },
         { text: 'Overview', link: '/overview/' },
         {
-          text: 'Artifacts',
+          text: 'Cấu trúc Workspace',
           link: '/artifacts/',
-          collapsed: true,
-          items: [
-            { text: 'Tổng quan (4 resource)', link: '/artifacts/' },
-            { text: 'docs-hub', link: '/artifacts/docs' },
-            { text: 'tests-docs', link: '/artifacts/tests-docs' },
-            { text: 'code', link: '/artifacts/code' },
-            { text: 'DNA & tags (dsl)', link: '/artifacts/dsl' },
-          ],
         },
         {
           text: 'Workflows',
@@ -131,6 +134,7 @@ export default withMermaid(
           collapsed: true,
           items: [
             { text: 'Tổng thể (phase & vai trò)', link: '/workflows/' },
+            { text: 'Phase 0 — Setup', link: '/workflows/phase-0-setup' },
             { text: 'Design', link: '/workflows/design' },
             { text: 'Backend', link: '/workflows/backend' },
             { text: 'Test', link: '/workflows/test' },
@@ -138,7 +142,6 @@ export default withMermaid(
             { text: 'Gate & audit', link: '/workflows/gates' },
             { text: 'Grill & review', link: '/workflows/grill-and-human-review' },
             { text: 'QA inbox (team)', link: '/workflows/qa-team' },
-            { text: 'Legacy & adopt', link: '/workflows/legacy-brownfield' },
             { text: 'Custom base', link: '/workflows/custom-base' },
           ],
         },

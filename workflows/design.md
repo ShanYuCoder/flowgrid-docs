@@ -4,15 +4,15 @@
 
 **Không viết ở đây:** cấu trúc bundle/IR → [artifacts/docs.md](../artifacts/docs.md) · DNA/tag → [artifacts/dsl.md](../artifacts/dsl.md).
 
-**Thuộc macro:** [index.md](./index.md#ba-macro-phase-release) · Phase 0 gate: [index.md#architecture-gate](./index.md#architecture-gate) · Grill: [grill-and-human-review.md](./grill-and-human-review.md) · Legacy: [legacy-brownfield.md](./legacy-brownfield.md).
+**Thuộc macro:** [index.md](./index.md) · Phase 0 setup: [phase-0-setup.md](./phase-0-setup.md) · Grill: [grill-and-human-review.md](./grill-and-human-review.md).
 
 ---
 
 ## Design cycle (Phase 1) {#design-cycle}
 
-Gam **emerald** khớp [full cycle](./index.md#full-cycle). Optional `/grill-docs` = amber trong diagram (không default).
+Gam **emerald** khớp [Workflow tổng quan](./index.md). Optional `/grill-docs` = amber trong diagram (không default).
 
-Prep SSOT (registry / adopt): [spec-ssot-prep.md](./spec-ssot-prep.md) — **trước** entry dưới (custom-base · `/adopt` · `registry:sync`).
+Khởi tạo dự án & mapping surfaces: [phase-0-setup.md](./phase-0-setup.md) — **trước** khi viết spec chi tiết.
 
 ```mermaid
 flowchart TD
