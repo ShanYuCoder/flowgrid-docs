@@ -121,12 +121,11 @@ flowchart TD
 
 ### Chi tiết các kỹ năng ngăn chặn duplicate:
 
-1. **Skill `/init` (Quét, Phát hiện Duplicate & Định vị Nơi Gen Code)**:
-   - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động gán mã định danh:
-     - **`CMN-UI-*`**: Các mẫu giao diện trùng lặp (Confirm Modal, Search Filter Toolbar, Action Bar,...).
-     - **`CMN-API-*`**: Các logic backend trùng lặp (Paging wrapper, Audit log interceptor, Export CSV/Excel, Transmission logger,...).
-     - **`CMN-DTO-*`**: Cấu trúc dữ liệu trùng lặp (BaseAuditable, Soft-delete model, ApiResponse chuẩn,...).
-   - **Định vị chính xác nơi gen Common (Target Placement Check):** Trong các hệ thống lớn hoặc multi-repo, Agent không để mơ hồ mà đối chiếu với `projects` trong `.flowgrid/config.json` để chỉ định rõ 3 tọa độ cho từng Common Candidate trong `inition-inventory.md`:
+1. **Skill `/init` (Quét, Phân loại Common & Định vị Nơi Gen Code)**:
+   - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động phân thành **2 nhóm xử lý khác biệt**:
+     - **Nhóm 1 — Existing Commons (Đã có code sẵn trong base/shared):** Các component/service đã được viết sẵn trong thư mục dùng chung (như `ConfirmModal.vue`, `BaseServiceImpl.php`). Với nhóm này, **KHÔNG lên plan gen lại code**, chỉ liệt kê danh sách để bổ sung file Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) nhằm hoàn thiện SSOT.
+     - **Nhóm 2 — Duplicate Candidates (Mã nguồn bị copy-paste nhiều nơi):** Các đoạn logic/giao diện bị nhân bản ở 3–4 nơi mà chưa có component dùng chung. Nhóm này **mới cần lên Action Plan** với đầy đủ Target Placement Check (Target Repo, Target Code Path, Target Docs Path) để sinh 1 bản cài đặt chuẩn duy nhất vào `shared/`.
+   - **Định vị chính xác nơi gen Common (Target Placement Check):** Trong các hệ thống lớn hoặc multi-repo, Agent không để mơ hồ mà đối chiếu với `projects` trong `.flowgrid/config.json` để chỉ định rõ 3 tọa độ cho từng Duplicate Candidate trong `inition-inventory.md`:
      1. *Owning Surface & Target Repo:* Repo sở hữu đích (ví dụ `admin-fe`, `booking-portal`, hay `core-api`).
      2. *Target Code Path:* Đường dẫn file mã nguồn cụ thể sẽ sinh (ví dụ `source-code/admin-fe/src/components/Common/ConfirmModal.vue` thay vì nói chung chung).
      3. *Target Docs Path (LCA):* Đường dẫn file Markdown User Stories trong Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
@@ -134,6 +133,9 @@ flowchart TD
 
 2. **Skill `/common <CMN-ID>` (Đặc tả User Stories & Sinh code dùng chung)**:
    - **Chỉ dùng file Markdown `.md` mô tả User Stories & Rules:** Các thành phần common đều được code sẵn trong base (`shared/`), **TUYỆT ĐỐI KHÔNG TẠO FILE YAML CHO COMMON VÀ KHÔNG PHÂN TÁCH IR**. Tạo file YAML cho common là thừa thãi và sai chuẩn.
+   - **Phân biệt 2 trường hợp thực thi:**
+     - *Với Existing Common (Đã có code sẵn):* Agent chỉ đọc code và sinh duy nhất file `.md` User Stories, **tuyệt đối không gen lại code**.
+     - *Với Duplicate Candidate (Chưa có code chung):* Member duyệt Action Plan ➔ Agent lần lượt sinh file `.md` User Stories + **gen code 1 bản cài đặt chuẩn vào `shared/`** + đăng ký vào registry.
    - **Quy trình Plan ➔ Tự động thực thi khi Approve / Proceed:**
      - Agent đề xuất Action Plan ngắn gọn (mô tả User Stories dự kiến và file code cần tạo).
      - Member xem qua, điều chỉnh nếu cần rồi bấm **Approve** hoặc **Proceed**.

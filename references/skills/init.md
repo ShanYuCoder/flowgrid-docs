@@ -20,7 +20,7 @@
    - `model/data-models.md`: Sơ đồ thực thể ERD Mermaid `erDiagram`.
    - `03-user-flows/`: Bóc tách các luồng nghiệp vụ phức tạp.
    - `08-cross-cutting/`: Xác thực, bảo mật, tích hợp bên thứ ba.
-3. Sinh file danh mục `inition-inventory.md` tại root workspace (danh mục ánh xạ module, màn hình, API, User Flows đa tầng A/B/C, danh mục ứng viên dùng chung `CMN-*` kích hoạt **Anti-Copy-Paste Guard**, và đề xuất **Golden Sample** huấn luyện template chuẩn qua `build-template-code`).
+3. Sinh file danh mục `inition-inventory.md` tại root workspace (danh mục ánh xạ module, màn hình, API, User Flows đa tầng A/B/C; danh mục Common Catalog `CMN-*` phân tách rõ 2 nhóm: Existing Commons chỉ bổ sung Markdown User Stories và Duplicate Candidates cần lên plan gen code vào `shared/`; cùng đề xuất **Golden Sample** huấn luyện template chuẩn qua `build-template-code`).
 
 ## Description / Ý nghĩa
 - `/init` là bước khởi đầu bắt buộc của Agent AI ngay sau khi dựng workspace. 

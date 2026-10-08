@@ -21,7 +21,9 @@
 
 ## Chú ý quan trọng
 - **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/` User Stories & Rules). **TUYỆT ĐỐI KHÔNG VIẾT FILE YAML CHO COMMON**, không phân tách IR. Do các thành phần common đã được code sẵn trong base (`shared/`), việc tạo YAML là hoàn toàn thừa thãi và sai chuẩn.
-- **Tự động thực thi khi Approve / Proceed:** Agent lên plan ngắn gọn ➔ Member xem và bấm Approve/Proceed ➔ Agent tự động lần lượt sinh file `.md` User Stories, sinh mã nguồn Single Implementation vào `shared/` (`shared/components/` hoặc `shared/services/`), và đăng ký registry mà không hỏi vòng vo.
+- **Phân biệt rõ 2 trường hợp thực thi:**
+  - *Với Existing Common (Đã có sẵn code trong base/shared):* Chỉ sinh duy nhất file `.md` User Stories để chuẩn hóa tài liệu SSOT, **tuyệt đối không gen lại code**.
+  - *Với Duplicate Candidate (Mã trùng lặp, chưa có component chung):* Lên plan ➔ Member bấm Approve/Proceed ➔ Tự động sinh file `.md` User Stories + **gen code 1 bản chuẩn hoá vào `shared/`** + đăng ký registry.
 - **Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy:** Common mới chuẩn bị sẵn cho các tính năng tiếp theo để tránh copy duplicate lần thứ 3. Tuyệt đối KHÔNG tự ý sửa code cũ trong `source-legacy/` (luôn READ-ONLY) để tránh mọi rủi ro degrade/regression cho hệ thống cũ.
 
 ---
