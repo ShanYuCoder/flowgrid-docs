@@ -121,11 +121,15 @@ flowchart TD
 
 ### Chi tiết các kỹ năng ngăn chặn duplicate:
 
-1. **Skill `/init` (Quét & Phát hiện Duplicate)**:
+1. **Skill `/init` (Quét, Phát hiện Duplicate & Định vị Nơi Gen Code)**:
    - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động gán mã định danh:
      - **`CMN-UI-*`**: Các mẫu giao diện trùng lặp (Confirm Modal, Search Filter Toolbar, Action Bar,...).
      - **`CMN-API-*`**: Các logic backend trùng lặp (Paging wrapper, Audit log interceptor, Export CSV/Excel, Transmission logger,...).
      - **`CMN-DTO-*`**: Cấu trúc dữ liệu trùng lặp (BaseAuditable, Soft-delete model, ApiResponse chuẩn,...).
+   - **Định vị chính xác nơi gen Common (Target Placement Check):** Trong các hệ thống lớn hoặc multi-repo, Agent không để mơ hồ mà đối chiếu với `projects` trong `.flowgrid/config.json` để chỉ định rõ 3 tọa độ cho từng Common Candidate trong `inition-inventory.md`:
+     1. *Owning Surface & Target Repo:* Repo sở hữu đích (ví dụ `admin-fe`, `booking-portal`, hay `core-api`).
+     2. *Target Code Path:* Đường dẫn file mã nguồn cụ thể sẽ sinh (ví dụ `source-code/admin-fe/src/components/Common/ConfirmModal.vue` thay vì nói chung chung).
+     3. *Target Docs Path (LCA):* Đường dẫn file Markdown User Stories trong Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
    - **Cảnh báo nhân bản cả trang (`Whole Page Duplication Warnings`)**: Nếu phát hiện 2 file màn hình giống nhau đến 90–95% (như `CreateUser.vue` và `EditUser.vue`), Agent **không** tạo `CMN-*` mà khuyến nghị gộp thành một Form Spec đa hình duy nhất (`mode: create | edit`).
 
 2. **Skill `/common <CMN-ID>` (Đặc tả User Stories & Sinh code dùng chung)**:
