@@ -7,6 +7,6 @@
 | Quy tắc UX/nghiệp vụ Markdown | [`/common`](./common.md) → `common/patterns/` |
 | Cross-flow | `common/user-flows/FLOW-*.md` |
 | Pattern UI (delete flow, badge, flat design, …) | FE **base** + `flowgrid-ux-common.mdc` khi `/spec` / grill |
-| Template / registry / Mo* mới | [Workflow custom-base](../../workflows/custom-base.md) → `build-template-code` |
+| Template / registry / Mo* mới | [Workflow Phase 0 — Setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code) → `build-template-code` |
 
 Harness skill giữ stub deprecation để agent không author YAML CMN. CLI `gen-common` chỉ legacy repo.

@@ -1,7 +1,7 @@
 > [!IMPORTANT]
 > 📚 **TÀI LIỆU THAM KHẢO:**
 > 
-> - 📖 **[Website Tài liệu (GitHub Pages)](https://shanyucoder.github.io/flowgrid-docs/)** — Trải nghiệm đọc tài liệu và tra cứu trực tuyến.
+> - 📖 **[Tài liệu dự án (GitHub)](https://github.com/ShanYuCoder/flowgrid-docs)** — Đọc tài liệu và tra cứu trực tiếp trên GitHub repository.
 > - ⚙️ **Thư mục [workflows/](https://github.com/ShanYuCoder/flowgrid-docs/tree/main/workflows/)** — Chi tiết các phase phát triển và quy trình vận hành.
 
 # FlowGrid
@@ -13,6 +13,7 @@
 ```text
 Requirement thô (bullet / ảnh / legacy code)
   → AI chuẩn hóa bundle + IR + render MD
+  → Khử trùng lặp qua Anti-Copy-Paste Guard (Common Catalog CMN-*)
   → Prototype + review BA/QA/Dev
   → Codegen E2E / BE / wire + safety net
 ```
@@ -32,7 +33,11 @@ AI không thay thế con người mà đóng vai trò đòn bẩy mở rộng la
 - **Tự động hóa từ tài liệu Testcase:** Từ ma trận kịch bản kiểm thử (`TC-*.yaml`), AI hỗ trợ sinh tự động mã kiểm thử **E2E Playwright** (`*.spec.ts`).
 - **Giải phóng áp lực IT / Regression:** Triệt tiêu hoàn toàn công sức kiểm thử hồi quy lặp đi lặp lại thủ công trước mỗi đợt release, bảo đảm các tính năng đã chạy không bị vỡ khi hệ thống mở rộng.
 
-### 4. Nguyên tắc vận hành: Đầy đủ khung chuẩn — Linh hoạt theo rủi ro
+### 4. Triệt tiêu code trùng lặp với Anti-Copy-Paste Guard
+- **Chặn đứng sao chép mã rác:** Trong các dự án bảo trì hoặc hiện đại hóa, mã nguồn thường bị copy-paste tràn lan qua nhiều module (cùng một Confirm Modal, bảng phân trang, hay logic xuất file bị viết lại ở 4–5 nơi khác nhau).
+- **Quy chuẩn hóa dùng chung khép kín:** Skill `/init` tự động phát hiện và bóc tách các đoạn code lặp lại vào **Common Catalog** (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`). Hệ thống bắt buộc chuẩn hóa qua `/common`, tạo 1 bản duy nhất (`shared/`), và cưỡng chế qua `/spec` để tuyệt đối cấm Dev và Agent AI copy-paste code legacy sang module mới.
+
+### 5. Nguyên tắc vận hành: Đầy đủ khung chuẩn — Linh hoạt theo rủi ro
 FlowGrid cung cấp đầy đủ các phase và tài nguyên SSOT từ đầu đến cuối, **nhưng không bắt buộc mọi tính năng phải thực hiện máy móc 100% các bước**:
 - **Tính năng đơn giản / phạm vi nhỏ / rủi ro thấp:** Team hoàn toàn có thể chủ động **cắt giảm** (viết tài liệu vắn tắt, bỏ qua prototype, không cần viết E2E test) nhằm tối ưu nhân sự và đẩy nhanh tốc độ release.
 - **Tính năng trọng yếu / phức tạp / hay phát sinh lỗi (Hotspots & High-risk):** Khi đối mặt với nghiệp vụ rủi ro cao, dễ vỡ tiến độ hoặc dễ phát sinh bug, team **nên tuân thủ nghiêm ngặt đầy đủ các bước**:
@@ -125,7 +130,9 @@ flowchart LR
 | Bước | Lệnh / Skill | Mô tả |
 | :--- | :--- | :--- |
 | **1. Setup** | `flowgrid setup [name]` | Khởi tạo skeleton, cấu hình MCP và harness cho agent. |
-| **2. Discover** | `/init` | Agent quét workspace, xác định surfaces và liên kết repo maps. |
+| **2. Discover** | `/init` | Agent quét workspace, map surfaces, bóc tách **Common Catalog** (`CMN-*`) và kích hoạt **Anti-Copy-Paste Guard** (ngăn chặn copy code trùng lặp từ legacy). |
+| **2.1. Lập Plan** | `/help-plan` | Phân tích `inition-inventory.md`, config và hiện trạng để lên Action Plan chi tiết từng bước cho yêu cầu mới, rà soát toàn diện các User Flow liên đới. |
+| **2.2. Huấn luyện Template** | `build-template-code` | Tự động phân tích **Golden Sample** (module mẫu sạch nhất) để sinh custom codegen templates theo đúng kiến trúc dự án. |
 | **3. Khảo cổ** | `/trace` *(Maintain)*<br>`/legacy` *(Rebase)* | • `/trace`: Quét mã nguồn trong `source-code` để đối chiếu & sinh spec.<br>• `/legacy`: Đọc Read-Only từ `source-legacy`, trích xuất spec/template sang `source-code`. |
 | **4. Đặc tả** | `/spec`, `/grill-bqa` | Viết Leaf Bundle spec cho từng màn hình/tính năng, phản biện logic nghiệp vụ. |
 | **5. Thiết kế & API** | `/prototype`, `/api-spec` | Sinh HTML prototype tương tác & định nghĩa API contract (`01-backend-spec.yaml`). |

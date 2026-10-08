@@ -105,7 +105,111 @@ flowchart TD
 
 ---
 
-## Xem tài liệu SSOT trực tiếp trên Local (`pnpm docs:dev`)
+## 4. Bộ kỹ năng & Cơ chế Ngăn chặn Duplicate Code (Anti-Copy-Paste Guard)
+
+Một trong những vấn đề lớn nhất khi bảo trì hoặc hiện đại hóa hệ thống legacy là **code bị copy-paste trùng lặp tràn lan** qua nhiều module (cùng một Confirm Modal, bảng phân trang, hay logic xuất Excel bị viết lại ở 4–5 controller/view khác nhau).
+
+FlowGrid thiết lập chuỗi kỹ năng khép kín để triệt tiêu triệt để vấn đề này ngay từ Phase 0:
+
+```mermaid
+flowchart TD
+  INIT["1. /init quét legacy<br/>Bóc tách CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Cảnh báo Whole Page Duplication"] --> COMMON["2. /common <CMN-ID><br/>Đặc tả Rule dùng chung tại <LCA>/common/patterns/*.md"]
+  COMMON --> IMPL["3. Single Implementation & Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Đăng ký design.registry.json / codegen.registry.json"]
+  IMPL --> SPEC["4. /spec cưỡng chế tái sử dụng<br/>Gắn tag #pattern hoặc #reuse-api<br/>Agent & Codegen từ chối copy-paste code legacy"]
+  SPEC --> SAFETRACE["5. /trace & /legacy khảo cổ an toàn<br/>Trích xuất logic nghiệp vụ, giữ source-legacy READ-ONLY"]
+```
+
+### Chi tiết các kỹ năng ngăn chặn duplicate:
+
+1. **Skill `/init` (Quét & Phát hiện Duplicate)**:
+   - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động gán mã định danh:
+     - **`CMN-UI-*`**: Các mẫu giao diện trùng lặp (Confirm Modal, Search Filter Toolbar, Action Bar,...).
+     - **`CMN-API-*`**: Các logic backend trùng lặp (Paging wrapper, Audit log interceptor, Export CSV/Excel, Transmission logger,...).
+     - **`CMN-DTO-*`**: Cấu trúc dữ liệu trùng lặp (BaseAuditable, Soft-delete model, ApiResponse chuẩn,...).
+   - **Cảnh báo nhân bản cả trang (`Whole Page Duplication Warnings`)**: Nếu phát hiện 2 file màn hình giống nhau đến 90–95% (như `CreateUser.vue` và `EditUser.vue`), Agent **không** tạo `CMN-*` mà khuyến nghị gộp thành một Form Spec đa hình duy nhất (`mode: create | edit`).
+
+2. **Skill `/common <CMN-ID>` (Chuẩn hóa Rule nghiệp vụ)**:
+   - Thành viên chạy `/common <CMN-ID>` (ví dụ: `/common CMN-UI-001` hoặc `/common CMN-API-002`) để tạo bản đặc tả hành vi chuẩn tại `<LCA>/common/patterns/<CMN-ID>.md`.
+   - Xác định rõ phạm vi ảnh hưởng (LCA — Lowest Common Ancestor), input/output, và điều kiện biên trước khi viết bất kỳ dòng code nào.
+
+3. **Cài đặt Single Implementation & Đăng ký Registry**:
+   - **Frontend**: Tạo duy nhất 1 component chuẩn trong thư mục dùng chung (như `src/components/Common/` hoặc `shared/components/`) và đăng ký vào `design.registry.json`.
+   - **Backend**: Tạo duy nhất 1 Service / Trait / DTO chuẩn trong repo BE (như `app/Services/Common/`, `app/Traits/`) và đăng ký vào `codegen.registry.json`.
+
+4. **Skill `/spec` & Codegen (Cưỡng chế Anti-Copy-Paste Guard)**:
+   - Khi bất kỳ thành viên nào phát triển màn hình hoặc API mới qua `/spec`, bundle bắt buộc gắn tag `#pattern: <CMN-ID>` hoặc `#reuse-api: <CMN-ID>`.
+   - Agent AI và Codegen engine **tuyệt đối từ chối việc copy-paste code thô từ legacy** vào module mới; bắt buộc `import` và tái sử dụng component/service chung đã được đăng ký.
+
+5. **Bộ đôi `/trace` & `/legacy` (Kế thừa nghiệp vụ sạch sẽ)**:
+   - `/trace` (dự án Maintain): Quét code hiện hữu để đối chiếu data model và logic ngầm mà không làm gãy luồng.
+   - `/legacy` (dự án Rebase): Chỉ đọc Read-Only từ `source-legacy/`, trích xuất 100% nghiệp vụ lõi sang bản spec mới, triệt tiêu toàn bộ rác kỹ thuật cũ.
+
+---
+
+## 5. Huấn luyện Template từ Golden Sample (`build-template-code`)
+
+Sau khi chuẩn hóa các thành phần dùng chung, thách thức tiếp theo là **làm sao để Agent AI và engine Codegen sinh mã mới đúng 100% theo kiến trúc, thư viện UI và coding convention riêng của dự án** (không bị lệch chuẩn theo template mặc định).
+
+FlowGrid giải quyết bài toán này bằng công cụ `build-template-code` (kèm skill `/build-templates`) để học tự động từ một **Golden Sample** (module mẫu chuẩn).
+
+### 5.1. Golden Sample là gì?
+Ở cuối tài liệu `inition-inventory.md`, Agent AI sẽ phân tích toàn bộ codebase và đề xuất **Golden Sample** — module hoặc surface có kiến trúc phân tầng sạch đẹp, chuẩn mực và rõ layer nhất trong dự án (ví dụ phân tách rõ Controller ➔ Service ➔ Repository ➔ DTO hoặc View ➔ Component, có đầy đủ CRUD và validation mẫu mực).
+
+### 5.2. Quy trình huấn luyện Template (Tri-Sync)
+
+```mermaid
+flowchart TD
+  SAMPLE["Golden Sample<br/>(Module chuẩn mực được đề xuất ở inition-inventory.md)"] --> PLAN["Bước 1: flowgrid build-template-code --sample=<path><br/>(Phân tích cấu trúc, xuất template-plan.json)"]
+  PLAN --> REVIEW["Member Review kế hoạch<br/>(Kiểm tra danh sách template & placeholders)"]
+  REVIEW --> APPLY["Bước 2: flowgrid build-template-code --yes<br/>(Chấp thuận ghi template vào .flowgrid/adapters/custom/)"]
+  APPLY --> SYNC["Tự động cập nhật Registry<br/>(design.registry.json & codegen.registry.json)"]
+  SYNC --> NEW_DEV["Phát triển tính năng mới:<br/>/spec ➔ flowgrid gen sinh mã chuẩn 100%"]
+```
+
+### 5.3. Hướng dẫn thực thi từng bước:
+
+#### Bước 1: Phân tích module mẫu và xuất kế hoạch (`--sample`)
+Chỉ định đường dẫn tới thư mục module mẫu (chấp nhận đường dẫn tương đối hoặc tuyệt đối):
+
+```bash
+flowgrid build-template-code --sample=./source-code/src/modules/orders
+```
+
+*Cơ chế an toàn:* Bước này **hoàn toàn chưa ghi đè hay thay đổi bất kỳ file template nào**. CLI chỉ quét và tạo ra file kế hoạch `.flowgrid/template-plan.json` chứa:
+- Danh sách các file template dự kiến sinh.
+- Các vị trí placeholder được nhận diện (`{{entity}}`, `{{fields}}`, `{{actions}}`).
+- Các component UI và endpoints API được bóc tách.
+
+#### Bước 2: Kiểm tra và áp dụng template (`--yes`)
+Sau khi kiểm tra file plan, chạy lệnh xác nhận:
+
+```bash
+flowgrid build-template-code --yes
+```
+
+CLI sẽ ghi các file template tương ứng vào thư mục `.flowgrid/adapters/custom/` của repo tương ứng:
+
+| Công nghệ | Đuôi template | File Registry đồng bộ |
+| :--- | :--- | :--- |
+| **Nuxt, Next, NestJS** | `.hbs` (Handlebars) | `design.registry.json` (FE) · `codegen.registry.json` (BE) |
+| **Laravel / PHP** | `.stub` | `codegen.registry.json` |
+| **FastAPI / Python** | `.j2` (Jinja2) | `codegen.registry.json` |
+| **.NET / C#** | `.scriban` | `codegen.registry.json` |
+
+*Ghi đè khi cần thiết:* Nếu cần cập nhật lại toàn bộ template đã tồn tại, thêm cờ `--force`:
+```bash
+flowgrid build-template-code --yes --force
+```
+
+#### Bước 3: Phát triển tính năng mới với Custom Template
+Kể từ thời điểm này, toàn bộ quy trình phát triển chức năng mới diễn ra tự động và chuẩn xác:
+1. Viết spec với `/spec` (kế thừa các mã `CMN-*`).
+2. Phản biện nghiệp vụ và giao diện với `/grill-bqa`, `/prototype`.
+3. Khi chạy lệnh sinh code (`flowgrid gen`), hệ thống sẽ tự động sử dụng bộ custom template vừa được huấn luyện để sinh mã đúng 100% quy chuẩn dự án mà không cần dev phải sửa tay.
+
+---
+
+## 6. Xem tài liệu SSOT trực tiếp trên Local (`pnpm docs:dev`)
 
 Đến đây, quá trình cài đặt và thiết lập Phase 0 đã hoàn tất! Bạn có thể khởi chạy server tài liệu để xem giao diện web trực quan của toàn bộ hệ thống SSOT:
 
@@ -118,3 +222,4 @@ Lệnh này khởi chạy VitePress dev server tại `http://localhost:5173` gi�
 - Đọc chi tiết các tài liệu kiến trúc Arc42, cấu trúc surfaces, data model, ERD và API contract dưới dạng web động.
 - Tự động cập nhật tức thì (Hot Reload) mỗi khi Agent AI hoặc team chỉnh sửa các file Markdown/YAML trên disk.
 - Là nơi đối chiếu trực quan duy nhất giữa BA, Dev và QA trong suốt vòng đời dự án.
+

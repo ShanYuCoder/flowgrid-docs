@@ -6,6 +6,7 @@ const skillGroups = [
     text: 'AI Skills (Setup & Discovery)',
     items: [
       { text: '/init', link: '/references/skills/init' },
+      { text: '/help-plan', link: '/references/skills/help-plan' },
       { text: '/extract-legacy', link: '/references/skills/extract-legacy' },
     ],
   },
@@ -142,7 +143,6 @@ export default withMermaid(
             { text: 'Gate & audit', link: '/workflows/gates' },
             { text: 'Grill & review', link: '/workflows/grill-and-human-review' },
             { text: 'QA inbox (team)', link: '/workflows/qa-team' },
-            { text: 'Custom base', link: '/workflows/custom-base' },
           ],
         },
         {

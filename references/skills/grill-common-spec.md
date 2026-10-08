@@ -7,6 +7,6 @@ Không còn bundle `common/yaml` để grill.
 | Spec màn / function | `/grill-bqa` · `/grill-dev` trên `*.bundle.yaml` |
 | Quy tắc patterns Markdown | `/common` |
 | Affordance UI | `flowgrid-ux-common.mdc` + `/grill-bqa` |
-| Registry / codegen template | [custom-base](../../workflows/custom-base.md) |
+| Registry / codegen template | [Phase 0 — Setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code) |
 
-Xem [custom-base § Common trên docs hub](../../workflows/custom-base.md#common-trên-docs-hub-không-còn-gen-common).
+Xem [Phase 0 — Setup § Huấn luyện Template](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).

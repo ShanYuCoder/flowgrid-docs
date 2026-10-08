@@ -42,7 +42,7 @@ Spec: prefer `--id {W-*}`
 Order:
 1. Read spec tags — `#needs-component` inventory (Mo* names from grill)
 2. Implement missing Mo* molecules in /prototype (gen does not emit stubs)
-3. Registry promote reusable Mo* — `registries/design.registry.json` on FE base ([custom-base](../../workflows/custom-base.md)); hub `common/` is Markdown only (`patterns/`, `processes/`).
+3. Registry promote reusable Mo* — `registries/design.registry.json` on FE base ([Phase 0 — Setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code)); hub `common/` is Markdown only (`patterns/`, `processes/`).
 4. pnpm portal:gen --id {W-*} --force
 5. HANDOFF *Prototype next* = remaining slots only; wire-only / manual-composable
 

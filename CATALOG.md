@@ -7,7 +7,6 @@
 - [workflows](workflows/index.md)
   - [Phase 0 — Data model & ERD](workflows/architecture-data.md)
   - [Workflow — Backend (API & code)](workflows/backend.md)
-  - [Huấn luyện Template từ Golden Sample (`build-template-code`)](workflows/custom-base.md)
   - [Design leaf — sign-off rubric (voluntary)](workflows/design-leaf-signoff.md)
   - [Workflow — Design](workflows/design.md)
   - [Gate & mốc kiểm định](workflows/gates.md)
