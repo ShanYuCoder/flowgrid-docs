@@ -37,7 +37,16 @@ AI không thay thế con người mà đóng vai trò đòn bẩy mở rộng la
 - **Chặn đứng sao chép mã rác:** Trong các dự án bảo trì hoặc hiện đại hóa, mã nguồn thường bị copy-paste tràn lan qua nhiều module (cùng một Confirm Modal, bảng phân trang, hay logic xuất file bị viết lại ở 4–5 nơi khác nhau).
 - **Quy chuẩn hóa dùng chung khép kín:** Skill `/init` tự động phát hiện và bóc tách các đoạn code lặp lại vào **Common Catalog** (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`). Hệ thống bắt buộc chuẩn hóa qua `/common`, tạo 1 bản duy nhất (`shared/`), và cưỡng chế qua `/spec` để tuyệt đối cấm Dev và Agent AI copy-paste code legacy sang module mới.
 
-### 5. Nguyên tắc vận hành: Đầy đủ khung chuẩn — Linh hoạt theo rủi ro
+### 5. Tool đảm bảo về <span style="color: #0284c7; font-weight: bold;">"LƯỢNG"</span> — Con người quyết định về <span style="color: #16a34a; font-weight: bold;">"CHẤT"</span> cho SSOT
+FlowGrid phân định ranh giới rõ ràng giữa kiểm tra tự động của máy và kiểm soát tư duy của con người:
+- **Tool đảm bảo về <span style="color: #0284c7; font-weight: bold;">"LƯỢNG"</span> (Tính đầy đủ, cấu trúc & độ phủ):**
+  - Thông qua các script deterministic (`flowgrid audit *`, `cases:gate`), toolkit tự động quét và kiểm tra xem tài liệu đã đủ lượng thông tin cần thiết hay chưa.
+  - Từ chi tiết UI (màu mè text, vị trí hiển thị, kích thước, các action/trigger ra sao...), API contracts, mã lỗi/exception, cho đến danh mục rủi ro QA (`gaps[]`, `confirms[]`), Tech Debt... Máy móc sẽ phát hiện ngay các khoảng trống bị thiếu mà không bỏ sót.
+- **Con người là chốt chặn quyết định về <span style="color: #16a34a; font-weight: bold;">"CHẤT"</span> (Độ chuẩn xác, độ sâu & tính khả thi):**
+  - **AI phân tích & gợi ý giải pháp:** AI chủ động phân tích bài toán, đề xuất phương án kiến trúc, mô hình logic và đặt câu hỏi gợi mở qua các interactive questions (`ask_question`).
+  - **Con người phân tích, phản biện & chốt hạ:** Member (BA, Dev, QA, Lead) giữ vai trò trọng tài tối cao — trực tiếp cân nhắc, phản biện lại AI (`grill`), lựa chọn phương án tối ưu nhất hoặc phản biện để đưa ra lựa chọn đúng đắn chuẩn xác cuối cùng để biến bản nháp thành SSOT hoàn thiện.
+
+### 6. Nguyên tắc vận hành: Đầy đủ khung chuẩn — Linh hoạt theo rủi ro
 FlowGrid cung cấp đầy đủ các phase và tài nguyên SSOT từ đầu đến cuối, **nhưng không bắt buộc mọi tính năng phải thực hiện máy móc 100% các bước**:
 - **Tính năng đơn giản / phạm vi nhỏ / rủi ro thấp:** Team hoàn toàn có thể chủ động **cắt giảm** (viết tài liệu vắn tắt, bỏ qua prototype, không cần viết E2E test) nhằm tối ưu nhân sự và đẩy nhanh tốc độ release.
 - **Tính năng trọng yếu / phức tạp / hay phát sinh lỗi (Hotspots & High-risk):** Khi đối mặt với nghiệp vụ rủi ro cao, dễ vỡ tiến độ hoặc dễ phát sinh bug, team **nên tuân thủ nghiêm ngặt đầy đủ các bước**:
