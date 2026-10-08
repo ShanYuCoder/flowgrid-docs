@@ -5,7 +5,7 @@
 
 ## Prep (trước session spec)
 
-Drill chung với custom-base và brownfield: [spec-ssot-prep.md](../../workflows/spec-ssot-prep.md) — registry/adopt → Phase 0 → `/spec` hoặc `/legacy /spec`.
+Quy trình chuẩn bị Phase 0: [phase-0-setup.md](../../workflows/phase-0-setup.md) — `/init` → Phase 0 → `/spec` hoặc `/legacy /spec`.
 
 ## Cách dùng (Command/Trigger)
 - Gọi qua slash command: `/spec <module-id/slug/draft-id>`

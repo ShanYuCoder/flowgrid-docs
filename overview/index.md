@@ -7,20 +7,20 @@ Tài liệu này dành cho member team phát triển phần mềm: giải thích
 FlowGrid kết hợp **script deterministic** và **agent** trên cùng SSOT — hai lớp bổ trợ, không thay nhau:
 
 1. **Phân vai kiểm tra (lượng / chất)** — `flowgrid audit *`, `cases:gate` báo thiếu field, schema, trace (`gaps[]`, `confirms[]`) bằng Node thuần; grill (`/grill-bqa`, `/grill-dev`, …) và review member xử lý logic nghiệp vụ, nhất quán UI ↔ API ↔ testcase. Agent bám skill chuẩn (`/spec`, `/legacy`, `/update-spec`, …), không tự điền thiếu sót im lặng — gap phải grill hoặc chốt qua `qa`. Chi tiết: [workflows/grill-and-human-review.md](../workflows/grill-and-human-review.md).
-2. **Legacy và catalog dùng chung** — brownfield: audit **2 tầng** (màn/API vs luồng cross-flow), `/adopt` gom candidate `CMN-*`, codebase mới **không** copy-paste file lẻ từ repo cũ. Drill prep cùng `/spec` và custom-base: [workflows/spec-ssot-prep.md](../workflows/spec-ssot-prep.md) · [legacy-brownfield.md](../workflows/legacy-brownfield.md).
+2. **Anti-Copy-Paste Guard & Common Catalog** — triệt tiêu code trùng lặp: skill `/init` tự động phát hiện các ứng viên `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*` và cảnh báo nhân bản trang; chuẩn hóa Rule qua `/common`; cài đặt 1 bản duy nhất trong thư mục `shared/`; và cưỡng chế qua `/spec` để tuyệt đối **không** copy code rác từ legacy sang module mới. Chi tiết: [Phase 0 — Setup](../workflows/phase-0-setup.md#4-bo-ky-nang-co-che-ngan-chan-duplicate-code-anti-copy-paste-guard).
 3. **Kỷ luật workflow** — khi `gaps[]` + `confirms[]` vượt ngưỡng (~10), dừng hỏi lẻ, chuyển plan chia phase (Law 2); spec màn lớn phân **zone** (header, toolbar, bảng/form, footer) từng lượt để tránh lost-in-the-middle; `audit`/`gate` chạy sau artifact, **không** thay backlog hay sprint board. Mốc gate: [workflows/gates.md](../workflows/gates.md) · chuỗi đóng một function (`W-*`): [gates § Đóng một function](../workflows/gates.md#close-one-function).
 
 Đội **T-shaped** dùng FlowGrid làm lane artifact trên một function (`W-*`): spec → prototype → API → tests-docs → wire — macro và vai trò: [workflows/index.md](../workflows/index.md).
 
 ## Ba ngữ cảnh triển khai
 
-*Xem tài liệu hướng dẫn từng bước chi tiết + sơ đồ luồng:* **[Hướng dẫn Workflow 3 Ngữ cảnh Triển khai](../workflows/use-cases-guide.md)**.
+*Xem tài liệu hướng dẫn từng bước chi tiết + sơ đồ điều hướng:* **[Phase 0 — Setup & Khởi tạo dự án](../workflows/phase-0-setup.md)**.
 
-| Ngữ cảnh | Đặc điểm | Lane gợi ý |
+| Ngữ cảnh | Đặc điểm | Quy trình chuẩn (Phase 0 ➔ Feature) |
 | --- | --- | --- |
-| **Greenfield** | Dự án mới, stack chuẩn adapter | `flowgrid init` (standard) → **`registry:sync`** index base → `/architecture` → `/spec` (đọc `design.registry.json` FE) → prototype → testcase/E2E |
-| **Modernization / re-platform** | Code cũ làm nguồn, hệ mới cần catalog | `/adopt`, `/legacy /spec`, 2-tier audit; tái dùng `CMN-*` thay nhân bản màn |
-| **Maintain / base tùy biến** | UI library hoặc kiến trúc lệch template mặc định | `flowgrid init` **Custom** + Golden Sample → `build-template-code` → spec/gen trên registry/lexicon đã học |
+| **1. Greenfield** | Làm sản phẩm mới hoàn toàn từ con số 0 | `flowgrid setup` ➔ `/init` ➔ `/spec` ➔ `/prototype` ➔ `/api-spec` ➔ `/testcase` ➔ `/wire` |
+| **2. Maintain** | Tiếp tục phát triển và bảo trì codebase hiện có | `flowgrid setup` ➔ đưa code vào `source-code/` ➔ `/init` quét map ➔ dùng kèm `/trace` khi viết `/spec` để đối chiếu logic ngầm |
+| **3. Rebase / Modernization** | Đập đi làm lại từ hệ thống legacy cũ (đổi stack) | Đưa code cũ vào `source-legacy/` (READ-ONLY) ➔ `/init` bóc tách `CMN-*` kích hoạt Anti-Copy-Paste Guard ➔ đề xuất Golden Sample huấn luyện `build-template-code` ➔ dùng kèm `/legacy` khi viết `/spec` |
 
 ## Các lớp artifact một team cần
 
@@ -54,7 +54,7 @@ FlowGrid không thay thế việc team **chọn phạm vi** theo quy mô dự á
 
 ![SSOT — một nguồn chốt, nhiều lane đọc cùng artifact](./assets/overview-ssot-hub.png)
 
-**Single Source of Truth (SSOT)** trong FlowGrid là **artifact trên disk** (docs-hub, tests-docs, contract trong repo code) được `flowgrid init` trỏ rõ — **cùng version control với code**, không phải slide rời hoặc wiki tách repo không đồng bộ merge.
+**Single Source of Truth (SSOT)** trong FlowGrid là **artifact trên disk** (docs-hub, tests-docs, contract trong repo code) được `flowgrid setup` và skill `/init` thiết lập chuẩn xác — **cùng version control với code**, không phải slide rời hoặc wiki tách repo không đồng bộ merge.
 
 SSOT đóng các vai trò sau cho cả dự án:
 
@@ -182,4 +182,4 @@ Nhiều mô hình (spiral, dual-track, v.v.) đều có các **mốc tương đ�
   - Member **grill, review, chốt** — không gom cả repo một lần, không thay quyết định product owner.
   - Audit/gate báo thiếu/lệch có cấu trúc; giảm “tin miệng” ở mốc chuyển phase.
 
-Cài đặt CLI, `flowgrid init`, bảng phase · skill và mô tả harness: xem **README** ở root repository FlowGrid.
+Cài đặt CLI, `flowgrid setup`, skill `/init`, bảng phase · skill và mô tả harness: xem **README** ở root repository FlowGrid.

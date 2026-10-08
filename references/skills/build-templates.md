@@ -29,7 +29,7 @@
 - **Giải pháp của `/build-templates`:** Đọc một thư mục module (kể cả repo ngoài hệ thống), lập plan, rồi khi member tiếp tục thì ghi template đúng công nghệ vào repo FE hoặc BE tương ứng.
 
 ## Các Skill liên quan
-- **Trước đó:** Yêu cầu chạy `/adopt` nếu chưa liên kết thư mục mã nguồn.
+- **Trước đó:** Khởi tạo qua `flowgrid setup` và chạy `/init` (liên kết `source-legacy/` hoặc `source-code/`) để quét cấu trúc và đề xuất Golden Sample.
 - **Sau đó:** `/spec` dùng registry vừa ghi. Template đã có được giữ. `--force` chỉ khi member muốn ghi đè.
 
 ## Chú ý quan trọng

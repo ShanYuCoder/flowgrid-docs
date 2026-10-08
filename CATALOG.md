@@ -55,6 +55,7 @@
     - [Skill: `/grill-unit`](references/skills/grill-unit.md)
     - [Skill: `/grill-wire`](references/skills/grill-wire.md)
     - [Skill: `/grill`](references/skills/grill.md)
+    - [Kỹ năng: `/help-plan`](references/skills/help-plan.md)
     - [Kỹ năng: `/init`](references/skills/init.md)
     - [Kỹ năng: `/legacy`](references/skills/legacy.md)
     - [Skill: `/model`](references/skills/model.md)

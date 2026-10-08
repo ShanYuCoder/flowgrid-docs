@@ -117,6 +117,6 @@ flowgrid audit legacy my-legacy-target
 | `/scenario` | `audit scenario` |
 | `/wire` | `audit e2e`, `audit fe-be`, `audit scenario` (khi SC) |
 | `/grill-wire` | Cùng chuỗi — verify-only sau `/wire`; gap → `/update-spec`, `/api-update`, `/grill-testcase`, `/test` |
-| `/adopt` | `audit legacy` |
+| `/init`, `/legacy` | `audit legacy` |
 
 Cập nhật engine: sửa `bin/lib/audit-run.mjs` (`AUDIT_ENGINES`) + test `test/audit-run.test.mjs` + bảng trên.

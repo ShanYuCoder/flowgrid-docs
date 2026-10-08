@@ -21,7 +21,7 @@
 
 ## Chú ý quan trọng
 - **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/`). Không viết `common/yaml`. `/common-spec` và `/gen-common` đã deprecated.
-- Code `CMN-*` chỉ xuất hiện sau khi member duyệt plan adopt. Template codegen mới đi [phase-0-setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).
+- Code `CMN-*` chỉ xuất hiện sau khi member duyệt plan `/init` / catalog. Template codegen mới đi [phase-0-setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).
 
 ---
 
