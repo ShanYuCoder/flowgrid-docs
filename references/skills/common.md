@@ -20,8 +20,9 @@
 - Nội dung file viết bằng ngôn ngữ tự nhiên, phi kỹ thuật (Non-technical language). Không sa đà vào code. VD: "Dialog xác nhận xoá phải luôn làm mờ nền đen đằng sau (block background)".
 
 ## Chú ý quan trọng
-- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/`). Không viết `common/yaml`. `/common-spec` và `/gen-common` đã deprecated.
-- Code `CMN-*` chỉ xuất hiện sau khi member duyệt plan `/init` / catalog. Template codegen mới đi [phase-0-setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).
+- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/` User Stories & Rules). **TUYỆT ĐỐI KHÔNG VIẾT FILE YAML CHO COMMON**, không phân tách IR. Do các thành phần common đã được code sẵn trong base (`shared/`), việc tạo YAML là hoàn toàn thừa thãi và sai chuẩn.
+- **Tự động thực thi khi Approve / Proceed:** Agent lên plan ngắn gọn ➔ Member xem và bấm Approve/Proceed ➔ Agent tự động lần lượt sinh file `.md` User Stories, sinh mã nguồn Single Implementation vào `shared/` (`shared/components/` hoặc `shared/services/`), và đăng ký registry mà không hỏi vòng vo.
+- **Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy:** Common mới chuẩn bị sẵn cho các tính năng tiếp theo để tránh copy duplicate lần thứ 3. Tuyệt đối KHÔNG tự ý sửa code cũ trong `source-legacy/` (luôn READ-ONLY) để tránh mọi rủi ro degrade/regression cho hệ thống cũ.
 
 ---
 

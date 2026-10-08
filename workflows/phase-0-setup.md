@@ -128,17 +128,23 @@ flowchart TD
      - **`CMN-DTO-*`**: Cấu trúc dữ liệu trùng lặp (BaseAuditable, Soft-delete model, ApiResponse chuẩn,...).
    - **Cảnh báo nhân bản cả trang (`Whole Page Duplication Warnings`)**: Nếu phát hiện 2 file màn hình giống nhau đến 90–95% (như `CreateUser.vue` và `EditUser.vue`), Agent **không** tạo `CMN-*` mà khuyến nghị gộp thành một Form Spec đa hình duy nhất (`mode: create | edit`).
 
-2. **Skill `/common <CMN-ID>` (Chuẩn hóa Rule nghiệp vụ)**:
-   - Thành viên chạy `/common <CMN-ID>` (ví dụ: `/common CMN-UI-001` hoặc `/common CMN-API-002`) để tạo bản đặc tả hành vi chuẩn tại `<LCA>/common/patterns/<CMN-ID>.md`.
-   - Xác định rõ phạm vi ảnh hưởng (LCA — Lowest Common Ancestor), input/output, và điều kiện biên trước khi viết bất kỳ dòng code nào.
+2. **Skill `/common <CMN-ID>` (Đặc tả User Stories & Sinh code dùng chung)**:
+   - **Chỉ dùng file Markdown `.md` mô tả User Stories & Rules:** Các thành phần common đều được code sẵn trong base (`shared/`), **TUYỆT ĐỐI KHÔNG TẠO FILE YAML CHO COMMON VÀ KHÔNG PHÂN TÁCH IR**. Tạo file YAML cho common là thừa thãi và sai chuẩn.
+   - **Quy trình Plan ➔ Tự động thực thi khi Approve / Proceed:**
+     - Agent đề xuất Action Plan ngắn gọn (mô tả User Stories dự kiến và file code cần tạo).
+     - Member xem qua, điều chỉnh nếu cần rồi bấm **Approve** hoặc **Proceed**.
+     - Agent tự động thực thi lần lượt các phase mà không hỏi vòng vo:
+       1. Sinh file `.md` User Stories & Behavior tại `<LCA>/common/patterns/<CMN-ID>.md`.
+       2. Sinh mã nguồn cài đặt (Single Implementation) vào thư mục `shared/` (`shared/components/` cho FE hoặc `shared/services/` cho BE).
+       3. Tự động đăng ký vào `design.registry.json` hoặc `codegen.registry.json`.
 
-3. **Cài đặt Single Implementation & Đăng ký Registry**:
-   - **Frontend**: Tạo duy nhất 1 component chuẩn trong thư mục dùng chung (như `src/components/Common/` hoặc `shared/components/`) và đăng ký vào `design.registry.json`.
-   - **Backend**: Tạo duy nhất 1 Service / Trait / DTO chuẩn trong repo BE (như `app/Services/Common/`, `app/Traits/`) và đăng ký vào `codegen.registry.json`.
+3. **Nguyên tắc an toàn tuyệt đối: Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy**:
+   - Mục đích tạo Common: Đoạn code này được phát hiện đang bị copy-paste duplicate ở 3–4 nơi trong code cũ. Ta tạo sẵn 1 bản chuẩn hoá duy nhất trong `shared/` để **các tính năng phát triển tiếp theo sử dụng**, triệt tiêu nguy cơ copy duplicate lần thứ 3, thứ 4.
+   - **Tuyệt đối KHÔNG tự ý sửa đổi hay refactor code trong `source-legacy/`**: Thư mục legacy luôn là **READ-ONLY**. Không thay thế code cũ đang chạy để tránh 100% nguy cơ regression hoặc làm degrade hệ thống cũ.
 
 4. **Skill `/spec` & Codegen (Cưỡng chế Anti-Copy-Paste Guard)**:
    - Khi bất kỳ thành viên nào phát triển màn hình hoặc API mới qua `/spec`, bundle bắt buộc gắn tag `#pattern: <CMN-ID>` hoặc `#reuse-api: <CMN-ID>`.
-   - Agent AI và Codegen engine **tuyệt đối từ chối việc copy-paste code thô từ legacy** vào module mới; bắt buộc `import` và tái sử dụng component/service chung đã được đăng ký.
+   - Agent AI và Codegen engine **tuyệt đối từ chối việc copy-paste code thô từ legacy** vào module mới; bắt buộc `import` và tái sử dụng component/service chung đã được đăng ký trong `shared/`.
 
 5. **Bộ đôi `/trace` & `/legacy` (Kế thừa nghiệp vụ sạch sẽ)**:
    - `/trace` (dự án Maintain): Quét code hiện hữu để đối chiếu data model và logic ngầm mà không làm gãy luồng.
@@ -180,8 +186,11 @@ flowgrid build-template-code --sample=./source-code/src/modules/orders
 - Các vị trí placeholder được nhận diện (`{{entity}}`, `{{fields}}`, `{{actions}}`).
 - Các component UI và endpoints API được bóc tách.
 
-#### Bước 2: Kiểm tra và áp dụng template (`--yes`)
-Sau khi kiểm tra file plan, chạy lệnh xác nhận:
+#### Bước 2: Build luôn template khi User Approve (`--yes`)
+- **Fast-track Build khi User xác nhận đề xuất:**
+  - Khi user / member đã xem đề xuất Golden Sample (từ `inition-inventory.md` hoặc sau khi chạy `--sample`) và bấm **Approve** hoặc **Proceed**:
+  - Agent chạy ngay lệnh `flowgrid build-template-code --yes` để **BUILD LUÔN TEMPLATE**.
+  - **Tuyệt đối không chạy thảo luận/discuss dài dòng qua lại.** Người thực hiện công đoạn này là dân kỹ thuật (tech lead / dev) đọc hiểu được code; khi họ đã bấm approve là họ đã nắm rõ kết quả và muốn hoàn tất ngay. Thêm nữa, việc sinh template vào `.flowgrid/` hoàn toàn chưa sửa đổi code cũ legacy nên tuyệt đối an toàn, không có rủi ro degrade.
 
 ```bash
 flowgrid build-template-code --yes

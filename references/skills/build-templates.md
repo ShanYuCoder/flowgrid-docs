@@ -33,7 +33,8 @@
 - **Sau đó:** `/spec` dùng registry vừa ghi. Template đã có được giữ. `--force` chỉ khi member muốn ghi đè.
 
 ## Chú ý quan trọng
-- Phân tích (`--sample`) không ghi template. Hỏi một lần rồi mới `--yes`.
+- Phân tích (`--sample`) không ghi template, chỉ quét xuất `.flowgrid/template-plan.json`.
+- **Fast-track Build khi User xác nhận:** Khi user/member đã đồng ý theo đề xuất Golden Sample (bấm Approve/Proceed), Agent chạy ngay `--yes` để **BUILD LUÔN TEMPLATE**, tuyệt đối không thảo luận/discuss dài dòng qua lại vì đây là bước kỹ thuật đã có sẵn code mẫu rõ ràng.
 - Không ghi đè template đã sửa tay nếu member chưa yêu cầu `--force`.
 
 ---
