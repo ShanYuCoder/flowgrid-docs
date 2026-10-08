@@ -16,12 +16,12 @@
 
 ## Output (Kết quả mong đợi)
 - Bước phân tích ghi `.flowgrid/template-plan.json`.
-- Bước `--yes` ghi template vào repo đúng lane, dưới `.flowgrid/adapters/custom/templates/`:
+- Bước `--yes` ghi template vào Workspace SSOT, dưới `.flowgrid/adapters/<target>/custom/templates/`:
   - Nuxt, Next, Nest → `.hbs`
   - Laravel → `.stub`
   - FastAPI → `.j2`
   - .NET → `.scriban`
-- FE ghi `design.registry.json`. BE ghi `codegen.registry.json`.
+- FE ghi `design.registry.json`. BE ghi `codegen.registry.json` dưới `.flowgrid/adapters/<target>/custom/registries/` tại Workspace SSOT (tuyệt đối không ghi vào repo code).
 
 ## Description / Ý nghĩa
 - Để hệ thống có thể tự động sinh code (gencode) cho cả Frontend, Backend, và Test E2E, FlowGrid hiện đang cần gắn liền với một bộ base có sẵn của các công nghệ như Nuxt4, Next.js, Python FastAPI, Laravel... với các cấu trúc thư mục, file mẫu, và common code định sẵn.

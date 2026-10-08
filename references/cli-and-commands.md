@@ -50,6 +50,7 @@ Các lệnh thao tác với tài liệu, chia tách Spec và kết xuất giao d
 | `flowgrid dev` | VitePress dev: đọc `.flowgrid/config.json` — `frontend.docsRoot` **hoặc** `backend.docsRoot` (port **5173**), và/hoặc `testsRoot` tương ứng (port **5174**). **Backend-only** vẫn cần docs-hub (SSOT `01-backend-spec`, OpenAPI, surfaces) — cùng lệnh, không tách CLI riêng cho BE. |
 | `flowgrid build` | `vitepress build` **lần lượt** cho từng `docsRoot` / `testsRoot` có trong config (output: `<hub>/.vitepress/dist` riêng). Repo BE in-repo `docs/` + `tests/` → một lệnh build cả hai hub. |
 | `flowgrid publish` | Publish tài liệu lên server hoặc CDN tĩnh, sinh `CATALOG.md`. |
+| `flowgrid publish manual` | Đồng bộ file User Manual (`.md`) lên Google Docs, tự động chống Quotas và chèn ảnh E2E. |
 | `flowgrid openapi_gen` | Sinh/cập nhật fragment OpenAPI từ `01-backend-spec.yaml` (`--spec` path). |
 | `flowgrid openapi_render` | Gộp các OpenAPI YAML nhỏ thành `docs/openapi/api.yaml`. |
 | `flowgrid openapi_build_ui` | Build giao diện Swagger UI tĩnh cho Docs Hub. |
@@ -178,6 +179,7 @@ Dùng để sinh mã nguồn API và Unit Test Backend.
 Khối óc trung tâm (bộ docs (SSOT)). Nơi diễn ra 90% việc phân tích hệ thống, thiết kế kiến trúc và luồng dữ liệu trước khi code.
 - **Kiến trúc & Sơ đồ:** `architecture`, `architecture-grill`, `docs-hub`, `user-flow`, `background-logic`, `business-process-trace`, `cross-cutting`, `deployment`, `surfaces`, `db-erd`, `flow-trace`.
 - **Thiết kế API & Specs:** `api`, `api-spec`, `api-update`, `cross-entity-service`, `cross-service`, `openapi`, `module`, `spec`, `update-spec`, `common` (Markdown patterns only).
+- **Tài liệu Người dùng:** `manual` (Sinh User Manual từ luồng Flow & E2E Evidence).
 - **Quản lý & Review:** `decision`, `overview`, `qa-resolve`, `platform-ai`, `build-templates`, `call-external`.
 - **Soi chiếu (Grill):** `grill`, `grill-api` (router → `grill-api-spec`), `grill-api-spec`, `grill-bqa`, `grill-dev`, `grill-docs`.
 

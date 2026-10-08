@@ -84,8 +84,11 @@ flowgrid uninstall
 Chạy lệnh setup để tạo mới hoặc thiết lập workspace:
 
 ```bash
-# Tạo thư mục workspace mới và khởi tạo khung dự án
+# Tạo thư mục workspace mới và khởi tạo khung dự án (chế độ base mặc định)
 flowgrid setup my-workspace
+
+# Hoặc khởi tạo chế độ custom (giữ workspace sạch, không nạp seed common/templates mẫu)
+flowgrid setup my-workspace --mode=custom
 
 # Hoặc khởi tạo ngay trong thư mục hiện tại
 flowgrid setup

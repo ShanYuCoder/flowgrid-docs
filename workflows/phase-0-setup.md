@@ -46,9 +46,11 @@ flowchart TD
 
 - **Bước 1: Khởi tạo khung workspace**
   ```bash
-  flowgrid setup my-project
+  flowgrid setup my-project [--mode=base|custom]
   ```
-  CLI tự động sinh khung cấu trúc SSOT chuẩn (`architecture/`, `overview/`, `surfaces/`, `registries/`, `source-code/`, `source-legacy/`).
+  CLI hỗ trợ 2 chế độ scaffolding:
+  - **`base` (mặc định):** Nạp đầy đủ bộ khung skeleton + seed common patterns/components mẫu chuẩn (`surfaces/common`, `03-user-flows/FLOW-login.md`, global templates) làm tài liệu tham khảo khởi đầu.
+  - **`custom`:** Chỉ khởi tạo khung cấu trúc docs cốt lõi và VitePress dev hub (`.vitepress/`, `architecture/`, `overview/`, `registries/`, `source-code/`), **không** nạp các file common và templates mẫu của skeleton — giữ workspace sạch sẽ theo nhu cầu riêng của dự án.
 - **Bước 2: Xây dựng tài liệu định hướng cấp cao**
   - Viết tài liệu tại `overview/index.md` (Tầm nhìn, Persona, Mục tiêu phát hành).
   - Khai báo kiến trúc tại `architecture/` (Arc42, Ràng buộc kỹ thuật, ERD cơ sở dữ liệu).
@@ -114,7 +116,7 @@ FlowGrid thiết lập chuỗi kỹ năng khép kín để triệt tiêu triệt
 ```mermaid
 flowchart TD
   INIT["1. /init quét legacy<br/>Bóc tách CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Cảnh báo Whole Page Duplication"] --> COMMON["2. /common <CMN-ID><br/>Đặc tả Rule dùng chung tại <LCA>/common/patterns/*.md"]
-  COMMON --> IMPL["3. Single Implementation & Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Đăng ký design.registry.json / codegen.registry.json"]
+  COMMON --> IMPL["3. Single Implementation & Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Đăng ký vào Workspace SSOT .flowgrid/registries/"]
   IMPL --> SPEC["4. /spec cưỡng chế tái sử dụng<br/>Gắn tag #pattern hoặc #reuse-api<br/>Agent & Codegen từ chối copy-paste code legacy"]
   SPEC --> SAFETRACE["5. /trace & /legacy khảo cổ an toàn<br/>Trích xuất logic nghiệp vụ, giữ source-legacy READ-ONLY"]
 ```
@@ -142,7 +144,7 @@ flowchart TD
      - Agent tự động thực thi lần lượt các phase mà không hỏi vòng vo:
        1. Sinh file `.md` User Stories & Behavior tại `<LCA>/common/patterns/<CMN-ID>.md`.
        2. Sinh mã nguồn cài đặt (Single Implementation) vào thư mục `shared/` (`shared/components/` cho FE hoặc `shared/services/` cho BE).
-       3. Tự động đăng ký vào `design.registry.json` hoặc `codegen.registry.json`.
+       3. Tự động đăng ký vào Workspace SSOT registry (`.flowgrid/registries/design.registry.json` hoặc `.flowgrid/registries/be-capabilities.registry.json` / `.flowgrid/adapters/<target>/custom/registries/codegen.registry.json`). Tuyệt đối không sinh thư mục `registries/` vào repo code.
 
 3. **Nguyên tắc an toàn tuyệt đối: Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy**:
    - Mục đích tạo Common: Đoạn code này được phát hiện đang bị copy-paste duplicate ở 3–4 nơi trong code cũ. Ta tạo sẵn 1 bản chuẩn hoá duy nhất trong `shared/` để **các tính năng phát triển tiếp theo sử dụng**, triệt tiêu nguy cơ copy duplicate lần thứ 3, thứ 4.
@@ -173,8 +175,8 @@ FlowGrid giải quyết bài toán này bằng công cụ `build-template-code` 
 flowchart TD
   SAMPLE["Golden Sample<br/>(Module chuẩn mực được đề xuất ở inition-inventory.md)"] --> PLAN["Bước 1: flowgrid build-template-code --sample=<path><br/>(Phân tích cấu trúc, xuất template-plan.json)"]
   PLAN --> REVIEW["Member Review kế hoạch<br/>(Kiểm tra danh sách template & placeholders)"]
-  REVIEW --> APPLY["Bước 2: flowgrid build-template-code --yes<br/>(Chấp thuận ghi template vào .flowgrid/adapters/custom/)"]
-  APPLY --> SYNC["Tự động cập nhật Registry<br/>(design.registry.json & codegen.registry.json)"]
+  REVIEW --> APPLY["Bước 2: flowgrid build-template-code --yes<br/>(Chấp thuận ghi template vào Workspace SSOT .flowgrid/adapters/<target>/custom/)"]
+  APPLY --> SYNC["Tự động cập nhật Workspace SSOT Registry<br/>(.flowgrid/adapters/<target>/custom/registries/)"]
   SYNC --> NEW_DEV["Phát triển tính năng mới:<br/>/spec ➔ flowgrid gen sinh mã chuẩn 100%"]
 ```
 
@@ -202,9 +204,9 @@ flowgrid build-template-code --sample=./source-code/src/modules/orders
 flowgrid build-template-code --yes
 ```
 
-CLI sẽ ghi các file template tương ứng vào thư mục `.flowgrid/adapters/custom/` của repo tương ứng:
+CLI sẽ ghi các file template tương ứng vào Workspace SSOT `.flowgrid/adapters/<target>/custom/` (tuyệt đối **không** ghi vào repo code):
 
-| Công nghệ | Đuôi template | File Registry đồng bộ |
+| Công nghệ | Đuôi template | File Registry tại Workspace SSOT (`.flowgrid/adapters/<target>/custom/registries/`) |
 | :--- | :--- | :--- |
 | **Nuxt, Next, NestJS** | `.hbs` (Handlebars) | `design.registry.json` (FE) · `codegen.registry.json` (BE) |
 | **Laravel / PHP** | `.stub` | `codegen.registry.json` |

@@ -84,7 +84,7 @@ flowchart TD
 
 ### Promote design registry (cuối `/prototype`)
 
-Component **tái sử dụng** hoặc shell/widget chuẩn (không domain-only) phải **promote** `registries/design.registry.json` (`planned` → `implemented`, `aliasIndex`, `registry` pass), rồi grill spec lại với `#widget:` / `#shell:` thay `#needs-*`. Domain-only / `#wire-only` giữ trong feature — không promote.
+Component **tái sử dụng** hoặc shell/widget chuẩn (không domain-only) phải **promote** `.flowgrid/registries/design.registry.json` (`planned` → `implemented`, `aliasIndex`, `registry` pass), rồi grill spec lại với `#widget:` / `#shell:` thay `#needs-*`. Domain-only / `#wire-only` giữ trong feature — không promote.
 
 Tiêu chí promote, map hashtag và review PR: [artifacts/dsl.md — Registry & promote](../artifacts/dsl.md#registry--promote).
 
@@ -92,7 +92,7 @@ Tiêu chí promote, map hashtag và review PR: [artifacts/dsl.md — Registry & 
 
 ## Điều kiện (repo code FE)
 
-- **Standard base:** FE đã `flowgrid registry:sync` (init hoặc sau đổi UI/composables) — `/spec` map `#ui:`, `#shell:`, `#composable:` từ `registries/design.registry.json` trên checkout FE ([dsl.md](../artifacts/dsl.md#registry--script-sau-init-repo-code)).
+- **Standard base:** FE đã `flowgrid registry:sync` (init hoặc sau đổi UI/composables) — `/spec` map `#ui:`, `#shell:`, `#composable:` từ `.flowgrid/registries/design.registry.json` tại Workspace SSOT ([dsl.md](../artifacts/dsl.md#registry--script-sau-init-repo-code)).
 - **Trước `gen:dry`:** `grillStatus.dev: done` + `flowgrid split` / `check` không lỗi trên bundle leaf.
 
 ## Bước trong lane

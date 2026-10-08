@@ -9,7 +9,7 @@
 
 ## Input (Dữ liệu đầu vào)
 - Thông số kỹ thuật từ `ir/spec.yaml`.
-- Các registries thuộc tầng giao diện UI (`registries/design.registry.json`) hoặc tầng logic (`registries/common.registry.json`).
+- Các registries thuộc tầng giao diện UI (`.flowgrid/registries/design.registry.json`) hoặc tầng logic (`.flowgrid/registries/common.registry.json`) tại Workspace SSOT.
 - Quyết định (confirm) của member sau khi chạy các grill (vd: chọn option A, B, C).
 
 ## Output (Kết quả mong đợi)

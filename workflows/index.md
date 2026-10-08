@@ -19,6 +19,7 @@ Mỗi tính năng hoặc màn hình (`W-*` / leaf) đều trải qua chu kỳ 4 
 | **Phase 1: Design** | Đặc tả leaf bundle, grill nghiệp vụ, sinh prototype tương tác | BA / Dev FE | [Design](./design.md) |
 | **Phase 2: Code & Test** | Chốt API contract backend, lập ma trận testcase, sinh automation E2E | Dev BE / QA | [Backend](./backend.md) · [Test](./test.md) |
 | **Phase 3: Wire & Ship** | Đấu nối FE ↔ API thật, chạy regression E2E, UAT & Sign-off | Dev FE + QA + PO | [Wire](./wire.md) · [Gates](./gates.md) |
+| **Phase 4: Ops & Docs** | Sinh tài liệu hướng dẫn người dùng, đồng bộ Help Center / Google Docs | BA / CS | [User Manual](./build-user-manual.md) |
 
 ```mermaid
 flowchart TD
@@ -55,11 +56,18 @@ flowchart TD
     WIRE --> AUDIT --> SHIP
   end
 
+  subgraph P4["Phase 4 — Ops & Documentation"]
+    MANUAL["/manual (Sinh User Manual từ Flow & E2E)"]
+    PUBLISH["flowgrid publish manual (Sync to Google Docs)"]
+    MANUAL --> PUBLISH
+  end
+
   P0 --> P1
   PROTO --> P2_BE
   PROTO --> P2_TEST
   API_GEN --> WIRE
   E2E --> WIRE
+  SHIP --> MANUAL
 
   US["/update-spec"]
   GRILL -.->|Gap nghiệp vụ| US
@@ -131,6 +139,8 @@ Quy định vai trò theo **trách nhiệm đầu ra**, không gắn cứng vào
 | `/testcase`, `/grill-testcase` | Phase 2 | Xây dựng ma trận kịch bản testcase tại tests-docs hub. |
 | `testcase:gen` | Phase 2 | Tự động sinh mã kiểm thử Playwright E2E từ testcase YAML. |
 | `/wire`, `/grill-wire` | Phase 3 | Đấu nối FE với API thật, đối chiếu spec ↔ code. |
+| `/manual` | Phase 4 | Sinh User Manual từ User Flow và kết quả chạy E2E. |
+| `flowgrid publish manual` | Phase 4 | Publish User Manual lên Google Docs (kèm xử lý Anti-Quotas API). |
 | `/update-spec`, `/qa-resolve` | Bất kỳ | Cập nhật delta khi thay đổi yêu cầu hoặc đóng câu hỏi QA. |
 
 *Xem chi tiết toàn bộ lệnh CLI và options nâng cao tại:* [CLI & Commands](../references/cli-and-commands.md).

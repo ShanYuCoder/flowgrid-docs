@@ -16,7 +16,7 @@ my-workspace/
 │   ├── common/             # [Dynamic] Quy tắc UX, patterns, DTO dùng chung xuyên suốt
 │   ├── user-flows/         # [Dynamic] Kịch bản luồng nghiệp vụ liên màn hình & liên surface
 │   └── <surface-name>/     # Từng bề mặt nghiệp vụ cụ thể (admin, portal, mobile,...)
-├── registries/             # Danh mục Design Tokens, UI Components và Capabilities
+├── .flowgrid/registries/   # Danh mục Design Tokens, UI Components và Capabilities trong Workspace SSOT
 ├── qa/                     # Hòm thư giải quyết thắc mắc nghiệp vụ giữa các thành viên
 ├── source-code/            # Mã nguồn chính đang hoạt động & phát triển (Submodules)
 └── source-legacy/          # Mã nguồn cũ phục vụ khảo cổ (STRICTLY READ-ONLY)
@@ -80,8 +80,8 @@ my-workspace/
     - Giúp BA, Dev và QA luôn nắm bắt được bức tranh tương tác End-to-End tổng thể thay vì chỉ nhìn vào từng màn hình lẻ loi.
 - **Người phụ trách chính:** BA, Frontend Dev, Backend Dev, QA.
 
-### 4. `registries/` — Danh mục Linh kiện & Capabilities dùng chung
-- **Nội dung:** Chứa các file từ điển JSON (`design.registry.json`, `be-capabilities.registry.json`).
+### 4. `.flowgrid/registries/` — Danh mục Linh kiện & Capabilities dùng chung (Workspace SSOT)
+- **Nội dung:** Chứa các file từ điển JSON (`design.registry.json`, `be-capabilities.registry.json`). Toàn bộ lưu trữ tập trung tại Workspace SSOT, không lưu vào repo code.
 - **Vai trò:**
   - Lưu trữ danh sách các linh kiện giao diện sẵn có của dự án (`components/ui`, layout, buttons, table).
   - Lưu trữ danh mục các capability/service backend có thể tái sử dụng.
