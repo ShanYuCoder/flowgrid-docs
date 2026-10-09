@@ -1,40 +1,44 @@
-# Skill: `/test`
-
-## Tên
-`test`
-
-## Cách dùng
-- Slash: `/test` — **e2e-root** (Playwright), sau `testcase:gen`.
-- **Không** thay `/testcase` (author plan trên tests-docs hub).
-
-## Input
-- `cases/**/TC-*.yaml` trên `FLOWGRID_TESTS_DOC` (resolve qua `--id` hoặc path member cung cấp).
-- `ir/design.yaml` — `testIds`, UI sau split.
-- PO + `*.spec.ts` đã gen; `portal-e2e-test.registry.json` cho `#e2e:*`.
-
-## Output
-- Scoped Playwright **green** (fixtures, mocks, PO gaps).
-- Bổ sung `data-testid` trên UI khi plan yêu cầu và DOM thiếu (policy team).
-
-## Description
-- Implementation lane — không audit coverage (dùng `/grill-test`).
-- Pre-wire: mocks theo TC; post-wire: API thật ([wire.md](../../workflows/wire.md)).
-- API hook: chủ yếu sửa `.api.spec.ts` sau `testcase:gen:api` (ít PO).
-
-## Liên quan
-- **Trước:** `testcase:gen` hoặc `testcase:gen:api`
-- **Sau:** `/grill-test`
-
-Harness: `harness/fe/skills/test/SKILL.md` (nếu synced trên FE repo).
-
+---
+name: test
+description: /test — Playwright E2E from ssot-docs plan YAML (FE only).
+disable-model-invocation: true
 ---
 
-## Example prompt
+# /test
+
+**Owner:** ssot-docs hub (`--type=fe`)
+
+```bash
+flowgrid testcase:gen:dry --docs-root=/path/to/docs-hub -- --id TC-…
+flowgrid testcase:gen --docs-root=/path/to/docs-hub -- --id TC-…
+```
+
+Use `FLOWGRID_DOCS_ROOT` (or `--docs-root`) when the ssot-docs hub is not local.
+docs hub, and symbols or call graphs for repo X through the Platform DNA-wired
+`codegraph-<repo-key>` server for checkout X. Never use a workspace-parent
+graph or ask the member to hand-edit MCP configuration.
+## Playwright Visual Regression (VRT) Rules
+When generating Playwright E2E code, the Agent MUST enforce the stateless evidence path convention:
+1. Do NOT use `toHaveScreenshot` directly.
+2. MUST import and use `expectSmartVisualMatch` from `visual-helpers.ts`.
+3. MUST pass the exact `surface`, `moduleId`, and `screenId` (e.g. `expectSmartVisualMatch(page, 'admin', 'CMP-ADM-AUTH-01', 'W-ADM-AUTH-01')`) so the helper can mathematically compute the screenshot path as `evidence/surfaces/<surface>/<module-id>/<screen-id>.png`.
+
+### Playwright Configuration Interlock
+- **[MANDATORY]** The Agent MUST ensure that the FE project's `playwright.config.ts` includes `snapshotPathTemplate: '{arg}'`. Without this, Playwright will incorrectly nest screenshots inside `<test-name>-snapshots/` folders. (See `harness/tests/templates/playwright.config.example.ts` for reference).
+
+## Accelerators (optional)
 
 ```text
-/test
-
-Scope: TC-LOGIN-VALID only (one session)
-Fix fixture/session gaps until test:e2e --grep LOGIN passes
-Do not regen entire hub via testcase:gen --all
+if local ArtifactGraph available: recommend/check generation allowlist (this repo)
+else: local deterministic search, then run flowgrid testcase:gen directly
 ```
+
+ArtifactGraph never follows `FLOWGRID_DOCS_ROOT`; plan
+YAML and docs evidence flow only through those ssot-docs hub pointers.
+
+Assign one stable `runId` at run start. If ArtifactGraph is missing, complete
+the local fallback, count successful file reads and exact raw bytes read into
+context, then emit exactly one `flowgrid.missing-optional` JSON event for the
+`runId` + `artifactgraph` pair. Deduplicate retries. Validate against
+`.cursor/schemas/flowgrid-test/missing-optional-event.schema.json`; report only actual
+`fileReads` and `contextBytes`, never estimated token or savings claims.

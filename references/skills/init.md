@@ -10,6 +10,10 @@ extractBundle: architecture-core
 
 # /init — Repository Discovery, Deep Architecture Scan & Smart Common Reconciliation
 
+> **[LANGUAGE RULE]** The Agent MUST read `.flowgrid/config.json` to determine the output language.
+> - **Content/Prose:** MUST be written in the language specified by `docsLanguage.docsProseLocale` (e.g., `vi` for Vietnamese). Do NOT output prose in English unless `docsProseLocale` is `en`.
+> - **Structure/Headings/Keys:** MUST use the language specified by `docsLanguage.structureLocale` (typically `en` for global standard keys/labels).
+
 **Audit Interlock:** Run `flowgrid audit legacy <target-id>`. Consume JSON gap report to verify mapping or prompt member if index is missing.
 
 **Handoff SSOT spec:** After init, member drills [spec-ssot-prep.md](../../../docs/workflows/spec-ssot-prep.md) — Phase 0 → `/legacy /spec` per `W-*` (do not jump straight to a bundle whose ID is not in the inventory).
@@ -293,4 +297,4 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] `common-plan.md` generated ONLY for duplicate candidates requiring shared refactoring.
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
-- [ ] Output written entirely in English.
+- [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
