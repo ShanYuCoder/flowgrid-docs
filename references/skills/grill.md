@@ -1,50 +1,27 @@
 # Skill: `/grill`
 
-## Tên
+## Name
 `grill`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/grill`
-- Dùng khi biết có **gap** nhưng chưa rõ skill grill chuyên — router sẽ chuyển **một** lệnh con.
+## Usage (Command/Trigger)
+- Call via slash command: `/grill <target>`
+- Router command directing to specialized grilling skills: `/grill-bqa`, `/grill-dev`, `/grill-api-spec`, `/grill-testcase`, `/grill-prototype`, or `/grill-wire`.
 
-## Input (Dữ liệu đầu vào)
-- Mô tả ngắn gap (UI, API contract, TC plan, Playwright, prototype, architecture…).
-- Đường dẫn hoặc ID function (`W-*`, `TC-*`, `CMP-*`) nếu có.
+## Input
+- Specification bundle, API contract, test plan, or prototype code depending on the active lifecycle phase.
 
-## Output (Kết quả mong đợi)
-- **Router only** — không patch SSOT tại `/grill`.
-- Chỉ định skill grill chuyên + audit CLI kỳ vọng (`audit spec`, `cases:gate`, `audit e2e`, `audit api`, …).
+## Output
+- Routes to the appropriate phase grilling skill.
+- Gap reports and interactive AskQuestion wizards.
 
-## Description / Ý nghĩa
-- Bám [workflows/grill-and-human-review.md](../../workflows/grill-and-human-review.md) và [gates.md](../../workflows/gates.md#close-one-function).
-- **Không** thay `/grill-bqa` + `/grill-dev` cho design; **không** dùng `/grill-docs` cho lần grill đầu (chỉ reconcile BQA↔Dev).
-
-| Gap | Route |
-| --- | --- |
-| Acceptance, copy, UX | `/grill-bqa` |
-| `bundle.gen`, `#gen:*`, `01` actions | `/grill-dev` |
-| BQA ↔ Dev mâu thuẫn | `/grill-docs` |
-| `01-backend-spec.yaml` | `/grill-api-spec` |
-| BE code vs `01` | `/audit-api` |
-| Mock / testIds / prototype | `/grill-prototype` |
-| Plan `TC-*.yaml` (tests hub) | `/grill-testcase` |
-| Playwright ↔ TC ↔ PO | `/grill-test` |
-| Post-wire e2e + fe-be + scenario | `/grill-wire` |
-| Unit FE/BE | `/grill-unit`, `/grill-api-unit` |
-| Architecture boundary | `/architecture-grill` |
-| Shared rules (`common/patterns`) | `/common` |
-
-Tech debt: `qa/*.yaml` + `/qa-resolve` — team: `/qa-review` · [qa-team.md](../../workflows/qa-team.md).
-
-## Các Skill liên quan
-- Harness SSOT: `harness/docs/skills/grill/SKILL.md`
+## Description
+- Central entry router for all qualitative review and grilling skills across the FlowGrid lifecycle.
+- Evaluates domain logic, consistency, error storming, and edge-case resilience.
 
 ---
 
-## Example prompt (mẫu gọi)
+## Example Prompt
 
 ```text
-/grill
-
-Surface: {admin-web} · Function: {W-*} · Gap: {mô tả ngắn — thiếu AC / lệch API / TC không khớp spec}
+/grill surfaces/admin/CMP-ADM-ORD/01/01/order-list.bundle.yaml
 ```

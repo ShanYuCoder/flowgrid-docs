@@ -1,46 +1,31 @@
 # Skill: `/api-update`
 
-## Tên
+## Name
 `api-update`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/api-update <page-id/slug>` (Mặc định: Đồng bộ thay đổi từ Portal FE sang Backend API).
-- Chế độ Backend Only: `/api-update <page-id/slug> --be-only` (Chỉ cập nhật logic ngầm, không làm thay đổi giao thức kết nối với Frontend).
+## Usage (Command/Trigger)
+- Call via slash command: `/api-update <page-id/slug>`
+- Used whenever backend contracts must be updated following UI changes, partner updates, or pending tech debt resolutions.
 
-## Input (Dữ liệu đầu vào)
-- Đọc file `ir/design.yaml` (dữ liệu từ FE Portal).
-- Đọc file hợp đồng Backend hiện hành: `api/<seq>/01-backend-spec.yaml` (và `03-mock.yaml` nếu có).
+## Input
+- Existing `01-backend-spec.yaml` and requested changes.
 
-## Output (Kết quả mong đợi)
-- File `01-backend-spec.yaml` (và file mock data) được vá/cập nhật (Delta Patch).
-- Ghi log thay đổi vào `changeLog` và tự động tăng `feature.version` trong file `01`.
-- Chạy lệnh CLI để kiểm định và sinh lại OpenAPI: `flowgrid openapi_gen`.
+## Output
+- Updated `01-backend-spec.yaml`.
+- Re-generated `02-openapi.yaml` via `flowgrid openapi_gen`.
+- Re-rendered documentation: `ir/generated/api.md`.
 
-## Description / Ý nghĩa
-- Dùng để **Đồng bộ hóa (Sync) / Cập nhật (Update)** hợp đồng Backend API khi giao diện Frontend (Portal) có sự thay đổi về đặc tả, hoặc khi team Backend có những yêu cầu logic ngầm mới (BE-only requirements).
-- Tương tự như `/update-spec` (sửa FE), kỹ năng này chỉ cập nhật cục bộ (Patch) dựa trên những điểm khác biệt (Diff). Tuyệt đối không viết lại toàn bộ file từ đầu hay tự ý thiết kế lại API.
-- Cấm sửa đổi tên các trường (API fields) một cách tuỳ tiện chỉ để "cho tiện" bên Frontend.
-
-## Các Skill liên quan
-- **Trước đó:** Giao diện FE thay đổi thông qua `/update-spec`.
-- **Sau đó:** Bắt buộc gọi `/grill-api-spec` để chạy lại kiểm toán kỹ thuật và gỡ/thêm các nhãn gencode (codegen tags).
-
-## Chú ý quan trọng
-- **Cấm đoán:** Tuyệt đối không sinh file Markdown report, không sinh mã nguồn Laravel/Python.
-- Nếu đụng tới các liên kết ngoại (External Integrations), phải dùng form AskQuestion (có option "Log as Tech Debt"). Nếu User chọn Tech Debt, sinh file trong `qa-inbox.md` và xử lý sau bằng `/qa-resolve`. 
-- File `02-openapi.yaml` là file **gen tự động**, cấm được patch/sửa tay trực tiếp vào nó. Chỉ sửa `01` và chạy lệnh gen.
+## Description
+- Surgical mutation skill for backend API contracts.
+- Adjusts request parameters, response schemas, error codes, and HTTP statuses without rewriting entire files from scratch.
+- Maintains schema parity with frontend `apiRef` mappings.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
-/api-update
+/api-update W-ADM-ORD-01
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Add optional filter parameter 'customerEmail' to GET /api/v1/orders/list endpoint.
 ```
-

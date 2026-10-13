@@ -1,0 +1,39 @@
+---
+layout: home
+
+hero:
+  name: "FlowGrid Docs"
+  text: "Hệ thống Tài liệu & AI Engineering Platform"
+  tagline: "Enterprise Disciplined AI Engineering Platform (Graph, DNA, Docs, Test, Codegen)"
+  actions:
+    - theme: brand
+      text: Bắt đầu — Overview
+      link: /vi/overview/
+    - theme: alt
+      text: README
+      link: /vi/readme
+
+features:
+  - title: 'README'
+    details: Pitch toolkit, cài đặt CLI, phase & vai trò.
+    link: /vi/readme
+  - title: 'Overview'
+    details: Toolkit là gì, phạm vi, bốn nhánh SSOT.
+    link: /vi/overview/
+  - title: 'Cấu trúc Workspace'
+    details: Skeleton SSOT trên disk (overview, architecture, surfaces, registries, qa).
+    link: /vi/artifacts/
+  - title: 'Workflows'
+    details: Phase tổng, design / backend / test / wire, grill & gate.
+    link: /vi/workflows/
+  - title: 'References'
+    details: CLI, MCP, repo map, slash skills — cli-and-commands & skills.
+    link: /vi/references/cli-and-commands
+---
+
+<br/>
+
+<div class="tip custom-block">
+  <p class="custom-block-title">Khung tài liệu SSOT</p>
+  <p>Site này gồm <strong>overview</strong>, <strong>cấu trúc workspace</strong>, <strong>workflows</strong>, <strong>references</strong> (CLI + skills). Slash skills đầy đủ sync vào repo dự án sau <code>flowgrid setup</code>; bản đọc trên web nằm dưới <strong>References → Skills</strong>.</p>
+</div>

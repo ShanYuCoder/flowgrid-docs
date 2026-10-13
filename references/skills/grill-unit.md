@@ -1,29 +1,25 @@
 # Skill: `/grill-unit`
 
-## Tên
+## Name
 `grill-unit`
 
-## Cách dùng (Command/Trigger)
-- Slash: `/grill-unit` — **repo FE**, trước hoặc sau `unit-gen` dry-run.
-- Không thay `/unit` (sinh/sửa test); skill này **gate** codegen unit.
+## Usage (Command/Trigger)
+- Call via slash command: `/grill-unit <target>`
+- Quality gate executed before finalizing backend unit test suites.
 
 ## Input
-- Manifest / allowlist unit trên FE repo.
-- `FLOWGRID_DOCS_ROOT` cho registry IR (không đọc ArtifactGraph thay docs pointer).
+- Backend unit test files and source implementation.
 
 ## Output
-- Pass dry-gen (`npm run codegen:unit:dry` hoặc `flowgrid unit-gen:dry`) hoặc báo block trước khi chạy `/unit` full.
+- Unit test quality report (boundary checks, edge-case coverage, mock boundaries).
 
 ## Description
-- Lane **tách E2E** — xem [index.md § unit](../../workflows/index.md).
-- BE unit grill: `/grill-api-unit` trên repo API.
+- Audits unit test suites to ensure edge cases, negative validation tests, and exception handling paths are thoroughly tested without over-mocking domain logic.
 
-## Liên quan
-- Trước/sau: `/unit` · Rule: `team-flow-unit.mdc` (sau `harness sync`)
+---
+
+## Example Prompt
 
 ```text
-/grill-unit
-
-Screen or module id: {W-*}
-flowgrid unit-gen:dry -- --id …
+/grill-unit source-code/backend/tests/Unit/OrderServiceTest.php
 ```

@@ -105,60 +105,249 @@ const skillGroups = [
 ];
 
 /** Nested sidebar groups need `collapsed` set or VitePress renders them always open (no caret). */
-const skillSidebarGroups = skillGroups.map((group) => ({
+const skillSidebarGroupsEn = skillGroups.map((group) => ({
   ...group,
   collapsed: true,
+}));
+
+const skillSidebarGroupsVi = skillGroups.map((group) => ({
+  ...group,
+  collapsed: true,
+  items: group.items.map((item) => ({
+    ...item,
+    link: `/vi${item.link}`,
+  })),
+}));
+
+const skillSidebarGroupsZh = skillGroups.map((group) => ({
+  ...group,
+  collapsed: true,
+  items: group.items.map((item) => ({
+    ...item,
+    link: `/zh${item.link}`,
+  })),
+}));
+
+const skillSidebarGroupsJa = skillGroups.map((group) => ({
+  ...group,
+  collapsed: true,
+  items: group.items.map((item) => ({
+    ...item,
+    link: `/ja${item.link}`,
+  })),
 }));
 
 export default withMermaid(
   defineConfig({
     title: 'FlowGrid Docs',
     ignoreDeadLinks: true,
-    srcExclude: ['README.md'],
+    srcExclude: ['README.md', 'README.*.md'],
     description:
       'Enterprise Disciplined AI Engineering Platform (Graph, DNA, Docs, Test, Codegen)',
-    themeConfig: {
-      nav: [
-        { text: 'Home', link: '/' },
-        { text: 'Overview', link: '/overview/' },
-      ],
-      sidebar: [
-        { text: 'README', link: '/readme' },
-        { text: 'Overview', link: '/overview/' },
-        {
-          text: 'Cấu trúc Workspace',
-          link: '/artifacts/',
-        },
-        {
-          text: 'Workflows',
-          link: '/workflows/',
-          collapsed: true,
-          items: [
-            { text: 'Tổng thể (phase & vai trò)', link: '/workflows/' },
-            { text: 'Phase 0 — Setup', link: '/workflows/phase-0-setup' },
-            { text: 'Design', link: '/workflows/design' },
-            { text: 'Backend', link: '/workflows/backend' },
-            { text: 'Test', link: '/workflows/test' },
-            { text: 'Wire', link: '/workflows/wire' },
-            { text: 'Gate & audit', link: '/workflows/gates' },
-            { text: 'Grill & review', link: '/workflows/grill-and-human-review' },
-            { text: 'QA inbox (team)', link: '/workflows/qa-team' },
+    locales: {
+      root: {
+        label: 'English',
+        lang: 'en-US',
+        themeConfig: {
+          nav: [
+            { text: 'Home', link: '/' },
+            { text: 'Overview', link: '/overview/' },
+            { text: 'Strengths', link: '/overview/strengths' },
           ],
-        },
-        {
-          text: 'References',
-          collapsed: true,
-          items: [
-            { text: 'CLI & Commands', link: '/references/cli-and-commands' },
-            { text: 'Audit & gap check', link: '/references/audit-commands' },
+          sidebar: [
+            { text: 'README', link: '/readme' },
+            { text: 'Overview', link: '/overview/' },
+            { text: 'Architectural Strengths', link: '/overview/strengths' },
             {
-              text: 'Skills',
+              text: 'Workspace Structure',
+              link: '/artifacts/',
+            },
+            {
+              text: 'Workflows',
+              link: '/workflows/',
               collapsed: true,
-              items: skillSidebarGroups,
+              items: [
+                { text: 'Overview (Phases & Roles)', link: '/workflows/' },
+                { text: 'Phase 0 — Setup', link: '/workflows/phase-0-setup' },
+                { text: 'Design', link: '/workflows/design' },
+                { text: 'Backend', link: '/workflows/backend' },
+                { text: 'Test', link: '/workflows/test' },
+                { text: 'Wire', link: '/workflows/wire' },
+                { text: 'Gate & Audit', link: '/workflows/gates' },
+                { text: 'Grill & Review', link: '/workflows/grill-and-human-review' },
+                { text: 'QA Inbox', link: '/workflows/qa-team' },
+              ],
+            },
+            {
+              text: 'References',
+              collapsed: true,
+              items: [
+                { text: 'CLI & Commands', link: '/references/cli-and-commands' },
+                { text: 'Audit & Gap Check', link: '/references/audit-commands' },
+                { text: 'Plugins', link: '/references/plugins' },
+                {
+                  text: 'Skills',
+                  collapsed: true,
+                  items: skillSidebarGroupsEn,
+                },
+              ],
             },
           ],
         },
-      ],
+      },
+      vi: {
+        label: 'Tiếng Việt',
+        lang: 'vi-VN',
+        link: '/vi/',
+        themeConfig: {
+          nav: [
+            { text: 'Trang chủ', link: '/vi/' },
+            { text: 'Tổng quan', link: '/vi/overview/' },
+            { text: 'Điểm mạnh', link: '/vi/overview/strengths' },
+          ],
+          sidebar: [
+            { text: 'README', link: '/vi/readme' },
+            { text: 'Tổng quan', link: '/vi/overview/' },
+            { text: 'Điểm mạnh Kiến trúc', link: '/vi/overview/strengths' },
+            {
+              text: 'Cấu trúc Workspace',
+              link: '/vi/artifacts/',
+            },
+            {
+              text: 'Quy trình (Workflows)',
+              link: '/vi/workflows/',
+              collapsed: true,
+              items: [
+                { text: 'Tổng thể (phase & vai trò)', link: '/vi/workflows/' },
+                { text: 'Phase 0 — Setup', link: '/vi/workflows/phase-0-setup' },
+                { text: 'Design', link: '/vi/workflows/design' },
+                { text: 'Backend', link: '/vi/workflows/backend' },
+                { text: 'Test', link: '/vi/workflows/test' },
+                { text: 'Wire', link: '/vi/workflows/wire' },
+                { text: 'Gate & audit', link: '/vi/workflows/gates' },
+                { text: 'Grill & review', link: '/vi/workflows/grill-and-human-review' },
+                { text: 'QA inbox (team)', link: '/vi/workflows/qa-team' },
+              ],
+            },
+            {
+              text: 'Tra cứu (References)',
+              collapsed: true,
+              items: [
+                { text: 'CLI & Commands', link: '/vi/references/cli-and-commands' },
+                { text: 'Audit & gap check', link: '/vi/references/audit-commands' },
+                { text: 'Plugins', link: '/vi/references/plugins' },
+                {
+                  text: 'Kỹ năng (Skills)',
+                  collapsed: true,
+                  items: skillSidebarGroupsVi,
+                },
+              ],
+            },
+          ],
+        },
+      },
+      zh: {
+        label: '简体中文',
+        lang: 'zh-CN',
+        link: '/zh/',
+        themeConfig: {
+          nav: [
+            { text: '首页', link: '/zh/' },
+            { text: '概览', link: '/zh/overview/' },
+            { text: '核心优势', link: '/zh/overview/strengths' },
+          ],
+          sidebar: [
+            { text: 'README 说明', link: '/zh/readme' },
+            { text: '概览', link: '/zh/overview/' },
+            { text: '架构核心优势', link: '/zh/overview/strengths' },
+            {
+              text: '工作区结构',
+              link: '/zh/artifacts/',
+            },
+            {
+              text: '工作流 (Workflows)',
+              link: '/zh/workflows/',
+              collapsed: true,
+              items: [
+                { text: '全局概览 (阶段与角色)', link: '/zh/workflows/' },
+                { text: 'Phase 0 — 初始化设置', link: '/zh/workflows/phase-0-setup' },
+                { text: 'Design 设计阶段', link: '/zh/workflows/design' },
+                { text: 'Backend 后端开发', link: '/zh/workflows/backend' },
+                { text: 'Test 测试阶段', link: '/zh/workflows/test' },
+                { text: 'Wire 联调集成', link: '/zh/workflows/wire' },
+                { text: 'Gate & 审计检查', link: '/zh/workflows/gates' },
+                { text: 'Grill 业务质询 & 评审', link: '/zh/workflows/grill-and-human-review' },
+                { text: 'QA 团队收件箱', link: '/zh/workflows/qa-team' },
+              ],
+            },
+            {
+              text: '参考手册 (References)',
+              collapsed: true,
+              items: [
+                { text: 'CLI 与命令', link: '/zh/references/cli-and-commands' },
+                { text: '审计与缺口检查', link: '/zh/references/audit-commands' },
+                { text: 'IDE 与 Agent 插件', link: '/zh/references/plugins' },
+                {
+                  text: 'Skills 技能库',
+                  collapsed: true,
+                  items: skillSidebarGroupsZh,
+                },
+              ],
+            },
+          ],
+        },
+      },
+      ja: {
+        label: '日本語',
+        lang: 'ja-JP',
+        link: '/ja/',
+        themeConfig: {
+          nav: [
+            { text: 'ホーム', link: '/ja/' },
+            { text: '概要', link: '/ja/overview/' },
+            { text: '強み・優位性', link: '/ja/overview/strengths' },
+          ],
+          sidebar: [
+            { text: 'README 説明書', link: '/ja/readme' },
+            { text: '概要 (Overview)', link: '/ja/overview/' },
+            { text: 'アーキテクチャの強み', link: '/ja/overview/strengths' },
+            {
+              text: 'ワークスペース構造',
+              link: '/ja/artifacts/',
+            },
+            {
+              text: 'ワークフロー (Workflows)',
+              link: '/ja/workflows/',
+              collapsed: true,
+              items: [
+                { text: '全体像 (フェーズと役割)', link: '/ja/workflows/' },
+                { text: 'Phase 0 — セットアップ', link: '/ja/workflows/phase-0-setup' },
+                { text: 'Design 設計', link: '/ja/workflows/design' },
+                { text: 'Backend バックエンド', link: '/ja/workflows/backend' },
+                { text: 'Test テスト', link: '/ja/workflows/test' },
+                { text: 'Wire 統合連携', link: '/ja/workflows/wire' },
+                { text: 'Gate ＆ 監査チェック', link: '/ja/workflows/gates' },
+                { text: 'Grill 業務レビュー ＆ 確定', link: '/ja/workflows/grill-and-human-review' },
+                { text: 'QA チーム受信トレイ', link: '/ja/workflows/qa-team' },
+              ],
+            },
+            {
+              text: 'リファレンス (References)',
+              collapsed: true,
+              items: [
+                { text: 'CLI コマンド一覧', link: '/ja/references/cli-and-commands' },
+                { text: '監査 ＆ ギャップ検出', link: '/ja/references/audit-commands' },
+                { text: 'IDE ＆ Agent プラグイン', link: '/ja/references/plugins' },
+                {
+                  text: 'Skills スキル一覧',
+                  collapsed: true,
+                  items: skillSidebarGroupsJa,
+                },
+              ],
+            },
+          ],
+        },
+      },
     },
     mermaid: {},
     vite: {

@@ -1,55 +1,55 @@
-# Audit & gap check (CLI ↔ engine)
+# Audit & Gap Check (CLI ↔ Engine)
 
-**SSOT tra cứu:** lệnh `flowgrid audit *` — script deterministic, stdout **JSON** (`gaps[]`, `confirms[]`, mã gap theo engine).
+**SSOT Reference:** The `flowgrid audit *` commands — deterministic scripts emitting structured **JSON** to stdout (`gaps[]`, `confirms[]`, engine-specific gap error codes).
 
-**Khi chạy (gate, phase):** [workflows/gates.md](../workflows/gates.md) · **đóng một function:** [gates.md § close-one-function](../workflows/gates.md#close-one-function).
+**When to Run (Gates & Phases):** [workflows/gates.md](../workflows/gates.md) · **Closing a Function:** [gates.md § close-one-function](../workflows/gates.md#close-one-function).
 
-**Cài / env:** `FLOWGRID_DOCS_ROOT`, `FLOWGRID_TESTS_DOC`, `--e2e-root` → [cli-and-commands.md](./cli-and-commands.md).
+**Installation & Environment:** `FLOWGRID_DOCS_ROOT`, `FLOWGRID_TESTS_DOC`, `--e2e-root` → [cli-and-commands.md](./cli-and-commands.md).
 
 ---
 
-## Gọi lệnh
+## Command Syntax
 
 ```text
 flowgrid audit <kind> [args…]
 flowgrid audit:<kind> [args…]    # legacy alias
-flowgrid audit                   # help
+flowgrid audit                   # print help
 ```
 
-`pnpm run flowgrid:audit:<kind>` sau `flowgrid init` (nếu repo inject script npm).
+Or `pnpm run flowgrid:audit:<kind>` after `flowgrid init` (when npm scripts are injected into repository).
 
 ---
 
-## Bảng 1:1 lệnh ↔ engine
+## 1:1 Command ↔ Engine Mapping
 
-| Kind | Lệnh | Engine | Input chính | Flags / env |
+| Kind | Command | Engine Script | Primary Input | Flags & Environment |
 | --- | --- | --- | --- | --- |
 | **spec** | `flowgrid audit spec` | `engines/spec/lib/audit-bundle-gaps.mjs` | `*.bundle.yaml` (UI/spec) | `--type list \| create \| detail \| admin-crud \| auth \| change-password \| public` |
 | **hub-prd** | `flowgrid audit hub-prd` | `engines/docs/lib/audit-hub-prd.mjs` | `overview/index.md`, surface/CMP `index.md` | — |
-| **risks** | `flowgrid audit risks` | `engines/docs/lib/audit-risks-catalog.mjs` | **`architecture/11-risks/risk-register.md`** (ưu tiên) hoặc `index.md` | Cột hạn mức / nhu cầu / chênh lệch trên register |
+| **risks** | `flowgrid audit risks` | `engines/docs/lib/audit-risks-catalog.mjs` | **`architecture/11-risks/risk-register.md`** (primary) or `index.md` | Risk register columns (threshold / demand / delta) |
 | **flow** | `flowgrid audit flow` | `audit-flow-gaps.mjs` | `FLOW-*.md` | — |
 | **api** | `flowgrid audit api` | `audit-api-gaps.mjs` | API / integration `*.bundle.yaml` | — |
-| **testcase** | `flowgrid audit testcase` | `audit-testcase-gaps.mjs` | `TC-*.yaml` (v2) hoặc legacy plan | `--bundle <foo.bundle.yaml>` cross-ref bundle |
-| **fe-be** | `flowgrid audit fe-be` | `audit-fe-be-alignment.mjs` | UI `*.bundle.yaml` | `--backend-spec …/01-backend-spec.yaml` (mặc định resolve cạnh surface) |
-| **scenario** | `flowgrid audit scenario` | `audit-scenario-coverage.mjs` | `SC-*.yaml` / scenario md | `--tests-docs <hub>` hoặc `FLOWGRID_TESTS_DOC` |
-| **e2e** | `flowgrid audit e2e` | `audit-e2e-coverage.mjs` | Playwright (`e2eRoot` config/MCP hoặc `--e2e-root`) + TC plan | `--id TC-*` / screen / suite, `--tests-docs`, `--screen W-*`, `--strict`; hoặc `TC-*.yaml` paths |
+| **testcase** | `flowgrid audit testcase` | `audit-testcase-gaps.mjs` | `TC-*.yaml` (v2) or legacy plan | `--bundle <foo.bundle.yaml>` cross-ref bundle |
+| **fe-be** | `flowgrid audit fe-be` | `audit-fe-be-alignment.mjs` | UI `*.bundle.yaml` | `--backend-spec …/01-backend-spec.yaml` (defaults to adjacent surface resolution) |
+| **scenario** | `flowgrid audit scenario` | `audit-scenario-coverage.mjs` | `SC-*.yaml` / scenario md | `--tests-docs <hub>` or `FLOWGRID_TESTS_DOC` |
+| **e2e** | `flowgrid audit e2e` | `audit-e2e-coverage.mjs` | Playwright (`e2eRoot` config/MCP or `--e2e-root`) + TC plan | `--id TC-*` / screen / suite, `--tests-docs`, `--screen W-*`, `--strict`; or `TC-*.yaml` paths |
 | **legacy** | `flowgrid audit legacy` | `audit-legacy-gaps.mjs` | `adoption-inventory.md` + optional target id | `<target-id>` |
 
 ---
 
-## Output & exit code
+## Output & Exit Codes
 
-- Mặc định in **JSON** pretty-printed ra stdout (dùng trong grill / agent đọc `gaps[]`).
-- Engine có thể set `criticalGaps` / `warningGaps`; CI gate thường dùng **`cases:gate`** cho tests-docs, không gộp tất cả audit vào một lệnh.
-- Đọc gap UX spec: `UX_*`, `CONFIRM_UX_*`, `uxAffordanceGaps` trong report `audit spec`.
-- FE↔BE: mã `FEBE_*` trong `audit fe-be`.
-- Scenario: `SC_SCREEN_NO_TC` khi `screens[]` chưa có `TC-*.yaml` (hoặc defer có `QA-*`).
+- By default prints pretty-printed **JSON** to stdout (consumed by adversarial grill skills or agents reading `gaps[]`).
+- Engines may set `criticalGaps` / `warningGaps`; CI quality gates typically run **`cases:gate`** for test hubs, rather than combining all audits into one step.
+- UX spec gap codes: `UX_*`, `CONFIRM_UX_*`, `uxAffordanceGaps` in the `audit spec` report.
+- FE↔BE alignment: codes prefixed with `FEBE_*` in `audit fe-be`.
+- Scenario coverage: `SC_SCREEN_NO_TC` when `screens[]` lacks a matching `TC-*.yaml` (or deferred with `QA-*`).
 
 ---
 
-## Ví dụ (copy-paste)
+## Usage Examples
 
-### FE / fullstack (portal bundle)
+### Frontend / Fullstack (Portal Bundle)
 
 ```bash
 export FLOWGRID_DOCS_ROOT="$(pwd)/docs"
@@ -63,29 +63,29 @@ flowgrid audit e2e --id TC-DEMO-001
 flowgrid audit e2e --tests-docs "$FLOWGRID_TESTS_DOC" --screen W-001
 ```
 
-### Backend-only (API spec trên docs-hub)
+### Backend-Only (API Spec on Docs Hub)
 
 ```bash
 export FLOWGRID_DOCS_ROOT="$(pwd)/docs"
 
 flowgrid audit api surfaces/partner-gateway/acme/export/api/01/01-backend-spec.yaml
-flowgrid audit spec surfaces/admin/CMP-ADM-ORD-01/02/01/list.bundle.yaml --type list   # nếu có UI portal
-flowgrid audit fe-be surfaces/admin/CMP-ADM-ORD-01/02/01/list.bundle.yaml            # khi có cả FE bundle + 01
+flowgrid audit spec surfaces/admin/CMP-ADM-ORD-01/02/01/list.bundle.yaml --type list   # if portal UI exists
+flowgrid audit fe-be surfaces/admin/CMP-ADM-ORD-01/02/01/list.bundle.yaml            # when both FE bundle + 01 exist
 flowgrid audit testcase cases/partner/TC-partner-export.yaml \
   --bundle surfaces/partner-gateway/acme/export/api/01/01-backend-spec.yaml
 ```
 
-### Release gate tests-docs (`cases:gate`)
+### Release Quality Gate (`cases:gate`)
 
-Không thay `audit *` — gom schema v2, audit TC, trace bundle, facets, coverage:
+Does not replace `audit *` — consolidates schema v2, TC audit, bundle traceability, matrix facets, and coverage:
 
 ```bash
 flowgrid cases:gate --strict --docs-root "$FLOWGRID_DOCS_ROOT"
-# hoặc từ repo tests-docs (cwd = hub):
+# or run from tests-docs repo (cwd = hub):
 cd tests && flowgrid cases:gate --strict --docs-root ../docs
 ```
 
-### Legacy
+### Legacy Migration Inventory
 
 ```bash
 flowgrid audit legacy my-legacy-target
@@ -93,20 +93,20 @@ flowgrid audit legacy my-legacy-target
 
 ---
 
-## Liên quan (không thay `audit *`)
+## Companion Commands (Distinct from `audit *`)
 
-| Lệnh | Vai trò |
+| Command | Role |
 | --- | --- |
-| `flowgrid cases:gate` | Release gate tests-docs: schema v2 + `audit testcase` + trace bundle + screen facets + `cases:coverage` (`--strict`, `--docs-root`, `--no-coverage`) |
-| `flowgrid cases:check` | Syntax / schema TC nhanh |
-| `flowgrid check` / `split` | IR ↔ bundle đồng bộ trước testcase |
-| `flowgrid doctor` | Config, MCP, env placeholder |
+| `flowgrid cases:gate` | Release gate for test suites: schema v2 + `audit testcase` + bundle trace + screen facets + `cases:coverage` (`--strict`, `--docs-root`, `--no-coverage`) |
+| `flowgrid cases:check` | Fast syntax / schema validation for testcase files |
+| `flowgrid check` / `split` | Validates IR ↔ bundle synchronization before generating testcases |
+| `flowgrid doctor` | Validates configuration, MCP wiring, and environment placeholders |
 
 ---
 
-## Skill thường bắt audit (inventory)
+## Skills Enforcing Audits
 
-| Skill | Audit bắt buộc / khuyến nghị |
+| Skill | Mandatory / Recommended Audit |
 | --- | --- |
 | `/update-spec`, `/grill-dev` | `audit spec` |
 | `/api-spec` | `audit api` |
@@ -115,8 +115,6 @@ flowgrid audit legacy my-legacy-target
 | `/risk-register` | `audit risks` → `risk-register.md` |
 | `/testcase`, `/grill-testcase` | `cases:gate`, `audit testcase --bundle`, `audit scenario` |
 | `/scenario` | `audit scenario` |
-| `/wire` | `audit e2e`, `audit fe-be`, `audit scenario` (khi SC) |
-| `/grill-wire` | Cùng chuỗi — verify-only sau `/wire`; gap → `/update-spec`, `/api-update`, `/grill-testcase`, `/test` |
+| `/wire` | `audit e2e`, `audit fe-be`, `audit scenario` (when SC exists) |
+| `/grill-wire` | Verification chain — verify-only following `/wire`; gap → `/update-spec`, `/api-update`, `/grill-testcase`, `/test` |
 | `/init`, `/legacy` | `audit legacy` |
-
-Cập nhật engine: sửa `bin/lib/audit-run.mjs` (`AUDIT_ENGINES`) + test `test/audit-run.test.mjs` + bảng trên.

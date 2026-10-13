@@ -1,39 +1,27 @@
 # Skill: `/audit-api`
 
-## Tên
+## Name
 `audit-api`
 
-## Cách dùng (Command/Trigger)
-- Slash: `/audit-api` — **repo BE** (`--type=be`), sau `/api` / `api-gen` và implementation.
-- Không dùng trên docs hub (contract grill = `/grill-api-spec`).
+## Usage (Command/Trigger)
+- Call via slash command: `/audit-api <target>`
+- Executed on the backend code repository prior to `/wire`.
 
 ## Input
-- `01-backend-spec.yaml` (qua `FLOWGRID_DOCS_ROOT` / route resolve).
-- Generated routes, controllers, validation, tests trên repo BE.
+- Backend codebase in `source-code/`.
+- Target contract: `01-backend-spec.yaml`.
 
 ## Output
-- Gap list: lệch route, status, auth, validation, placeholder chưa thay.
-- Pass → handoff `/wire` (hoặc open issues có tên).
+- Discrepancy report between actual backend code and the SSOT contract.
 
 ## Description
-- Soi **code thật** vs `01` — không sửa contract YAML (docs `/grill-api-spec`).
-- CLI: `flowgrid audit api` + `flowgrid audit fe-be` khi có portal bundle.
+- Compares implemented backend routes, controller signatures, request validation rules, and DTO fields against the agreed `01-backend-spec.yaml` contract.
+- Guarantees that the backend implementation has not drifted from the SSOT before frontend wiring begins.
 
-## Liên quan
-- Trước: `/api`, `api-gen:dry` · Sau: `/wire` · Contract: `/grill-api-spec` (docs)
+---
+
+## Example Prompt
 
 ```text
-/audit-api
-
-Function slug: {hotel-list}
-Backend: đã /api xong (ghi path evidence)
-
-Checklist:
-- [ ] Endpoints cover spec actions
-- [ ] Request/response/pagination khớp FE models/
-- [ ] Validation, permission, error shapes documented cho /wire
-- [ ] Backend test status
-
-KHÔNG sửa Portal UI. KHÔNG rename contract.
-Handoff: /wire khi checklist pass hoặc open issues rõ
+/audit-api surfaces/admin/CMP-ADM-ORD/01/01/api/01/01-backend-spec.yaml
 ```

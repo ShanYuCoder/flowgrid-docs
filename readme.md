@@ -1,62 +1,62 @@
 > [!IMPORTANT]
-> 📚 **TÀI LIỆU THAM KHẢO:**
+> 📚 **REFERENCE DOCUMENTATION:**
 > 
-> - 📖 **[Tài liệu dự án (GitHub)](https://github.com/ShanYuCoder/flowgrid-docs)** — Đọc tài liệu và tra cứu trực tiếp trên GitHub repository.
-> - ⚙️ **Thư mục [workflows/](https://github.com/ShanYuCoder/flowgrid-docs/tree/main/workflows/)** — Chi tiết các phase phát triển và quy trình vận hành.
+> - 📖 **[Project Docs (GitHub)](https://github.com/ShanYuCoder/flowgrid-docs)** — Read and explore documentation directly on GitHub.
+> - ⚙️ **Directory [workflows/](https://github.com/ShanYuCoder/flowgrid-docs/tree/main/workflows/)** — Detailed SDLC development phases and operational workflows.
 
 # FlowGrid
 
-**FlowGrid** là nền tảng **CLI + AI Harness** chuẩn hóa quy trình phát triển phần mềm theo mô hình **SSOT (Single Source of Truth)** dành cho team làm việc cùng **Agent AI** (Cursor, Gemini/Antigravity, Claude Code, Codex, OpenCode,...).
+**FlowGrid** is a **CLI + AI Harness** platform standardizing software development processes under the **SSOT (Single Source of Truth)** paradigm, designed for teams collaborating with **AI Agents** (Cursor, Gemini/Antigravity, Claude Code, Codex, OpenCode, etc.).
 
-**AI phục vụ con người** — không bắt member viết YAML phức tạp từ đầu:
+**AI serves humans** — never forcing developers or stakeholders to write raw complex YAML from scratch:
 
 ```text
-Requirement thô (bullet / ảnh / legacy code)
-  → AI chuẩn hóa bundle + IR + render MD
-  → Khử trùng lặp qua Anti-Copy-Paste Guard (Common Catalog CMN-*)
-  → Prototype + review BA/QA/Dev
-  → Codegen E2E / BE / wire + safety net
+Raw Requirements (bullet points / screenshots / legacy code)
+  → AI standardizes bundle + IR + renders Markdown
+  → Eliminates duplicate code via Anti-Copy-Paste Guard (Common Catalog CMN-*)
+  → Interactive Prototype + BA / QA / Dev review
+  → Automated Codegen: E2E Playwright / BE / Wire + safety net
 ```
 
-### 1. Tư duy AI hỗ trợ mở rộng năng lực T-Shaped Team
-AI không thay thế con người mà đóng vai trò đòn bẩy mở rộng lane chuyên môn (*T-shaped*), giúp san phẳng rào cản và giảm điểm nghẽn giao tiếp nội bộ:
-- **Dev (mở rộng kỹ năng BA):** Dùng AI phân tích nghiệp vụ và phản biện (*grill*) để tự nâng chuẩn spec/requirement đạt **70–80%** năng lực BA, chủ động làm rõ luồng mà không phải chờ đợi.
-- **BA (mở rộng kỹ năng Dev):** Tự chuyển hóa yêu cầu nghiệp vụ thành màn hình trực quan mà không cần phụ thuộc vào dev ở khâu tiền khả thi.
-- **QA (mở rộng kỹ năng Automation):** Từ kịch bản kiểm thử nghiệp vụ, tận dụng AI sinh code automation để chuyển dịch từ manual tester sang QA automation.
+### 1. Expanding T-Shaped Team Capabilities with AI
+AI does not replace human developers; it serves as a force multiplier to broaden cross-functional expertise (*T-shaped*), breaking silos and communication bottlenecks:
+- **Dev (Expanding BA skills):** Leverage AI to perform domain analysis and adversarial grilling (`/grill-bqa`), elevating requirement clarity to **70–80%** of a seasoned BA without blocking on meetings.
+- **BA (Expanding Dev skills):** Transform business requirements into interactive visual prototypes without relying on frontend engineers during feasibility phases.
+- **QA (Expanding Automation skills):** From structured test scenarios (`TC-*.yaml`), leverage AI to generate production-ready **E2E Playwright** code, transitioning manual testers to test automation engineers.
 
-### 2. Nguyên tắc Early Feedback Prototype
-- **Thống nhất hành vi sớm nhất có thể:** Thay vì chờ thiết kế UI/UX kéo dài hoặc đợi dev code xong mới thấy sai lệch, AI hỗ trợ sinh ngay **Prototype tương tác thực tế** (HTML/Vue/React) trực tiếp từ spec.
-- **Chốt giao diện & luồng với Stakeholder:** Cho phép PO/BA và khách hàng bấm thử, trải nghiệm luồng thao tác và góp ý phản hồi ngay từ phase thiết kế.
-- **Triệt tiêu 80% nguy cơ rework:** Mọi sai sót về luồng dữ liệu, thao tác thừa hay hiểu sai nghiệp vụ đều được giải quyết trên bản prototype rẻ tiền trước khi dev bắt tay vào viết code production.
+### 2. Early Feedback Prototype Principle
+- **Align behavior as early as possible:** Instead of waiting weeks for UI/UX wireframes or discovering misalignment only after code completion, AI generates **Interactive Living Prototypes** (HTML/Vue/React) directly from specs.
+- **Lock UI & Flow with Stakeholders:** Enable POs, BAs, and clients to click through real interactions, testing usability and providing immediate feedback during the design phase.
+- **Eliminate 80% of rework risks:** Logic flaws, redundant steps, and misunderstood business rules are resolved on disposable prototypes before writing production code.
 
-### 3. Khép vòng chất lượng với Automation Test E2E
-- **Tự động hóa từ tài liệu Testcase:** Từ ma trận kịch bản kiểm thử (`TC-*.yaml`), AI hỗ trợ sinh tự động mã kiểm thử **E2E Playwright** (`*.spec.ts`).
-- **Giải phóng áp lực IT / Regression:** Triệt tiêu hoàn toàn công sức kiểm thử hồi quy lặp đi lặp lại thủ công trước mỗi đợt release, bảo đảm các tính năng đã chạy không bị vỡ khi hệ thống mở rộng.
+### 3. Closing the Quality Loop with Automated E2E Testing
+- **Automated tests from Testcase Specs:** From the testcase scenario matrix (`TC-*.yaml`), AI automatically scaffolds complete **E2E Playwright** suites (`*.spec.ts`).
+- **Eliminating Regression Fatigue:** Fully removes repetitive manual regression cycles before every release, guaranteeing existing features remain robust as the codebase scales.
 
-### 4. Triệt tiêu code trùng lặp với Anti-Copy-Paste Guard
-- **Chặn đứng sao chép mã rác:** Trong các dự án bảo trì hoặc hiện đại hóa, mã nguồn thường bị copy-paste tràn lan qua nhiều module (cùng một Confirm Modal, bảng phân trang, hay logic xuất file bị viết lại ở 4–5 nơi khác nhau).
-- **Quy chuẩn hóa dùng chung khép kín:** Skill `/init` tự động phát hiện và bóc tách các đoạn code lặp lại vào **Common Catalog** (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`). Hệ thống bắt buộc chuẩn hóa qua `/common`, tạo 1 bản duy nhất (`shared/`), và cưỡng chế qua `/spec` để tuyệt đối cấm Dev và Agent AI copy-paste code legacy sang module mới.
+### 4. Eradicating Duplicated Code with Anti-Copy-Paste Guard
+- **Stop legacy copy-paste sprawl:** In brownfield maintenance and modernization projects, code is frequently copy-pasted across dozens of modules (e.g., identical Confirm Modals, paginators, export handlers rewritten in 4–5 different places).
+- **Enforced Common Sharing:** Skill `/init` automatically detects code duplicates into a unified **Common Catalog** (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`). The platform enforces consolidation into `shared/`, forbidding both Developers and AI Agents from copy-pasting legacy code into new modules.
 
-### 5. Tool đảm bảo về <span style="color: #0284c7; font-weight: bold;">"LƯỢNG"</span> — Con người quyết định về <span style="color: #16a34a; font-weight: bold;">"CHẤT"</span> cho SSOT
-FlowGrid phân định ranh giới rõ ràng giữa kiểm tra tự động của máy và kiểm soát tư duy của con người:
-- **Tool đảm bảo về <span style="color: #0284c7; font-weight: bold;">"LƯỢNG"</span> (Tính đầy đủ, cấu trúc & độ phủ):**
-  - Thông qua các script deterministic (`flowgrid audit *`, `cases:gate`), toolkit tự động quét và kiểm tra xem tài liệu đã đủ lượng thông tin cần thiết hay chưa.
-  - Từ chi tiết UI (màu mè text, vị trí hiển thị, kích thước, các action/trigger ra sao...), API contracts, mã lỗi/exception, cho đến danh mục rủi ro QA (`gaps[]`, `confirms[]`), Tech Debt... Máy móc sẽ phát hiện ngay các khoảng trống bị thiếu mà không bỏ sót.
-- **Con người là chốt chặn quyết định về <span style="color: #16a34a; font-weight: bold;">"CHẤT"</span> (Độ chuẩn xác, độ sâu & tính khả thi):**
-  - **AI phân tích & gợi ý giải pháp:** AI chủ động phân tích bài toán, đề xuất phương án kiến trúc, mô hình logic và đặt câu hỏi gợi mở qua các interactive questions (`ask_question`).
-  - **Con người phân tích, phản biện & chốt hạ:** Member (BA, Dev, QA, Lead) giữ vai trò trọng tài tối cao — trực tiếp cân nhắc, phản biện lại AI (`grill`), lựa chọn phương án tối ưu nhất hoặc phản biện để đưa ra lựa chọn đúng đắn chuẩn xác cuối cùng để biến bản nháp thành SSOT hoàn thiện.
+### 5. Tool Enforces "QUANTITY" — Humans Decide "QUALITY" for SSOT
+FlowGrid draws a clear line between automated machine verification and human critical thinking:
+- **Tool ensures "QUANTITY" (Completeness, structure & coverage):**
+  - Deterministic scripts (`flowgrid audit *`, `cases:gate`) audit whether documentation contains all required fields, schemas, and traces.
+  - From UI parameters (styling, positions, triggers), API contracts, error codes, to QA risk registers (`gaps[]`, `confirms[]`), tooling detects structural omissions without exception.
+- **Humans determine "QUALITY" (Accuracy, depth & viability):**
+  - **AI analyzes & proposes:** AI explores options, suggests architectures, and raises interactive clarifying questions.
+  - **Humans critique & arbitrate:** Team members (BA, Dev, QA, Lead) act as the final decision-makers — grilling AI proposals (`grill`), selecting optimal approaches, and formalizing the final SSOT.
 
-### 6. Nguyên tắc vận hành: Đầy đủ khung chuẩn — Linh hoạt theo rủi ro
-FlowGrid cung cấp đầy đủ các phase và tài nguyên SSOT từ đầu đến cuối, **nhưng không bắt buộc mọi tính năng phải thực hiện máy móc 100% các bước**:
-- **Tính năng đơn giản / phạm vi nhỏ / rủi ro thấp:** Team hoàn toàn có thể chủ động **cắt giảm** (viết tài liệu vắn tắt, bỏ qua prototype, không cần viết E2E test) nhằm tối ưu nhân sự và đẩy nhanh tốc độ release.
-- **Tính năng trọng yếu / phức tạp / hay phát sinh lỗi (Hotspots & High-risk):** Khi đối mặt với nghiệp vụ rủi ro cao, dễ vỡ tiến độ hoặc dễ phát sinh bug, team **nên tuân thủ nghiêm ngặt đầy đủ các bước**:
-  - Đặc tả chi tiết (`spec`) ➔ Phản biện nghiệp vụ (`grill`) ➔ Prototype sớm ➔ Chốt API contract ➔ Viết testcase ➔ Chạy kiểm thử tự động **Automation Test E2E**.
+### 6. Operational Principle: Standardized Framework — Risk-Adaptive Execution
+FlowGrid provides a complete end-to-end SSOT lifecycle, **without forcing teams into rigid bureaucratic dogmatism**:
+- **Simple features / Small scope / Low risk:** Teams can proactively streamline steps (concise specs, skip prototype, skip E2E test) to accelerate release velocity.
+- **Critical features / High complexity / High-risk hotspots:** For complex or high-risk business logic, teams **must strictly adhere to the full cycle**:
+  - Detailed Leaf Spec (`/spec`) ➔ Adversarial Review (`/grill`) ➔ Interactive Prototype ➔ API Contract ➔ Testcase Matrix ➔ **Automated E2E Test Suite**.
 
 ---
 
-## 1. Cài đặt CLI
+## 1. CLI Installation
 
-**Yêu cầu:** Node.js **≥ 24** (Linux / macOS / WSL / Git Bash).
+**Requirements:** Node.js **≥ 24** (Linux / macOS / WSL / Git Bash).
 
 ```bash
 export FLOWGRID_GITHUB_TOKEN=github_pat_XXXXX
@@ -67,96 +67,51 @@ curl -fsSL \
   | bash -s -- "$FLOWGRID_GITHUB_TOKEN"
 ```
 
-*Ghim phiên bản cụ thể (tùy chọn):*
+*Pin a specific version (optional):*
 ```bash
 export FLOWGRID_REF=v0.2.3
 ```
 
-*Gỡ cài đặt:*
+*Uninstall:*
 ```bash
 flowgrid uninstall
 ```
 
 ---
 
-## 2. Khởi tạo Workspace (`flowgrid setup`)
+## 2. Initialize Workspace (`flowgrid setup`)
 
-Chạy lệnh setup để tạo mới hoặc thiết lập workspace:
+Run the setup command to initialize a new or existing workspace:
 
 ```bash
-# Tạo thư mục workspace mới và khởi tạo khung dự án (chế độ base mặc định)
+# Create a new workspace directory and scaffold structure
 flowgrid setup my-workspace
 
-# Hoặc khởi tạo chế độ custom (giữ workspace sạch, không nạp seed common/templates mẫu)
-flowgrid setup my-workspace --mode=custom
-
-# Hoặc khởi tạo ngay trong thư mục hiện tại
+# Or initialize inside the current directory
 flowgrid setup
 ```
 
-CLI sẽ tự động tạo khung cấu trúc SSOT chuẩn:
-- **`source-code/`**: Thư mục / chứa các Submodule repository mã nguồn chính đang phát triển.
-- **`source-legacy/`**: Thư mục / chứa các Submodule repository chứa mã nguồn cũ khảo cổ (**Strictly READ-ONLY**).
-- **`registries/`**: Danh mục Components, Capabilities và Design Tokens chuẩn.
-- **`architecture/`**, **`overview/`**, **`surfaces/`**, **`qa/`**: Cấu trúc tài liệu SSOT theo chuẩn Arc42.
-- **Harness & MCP config**: Đồng bộ skills và cấu hình MCP server cho Agent AI đã chọn.
-
-### Base code tham khảo theo Adapter
-
-Khi đưa các repository vào `source-code/`, bạn có thể tham khảo hoặc fork từ các base mẫu chuẩn đã tích hợp sẵn quy cách FlowGrid:
-
-| Vai trò | Adapter / Stack | Base tham khảo |
-| --- | --- | --- |
-| Frontend | `nuxt4` | [base-nuxt4](https://github.com/ShanYuCoder/base-nuxt4) |
-| Frontend | `nextjs` | [base-nextjs](https://github.com/ShanYuCoder/base-nextjs) |
-| Frontend | `dotnet-line` | [base-line](https://github.com/ShanYuCoder/base-line) |
-| Backend | `nestjs` | *(monorepo fullstack)* [base-nextjs-nestjs](https://github.com/ShanYuCoder/base-nextjs-nestjs) hoặc [base-nuxt4-nestjs](https://github.com/ShanYuCoder/base-nuxt4-nestjs) — API trong `server/` / `apps/api` |
-| Backend | `fastapi` | [base-fast-api](https://github.com/ShanYuCoder/base-fast-api) |
-| Backend | `laravel` | [base-laravel](https://github.com/ShanYuCoder/base-laravel) |
-| Backend | `dotnet-integration` | [base-donet](https://github.com/ShanYuCoder/base-donet) |
-| Fullstack | `nextjs` + `nestjs` | [base-nextjs-nestjs](https://github.com/ShanYuCoder/base-nextjs-nestjs) |
-| Fullstack | `nuxt4` + `nestjs` | [base-nuxt4-nestjs](https://github.com/ShanYuCoder/base-nuxt4-nestjs) |
-
-Tất cả base code ở bảng trên **public trên GitHub** (org `ShanYuCoder`) — có thể xem README từng repo để biết lệnh dev/test và pilot feature (vd. Auth) trước khi setup dự án thật.
+The CLI automatically establishes the standardized Arc42 SSOT hierarchy:
+- **`source-code/`**: Submodule repositories for active application source code.
+- **`source-legacy/`**: Submodule repositories for legacy archeology code (**Strictly READ-ONLY**).
+- **`registries/`**: Shared catalogs for Components, Capabilities, and Design Tokens.
+- **`architecture/`**, **`overview/`**, **`surfaces/`**, **`qa/`**: Arc42-compliant SSOT documentation.
+- **Harness & MCP config**: Synchronizes AI Agent skills and MCP server configuration.
 
 ---
 
-## 3. End-to-End Workflow với Agent AI
+## 3. End-to-End Workflow with AI Agents
 
-Sau khi setup, mở workspace trên Agent AI (Cursor, Antigravity, Claude Code,...) và thực hiện quy trình:
+Open your workspace in your AI Agent (Cursor, Antigravity, Claude Code, etc.) and follow the guided workflow:
 
-```mermaid
-flowchart LR
-  A["flowgrid setup<br/>(Dựng workspace)"] --> B["/init<br/>(Map surfaces & repo)"]
-  B --> C{"Loại dự án?"}
-  C -->|Maintain| D["/trace<br/>(Khảo cổ source-code)"]
-  C -->|Rebase / Modernize| E["/legacy<br/>(Trích xuất từ source-legacy)"]
-  C -->|Greenfield| F["/spec<br/>(Đặc tả tính năng mới)"]
-  D --> F
-  E --> F
-  F --> G["/prototype & /api-spec"]
-  G --> H["/testcase & codegen"]
-  H --> I["/wire<br/>(Tích hợp & đóng gói)"]
-```
-
-| Bước | Lệnh / Skill | Mô tả |
+| Step | Command / Skill | Description |
 | :--- | :--- | :--- |
-| **1. Setup** | `flowgrid setup [name]` | Khởi tạo skeleton, cấu hình MCP và harness cho agent. |
-| **2. Discover** | `/init` | Agent quét workspace, map surfaces, bóc tách **Common Catalog** (`CMN-*`) và kích hoạt **Anti-Copy-Paste Guard** (ngăn chặn copy code trùng lặp từ legacy). |
-| **2.1. Lập Plan** | `/help-plan` | Phân tích `inition-inventory.md`, config và hiện trạng để lên Action Plan chi tiết từng bước cho yêu cầu mới, rà soát toàn diện các User Flow liên đới. |
-| **2.2. Huấn luyện Template** | `build-template-code` | Tự động phân tích **Golden Sample** (module mẫu sạch nhất) để sinh custom codegen templates theo đúng kiến trúc dự án. |
-| **3. Khảo cổ** | `/trace` *(Maintain)*<br>`/legacy` *(Rebase)* | • `/trace`: Quét mã nguồn trong `source-code` để đối chiếu & sinh spec.<br>• `/legacy`: Đọc Read-Only từ `source-legacy`, trích xuất spec/template sang `source-code`. |
-| **4. Đặc tả** | `/spec`, `/grill-bqa` | Viết Leaf Bundle spec cho từng màn hình/tính năng, phản biện logic nghiệp vụ. |
-| **5. Thiết kế & API** | `/prototype`, `/api-spec` | Sinh HTML prototype tương tác & định nghĩa API contract (`01-backend-spec.yaml`). |
-| **6. Kiểm thử** | `/testcase`, `testcase:gen` | Xây dựng ma trận `TC-*.yaml` và sinh code kiểm thử tự động E2E Playwright. |
-| **7. Tích hợp** | `/wire` | Đấu nối FE với API thật, chạy audit đối chiếu spec ↔ code và hoàn tất. |
-
----
-
-## 4. Kiểm tra hệ thống
-
-Kiểm tra tính toàn vẹn của harness và cấu hình trong workspace:
-
-```bash
-flowgrid doctor
-```
+| **1. Setup** | `flowgrid setup [name]` | Initializes skeleton, configures MCP and harness for AI agent. |
+| **2. Discover** | `/init` | Scans workspace, maps surfaces, isolates **Common Catalog** (`CMN-*`) and enables **Anti-Copy-Paste Guard**. |
+| **2.1. Action Plan** | `/help-plan` | Analyzes `inition-inventory.md` and current status to generate phased Action Plans for new requirements. |
+| **2.2. Train Templates** | `build-template-code` | Analyzes **Golden Sample** (cleanest existing module) to generate custom codegen templates adhering to project architecture. |
+| **3. Archaeology** | `/trace` *(Maintain)*<br>`/legacy` *(Rebase)* | • `/trace`: Scans `source-code` to reverse-engineer specs.<br>• `/legacy`: Reads `source-legacy` (Read-Only) to extract specs and templates into `source-code`. |
+| **4. Specification** | `/spec`, `/grill-bqa` | Authors Leaf Bundle specs per feature/screen with business logic grilling. |
+| **5. Design & API** | `/prototype`, `/api-spec` | Generates interactive HTML prototypes and formalizes API contracts (`01-backend-spec.yaml`). |
+| **6. Testing** | `/testcase`, `testcase:gen` | Builds test matrix (`TC-*.yaml`) and automatically generates E2E Playwright suites. |
+| **7. Integration** | `/wire` | Wires frontend to real backend APIs, audits spec ↔ code alignment, and verifies gates. |

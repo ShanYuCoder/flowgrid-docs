@@ -1,12 +1,12 @@
 # Skill: `/grill-common-spec` — DEPRECATED
 
-Không còn bundle `common/yaml` để grill.
+There are no longer `common/yaml` bundles to grill.
 
-| Gap | Route |
-|-----|--------|
-| Spec màn / function | `/grill-bqa` · `/grill-dev` trên `*.bundle.yaml` |
-| Quy tắc patterns Markdown | `/common` |
-| Affordance UI | `flowgrid-ux-common.mdc` + `/grill-bqa` |
-| Registry / codegen template | [Phase 0 — Setup](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code) |
+| Gap Type | Route |
+|----------|-------|
+| Screen / Function Spec | `/grill-bqa` · `/grill-dev` on `*.bundle.yaml` |
+| Markdown Pattern Rules | `/common` |
+| UI Affordances | `flowgrid-ux-common.mdc` + `/grill-bqa` |
+| Registry / Codegen Templates | [Phase 0 Setup Workflow](../../workflows/phase-0-setup.md#5-template-training-from-golden-sample-build-template-code) |
 
-Xem [Phase 0 — Setup § Huấn luyện Template](../../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).
+See [Phase 0 Setup § Template Training](../../workflows/phase-0-setup.md#5-template-training-from-golden-sample-build-template-code).

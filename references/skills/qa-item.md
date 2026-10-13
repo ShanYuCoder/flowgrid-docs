@@ -1,26 +1,26 @@
-# QA file template (`flowgrid-qa-item/v1`)
+# QA File Template (`flowgrid-qa-item/v1`)
 
-## Toolkit (sau `flowgrid init`)
+## Toolkit (Initialized via `flowgrid init`)
 
-| File | Vai trò |
-|------|---------|
-| `.flowgrid/templates/qa-item.yaml` | Golden YAML — copy khi mở QA |
-| `.flowgrid/templates/qa-authoring.md` | Quy tắc field, naming, timeline |
-| `.flowgrid/schemas/qa-item.schema.json` | JSON Schema (validate) |
+| File | Responsibility |
+|------|----------------|
+| `.flowgrid/templates/qa-item.yaml` | Golden YAML template — copy when opening QA items |
+| `.flowgrid/templates/qa-authoring.md` | Field rules, naming schemes, timeline updates |
+| `.flowgrid/schemas/qa-item.schema.json` | JSON Schema validation |
 
-Repo FlowGrid: [`templates/shared/qa-item.yaml`](../../../templates/shared/qa-item.yaml) · [`qa-authoring.md`](../../../templates/shared/qa-authoring.md).
+FlowGrid Workspace: [`templates/shared/qa-item.yaml`](../../../templates/shared/qa-item.yaml) · [`qa-authoring.md`](../../../templates/shared/qa-authoring.md).
 
-## Helper (CLI / test / agent)
+## Helper Library (CLI / Test / Agent)
 
 `engines/docs/lib/qa-item.mjs`:
 
-- `formatQaAt()` — timestamp `YYYYMMDD HH:mm`
+- `formatQaAt()` — timestamp formatted as `YYYYMMDD HH:mm`
 - `suggestQaShort('W-HOTEL-LIST')` → `HOTEL-LIST`
 - `nextQaId(hubRoot, SHORT)` → `HOTEL-LIST_0002`
 - `validateQaItem(doc)` / `validateQaItemFile(path)`
 
-## Skills
+## Associated Skills
 
-- Mở: `/spec`, grill-* — extract `qa-inbox.md`
-- Đóng: `/qa-resolve` · Review: `/qa-review`
+- Opening: `/spec`, `grill-*` — see extract `qa-inbox.md`
+- Closing: `/qa-resolve` · Reviewing: `/qa-review`
 - Workflow: [qa-team.md](../../workflows/qa-team.md)

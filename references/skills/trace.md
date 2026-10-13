@@ -1,37 +1,44 @@
-# Kỹ năng: `/trace`
+# Skill: `/trace`
 
-## Tên
+## Name
 `trace`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/trace` hoặc dùng kết hợp `/trace /spec`.
-- Dành riêng cho kịch bản **Maintain** (bảo trì và phát triển tiếp codebase hiện có).
+## Usage (Command/Trigger)
+- Call via slash command: `/trace`
+- Exclusively designed for **Maintain Mode** (extending and maintaining existing codebases).
 
-## Input (Dữ liệu đầu vào)
-- **Thư mục đọc:** `source-code/` (mã nguồn đang chạy của dự án).
-- Tài liệu kiến trúc hiện có trong `architecture/`.
+## Input
+- Active source code in `source-code/`.
+- Target screen or feature under inspection.
 
-## Output (Kết quả mong đợi)
-- **Thư mục ghi:** `source-code/` (và các file spec SSOT tương ứng).
-- Quét và đối chiếu trực tiếp code thực tế trong `source-code/` để trích ngược Data Model, API contract, state logic vào Leaf Bundle spec.
-- Mọi code mới sinh ra hoặc sửa đổi được cập nhật trực tiếp vào `source-code/`.
+## Output
+- Synchronized specification bundle in `surfaces/` reflecting active codebase behavior.
+- Reverse-engineered Data Model, API contracts, and validation rules.
+- Patches applied cleanly to active code in `source-code/`.
 
-## Quy tắc bắt buộc
-- **Chỉ đọc và ghi trên `source-code/`**: Không tìm kiếm hay đụng chạm vào thư mục `source-legacy/`.
-- Luôn giữ tính nhất quán giữa tài liệu kiến trúc SSOT và mã nguồn thực thi đang phát triển.
+## Description
+- Inspects existing repositories in-place to understand undocumented logic, implicit validation rules, and database schema mappings.
+- Re-architects active code into standardized FlowGrid specs (`W-*.bundle.yaml`, `01-backend-spec.yaml`, `FLOW-*.md`) without breaking implicit behaviors or regressing production features.
+- Enables safe feature addition by establishing a complete SSOT before code modification.
 
-## Description / Ý nghĩa
-- Trong dự án bảo trì, việc dev tự viết spec từ đầu rất dễ bỏ sót các logic ngầm, validation ẩn hoặc edge-cases đã tồn tại trong code.
-- `/trace` giúp Agent đóng vai trò "thám tử", dò ngược từ implementation thực tế ra spec chuẩn SSOT, bảo đảm việc phát triển tính năng mới không làm gãy vỡ hệ thống cũ.
+## Related Skills
+- **Preceding:** `/init` (Repository discovery).
+- **Combined with:** `/spec` or `/update-spec` to draft/update specs grounded in existing code.
+- **Workflow Orchestration:** `/help-plan` (Phase 1 baseline archaeology).
+
+## Important Notes
+- **Autonomous Fact-Finding Guard:** Never ask the user where files are located or what endpoints exist; inspect the codebase autonomously.
+- **5-Link User Flow Chain:** Must trace Upstream, Primary, Downstream side-effects, Failure/Rollback, and System/Security boundaries.
+- **Ground Truth Priority:** Active code execution is ground truth; document discrepancies with requirements immediately.
+- **Strict Isolation:** Inspects `source-code/` only; never touches `source-legacy/`.
 
 ---
 
-## Example prompt (mẫu gọi)
+## Example Prompt
 
 ```text
-/trace /spec
+/trace
 
-Surface: admin
-Màn hình: Quản lý đơn hàng (Order Management)
-Hãy quét controller và view tương ứng trong source-code/ để trích xuất đầy đủ spec, data model và API contract hiện có.
+Target: source-code/admin-fe/src/views/orders/OrderDetail.vue and OrderController.php
+Scan the corresponding controller and view in source-code/ to extract complete specification, data model, and active API contracts.
 ```

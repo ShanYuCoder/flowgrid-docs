@@ -1,41 +1,28 @@
 # Skill: `/deployment`
 
-## Tên
+## Name
 `deployment`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/deployment`
+## Usage (Command/Trigger)
+- Call via slash command: `/deployment`
+- Used to document system deployment topologies and CI/CD pipelines in Phase 0 / Phase 4 (`architecture/07-deployment-view.md`).
 
-## Input (Dữ liệu đầu vào)
-- Thông tin cơ bản về môi trường triển khai mong muốn.
+## Input
+- Cloud provider details, containerization strategy, environment topologies (Dev, Staging, Prod).
 
-## Output (Kết quả mong đợi)
-- Sinh ra file tài liệu triển khai lưu tại `architecture/deployment/` (hoặc cấu trúc tương đương), bắt đầu bằng tiền tố `DEP-*` (Ví dụ: `DEP-production`).
-- Mặc định chỉ sinh ra một file khung (stub) ngắn gọn dựa theo mẫu `tpl-deployment.md`.
+## Output
+- Arc42 deployment view documentation: Docker Compose setups, Kubernetes manifests, reverse proxy gateways, TLS certificates.
 
-## Description / Ý nghĩa
-- Dành riêng cho việc ghi chép sơ đồ triển khai hạ tầng vật lý hoặc Cloud (Deployment Topology).
-- **Lệnh CẤM ĐOÁN CHẶT CHẼ:**
-  - Nếu người dùng KHÔNG yêu cầu rõ ràng việc phải vẽ sơ đồ mạng/hạ tầng chi tiết, Agent **BẮT BUỘC TỪ CHỐI** việc tự tưởng tượng ra sơ đồ Prod/Staging (Multi-region topology from imagination) và chỉ ghi một đoạn stub siêu ngắn.
-  - Cấm ghi chép các mẹo vặt cài đặt máy ảo Local IDE/WSL cá nhân vào tài liệu Hub chung này.
-  - Tuyệt đối không được nhầm lẫn giữa sơ đồ mạng hạ tầng triển khai với sơ đồ hành trình người dùng (`/journey`).
-  - Không được đưa mã nguồn bảo mật (Secrets, Passwords) vào file Markdown này.
-- Khi được phép vẽ, sơ đồ ưu tiên dùng chuẩn **C4 Model** (Mermaid).
-
-## Các Skill liên quan
-- Kích hoạt bởi lệnh gốc `/architecture`.
+## Description
+- Models physical and virtual infrastructure hosting the codebase.
+- Details Central Gateway routing, environment variables, and network topologies.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
 /deployment
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Document Docker container topology for local development, connecting project containers to Central Docker Gateway network (base_shared_net).
 ```
-

@@ -1,45 +1,38 @@
 # Skill: `/common`
 
-## Tên
+## Name
 `common`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/common`
-- Yêu cầu người dùng (Member) bắt buộc phải chỉ định rõ **Nhóm sử dụng (Consumers)** là ai. VD: Dùng chung cho toàn hệ thống (`surfaces/common`), dùng chung cho 1 Surface (`surfaces/<Surface>/common`), dùng chung cho 1 Module (`surfaces/<Surface>/<CMP-ID>/common`), hoặc dùng chung cho 1 cụm màn hình nhỏ (`surfaces/<Surface>/<CMP-ID>/<NN>/common`).
+## Usage (Command/Trigger)
+- Call via slash command: `/common <CMN-ID>`
+- Used to document common rules or generate single shared implementations in Phase 0 / Phase 1.
 
-## Input (Dữ liệu đầu vào)
-- Phạm vi dùng chung (Scope) do Member khai báo.
-- Các quy tắc về trải nghiệm người dùng (UX/UI rules) hoặc quy tắc nghiệp vụ (Business rules) lặp đi lặp lại.
+## Input
+- Common ID (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`).
+- Existing code in `shared/` or duplicate candidate code references.
 
-## Output (Kết quả mong đợi)
-- Sinh ra file tài liệu định dạng Markdown (`.md`) lưu tại thư mục `common/patterns/` của cấp độ bao trùm thấp nhất (Lowest Common Ancestor - LCA).
+## Output
+- Markdown User Stories & Rules: `<LCA>/common/patterns/<CMN-ID>.md`.
+- Canonical single implementation in `shared/` (for Duplicate Candidates).
+- Registration in Workspace SSOT registry (`.flowgrid/registries/`).
 
-## Description / Ý nghĩa
-- Dùng để thiết kế các **Quy tắc dùng chung bằng Markdown** dành cho Con người (Business, QA, Dev) đọc và tham chiếu.
-- **Quy tắc LCA (Lowest Common Ancestor):** Không được lạm dụng thư mục gốc `surfaces/common` như một "Thùng rác". Kỹ năng này sẽ tính toán xem quy tắc này được xài chung bởi những tính năng nào, từ đó chọn ra một thư mục `common` ở cấp độ sâu nhất có thể bao bọc trọn vẹn được chúng. (Nếu chỉ có 1 chức năng xài, thì cấm tạo `common/`).
-- Nội dung file viết bằng ngôn ngữ tự nhiên, phi kỹ thuật (Non-technical language). Không sa đà vào code. VD: "Dialog xác nhận xoá phải luôn làm mờ nền đen đằng sau (block background)".
-
-## Chú ý quan trọng
-- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/` User Stories & Rules). **TUYỆT ĐỐI KHÔNG VIẾT FILE YAML CHO COMMON**, không phân tách IR. Do các thành phần common đã được code sẵn trong base (`shared/`), việc tạo YAML là hoàn toàn thừa thãi và sai chuẩn.
-- **Phân biệt rõ 2 trường hợp thực thi:**
-  - *Với Existing Common (Đã có sẵn code trong base/shared):* Chỉ sinh duy nhất file `.md` User Stories để chuẩn hóa tài liệu SSOT, **tuyệt đối không gen lại code**.
-  - *Với Duplicate Candidate (Mã trùng lặp, chưa có component chung):* Lên plan ➔ Member bấm Approve/Proceed ➔ Tự động sinh file `.md` User Stories + **gen code 1 bản chuẩn hoá vào `shared/`** + đăng ký registry.
-- **Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy:** Common mới chuẩn bị sẵn cho các tính năng tiếp theo để tránh copy duplicate lần thứ 3. Tuyệt đối KHÔNG tự ý sửa code cũ trong `source-legacy/` (luôn READ-ONLY) để tránh mọi rủi ro degrade/regression cho hệ thống cũ.
+## Description
+- Enforces the Anti-Copy-Paste Guard.
+- For existing common components: Generates Markdown User Stories documentation only (never regenerates existing working code).
+- For duplicate candidates: Generates 1 canonical implementation in `shared/` and registers it in the SSOT registry so future screens reuse it.
+- **Inviolable Rule:** Common components are documented using Markdown `.md` only. Never author YAML or IR bundles for common components.
+- **4-Layer Quality Standard for Common Specifications:**
+  1. **Contract Invariants:** Strict prop schemas, default values, and event payload types.
+  2. **4 Canonical States:** Explicit UX rules for `Loading`, `Empty`, `Error`, and `Success/Active`.
+  3. **Inversion of Control (IoC):** Zero hardcoded API URLs or business domain coupling.
+  4. **Golden Test Seams:** Dedicated unit test scenarios verifying contract invariants and visual states.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-Chỉ khi **không** fit command cụ thể (shared component, review architecture).
+## Example Prompt
 
 ```text
-@framework-rules skill
+/common CMN-UI-001
 
-Task: {thêm testId cho FormField suffix pattern mới}
-Scope: components/molecules/MoFormField.vue only
-Không đọc reference.md trừ khi cần template code đầy đủ
+Generate User Stories specification for Confirm Delete Modal and register in design.registry.json.
 ```
-
----

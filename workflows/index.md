@@ -1,25 +1,25 @@
-# Workflow Tổng quan
+# Development Workflows Overview
 
-Đây là workflow tổng thể đầy đủ các bước từ [Phase 0 Setup](./phase-0-setup.md) dự án đến Phase [Wire](./wire.md) kết thúc chu kỳ phát triển một tính năng:
+This document presents the complete lifecycle workflow spanning from [Phase 0 Setup](./phase-0-setup.md) to [Wire](./wire.md) and final release sign-off:
 
-- **Khởi tạo & cấu hình dự án (Phase 0):** Xem hướng dẫn chi tiết tại [Phase 0 — Setup & Khởi tạo dự án](./phase-0-setup.md) cho 3 kịch bản: Greenfield, Maintain, Rebase.
-- **Checklist đóng một leaf (`W-*`):** [gates § Đóng một function](./gates.md#close-one-function) (**10 mốc**, bước 10 = human UAT/Ship) — SSOT khi grill/audit.
-- **Grill vs audit, zone, AskQuestion:** [grill-and-human-review.md](./grill-and-human-review.md).
-- **Chi tiết từng phase nhỏ:** Tham khảo các lane: [Design](./design.md) ➔ [Backend](./backend.md) ➔ [Test](./test.md) ➔ [Wire](./wire.md).
+- **Project Initialization & Configuration (Phase 0):** See detailed instructions in [Phase 0 — Setup & Project Scaffolding](./phase-0-setup.md) across three project scenarios: Greenfield, Maintain, Rebase.
+- **Leaf Closure Checklist (`W-*`):** [gates § Closing a Function](./gates.md#close-one-function) (**10 Milestones**, Step 10 = Human UAT/Ship) — the authoritative SSOT during adversarial grill and audit.
+- **Grill vs Audit, Zone Analysis, and AskQuestion Wizard:** [grill-and-human-review.md](./grill-and-human-review.md).
+- **Specialized Phase Details:** Explore dedicated lanes: [Design](./design.md) ➔ [Backend](./backend.md) ➔ [Test](./test.md) ➔ [Wire](./wire.md).
 
 ---
 
-## 1. Chu kỳ phát triển một tính năng (End-to-End Cycle)
+## 1. End-to-End Feature Lifecycle
 
-Mỗi tính năng hoặc màn hình (`W-*` / leaf) đều trải qua chu kỳ 4 phase chuẩn:
+Every feature specification or screen (`W-*` / leaf) progresses through a standardized 4-phase lifecycle:
 
-| Phase | Trọng tâm | Trách nhiệm chính | Chi tiết lane |
+| Phase | Primary Focus | Core Responsibility | Lane Details |
 | :--- | :--- | :--- | :--- |
-| **Phase 0: Setup & Boundary** | Thiết lập repo, mapping surfaces, kiến trúc và ranh giới module | Lead / Architect | [Phase 0 Setup](./phase-0-setup.md) · [Architecture](./architecture-data.md) |
-| **Phase 1: Design** | Đặc tả leaf bundle, grill nghiệp vụ, sinh prototype tương tác | BA / Dev FE | [Design](./design.md) |
-| **Phase 2: Code & Test** | Chốt API contract backend, lập ma trận testcase, sinh automation E2E | Dev BE / QA | [Backend](./backend.md) · [Test](./test.md) |
-| **Phase 3: Wire & Ship** | Đấu nối FE ↔ API thật, chạy regression E2E, UAT & Sign-off | Dev FE + QA + PO | [Wire](./wire.md) · [Gates](./gates.md) |
-| **Phase 4: Ops & Docs** | Sinh tài liệu hướng dẫn người dùng, đồng bộ Help Center / Google Docs | BA / CS | [User Manual](./build-user-manual.md) |
+| **Phase 0: Setup & Boundary** | Repository scaffolding, surfaces mapping, system architecture, module boundaries | Lead / Architect | [Phase 0 Setup](./phase-0-setup.md) · [Architecture](./architecture-data.md) |
+| **Phase 1: Design** | Leaf bundle specification, adversarial business grilling, interactive prototype | BA / Frontend Dev | [Design](./design.md) |
+| **Phase 2: Code & Test** | Backend API contract agreement, test scenario matrix authoring, automated E2E codegen | Backend Dev / QA | [Backend](./backend.md) · [Test](./test.md) |
+| **Phase 3: Wire & Ship** | Wiring frontend ↔ real backend API, regression E2E runs, UAT & Sign-off | Frontend Dev + QA + PO | [Wire](./wire.md) · [Gates](./gates.md) |
+| **Phase 4: Ops & Docs** | User manual generation, Google Docs / Help Center sync | BA / CS | [User Manual](./build-user-manual.md) |
 
 ```mermaid
 flowchart TD
@@ -30,7 +30,7 @@ flowchart TD
   end
 
   subgraph P1["Phase 1 — Design Lane"]
-    SPEC["/spec<br/>(kèm /trace nếu Maintain, /legacy nếu Rebase)"]
+    SPEC["/spec<br/>(with /trace for Maintain, /legacy for Rebase)"]
     GRILL["/grill-bqa ➔ /grill-dev"]
     PROTO["/prototype ➔ /grill-prototype"]
     SPEC --> GRILL --> PROTO
@@ -50,14 +50,14 @@ flowchart TD
   end
 
   subgraph P3["Phase 3 — Wire & Ship"]
-    WIRE["/wire (FE ↔ API thật)"]
+    WIRE["/wire (Frontend ↔ Live API)"]
     AUDIT["flowgrid audit e2e / scenario"]
     SHIP["Human UAT ➔ Sign-off ➔ Release"]
     WIRE --> AUDIT --> SHIP
   end
 
   subgraph P4["Phase 4 — Ops & Documentation"]
-    MANUAL["/manual (Sinh User Manual từ Flow & E2E)"]
+    MANUAL["/manual (Generate User Manual from Flows & E2E)"]
     PUBLISH["flowgrid publish manual (Sync to Google Docs)"]
     MANUAL --> PUBLISH
   end
@@ -70,77 +70,77 @@ flowchart TD
   SHIP --> MANUAL
 
   US["/update-spec"]
-  GRILL -.->|Gap nghiệp vụ| US
+  GRILL -.->|Business Gap| US
   US -.-> SPEC
 ```
 
 ---
 
-## 2. Chi tiết từng Phase thực thi
+## 2. Phase Execution Details
 
 ### Phase 0: Setup & Boundary
-- **Khởi tạo:** Chạy `flowgrid setup [name]` để sinh cấu trúc SSOT skeleton (`source-code/`, `source-legacy/`, `registries/`, Arc42 docs).
-- **Nhận diện:** Mở Agent chạy skill `/init` để map surfaces và cấu hình repo maps `platform-repos.local.json`.
-- **Kiến trúc:** Dùng `/architecture`, `/overview`, `/surfaces`, `/module`, `/db-erd` để chốt ranh giới hệ thống trước khi đi sâu vào từng màn hình.
-- *Chi tiết:* [phase-0-setup.md](./phase-0-setup.md) và [architecture-data.md](./architecture-data.md).
+- **Scaffolding:** Run `flowgrid setup [name]` to scaffold the SSOT skeleton (`source-code/`, `source-legacy/`, `registries/`, Arc42 docs).
+- **Discovery:** Run skill `/init` to map surfaces and configure `platform-repos.local.json`.
+- **Architecture:** Use `/architecture`, `/overview`, `/surfaces`, `/module`, and `/db-erd` to establish system boundaries prior to screen authoring.
+- *Details:* [phase-0-setup.md](./phase-0-setup.md) and [architecture-data.md](./architecture-data.md).
 
 ### Phase 1: Design Lane
-- **Viết spec:**
-  - *Mới hoàn toàn:* Chạy `/spec` để sinh bundle spec (`<slug>.bundle.yaml`, `ir/design.yaml`, `ir/spec.yaml`).
-  - *Dự án Maintain:* Dùng kèm skill `/trace` để đối chiếu mã nguồn `source-code/`.
-  - *Dự án Rebase:* Dùng kèm skill `/legacy` để trích xuất logic từ `source-legacy/`.
-- **Phản biện (*Grill*):** Chạy `/grill-bqa` (nghiệp vụ) và `/grill-dev` (khả thi kỹ thuật) để hoàn thiện spec.
-- **Early Feedback Prototype:** Chạy `/prototype` sinh giao diện tương tác (HTML/Vue/React) để PO/BA bấm thử và chốt hành vi trước khi code production.
-- *Chi tiết:* [design.md](./design.md).
+- **Spec Authoring:**
+  - *Greenfield:* Run `/spec` to author complete bundle specifications (`<slug>.bundle.yaml`, `ir/design.yaml`, `ir/spec.yaml`).
+  - *Maintain Projects:* Complement with `/trace` to inspect existing code in `source-code/`.
+  - *Rebase Projects:* Complement with `/legacy` to extract archaeological logic from `source-legacy/`.
+- **Adversarial Review (*Grill*):** Run `/grill-bqa` (business depth) and `/grill-dev` (technical viability) to refine specifications.
+- **Early Feedback Prototype:** Run `/prototype` to generate interactive prototypes (HTML/Vue/React) for stakeholders to test usability prior to writing production code.
+- *Details:* [design.md](./design.md).
 
 ### Phase 2: Implementation & Tests Lane
 - **Backend API:**
-  - Định nghĩa contract REST/DTO tại `api/<seq>/01-backend-spec.yaml` với `/api-spec`.
-  - Phản biện contract với `/grill-api-spec`, sinh code controller/service với `api-gen` và kiểm tra với `/audit-api`.
-- **Tests-docs & Automation E2E:**
-  - QA xây dựng ma trận kịch bản tại tests-docs hub với `/testcase`, `/scenario` và `/grill-testcase`.
-  - Chạy `cases:gate` để chốt kế hoạch testcase, sau đó chạy `testcase:gen` để tự động sinh code Playwright E2E (`*.spec.ts`) trên repo FE.
-- *Chi tiết:* [backend.md](./backend.md) và [test.md](./test.md).
+  - Define REST/DTO contracts at `api/<seq>/01-backend-spec.yaml` using `/api-spec`.
+  - Review contracts with `/grill-api-spec`, scaffold controllers/services via `api-gen`, and verify with `/audit-api`.
+- **Tests-Docs & E2E Automation:**
+  - QAs author test scenario matrices on the tests-docs hub via `/testcase`, `/scenario`, and `/grill-testcase`.
+  - Run `cases:gate` to validate test coverage, followed by `testcase:gen` to automatically generate production-ready Playwright E2E suites (`*.spec.ts`) in the frontend codebase.
+- *Details:* [backend.md](./backend.md) and [test.md](./test.md).
 
 ### Phase 3: Wire & Ship
-- **Tích hợp (*Wire*):** Dev FE chạy `/wire` đấu nối UI với API thật, thay thế mock data.
-- **Kiểm định hồi quy:** Chạy bộ test Playwright E2E tự động và audit đối chiếu spec ↔ code (`flowgrid audit e2e`).
-- **Human UAT & Release:** Member/PO kiểm tra UAT bước cuối theo acceptance criteria và ký đóng màn ([gates § Bước 10](./gates.md#close-one-function)).
-- *Chi tiết:* [wire.md](./wire.md) và [gates.md](./gates.md).
+- **Integration (*Wire*):** Frontend engineers execute `/wire` to connect UI components with live backend APIs, eliminating mock fixtures.
+- **Regression Auditing:** Execute automated Playwright E2E suites and verify spec ↔ code parity via `flowgrid audit e2e`.
+- **Human UAT & Release:** Stakeholders perform final User Acceptance Testing (UAT) against acceptance criteria to sign off and close the screen ([gates § Step 10](./gates.md#close-one-function)).
+- *Details:* [wire.md](./wire.md) and [gates.md](./gates.md).
 
 ---
 
-## 3. Ma trận trách nhiệm (T-Shaped Team)
+## 3. Responsibility Matrix (T-Shaped Team)
 
-Quy định vai trò theo **trách nhiệm đầu ra**, không gắn cứng vào chức danh nhân sự:
+Roles are structured around **deliverable artifacts** rather than rigid job titles:
 
-| Vai trò | Phạm vi chính | Đầu ra (Artifacts) | Skill / Lệnh gợi ý |
+| Role | Primary Scope | Core Deliverables (Artifacts) | Recommended Skills & Commands |
 | :--- | :--- | :--- | :--- |
-| **Solution Architect / Lead** | Kiến trúc hệ thống, ranh giới module, deployment | `overview/`, `architecture/`, `FLOW-*` | `/architecture`, `/overview`, `/surfaces`, `/module`, `/db-erd` |
-| **Business Analyst (BA)** | Yêu cầu nghiệp vụ, acceptance criteria, câu hỏi mở | Spec leaf bundle, Prototype UI sớm | `/spec`, `/grill-bqa`, `/prototype` |
-| **Software Engineer (Dev)** | Kỹ thuật màn hình, API contract, implementation | `ir/design.yaml`, `01-backend-spec.yaml`, code thật | `/spec`, `/grill-dev`, `/api-spec`, `/api`, `/wire` |
-| **Quality Engineer (QA)** | Ma trận testcase, kịch bản kiểm thử, automation | `TC-*.yaml`, Playwright E2E (`*.spec.ts`) | `/testcase`, `/scenario`, `testcase:gen`, `/test` |
+| **Solution Architect / Lead** | System architecture, module boundaries, deployment topologies | `overview/`, `architecture/`, `FLOW-*` | `/architecture`, `/overview`, `/surfaces`, `/module`, `/db-erd` |
+| **Business Analyst (BA)** | Business requirements, acceptance criteria, clarifying questions | Leaf bundle specs, interactive prototypes | `/spec`, `/grill-bqa`, `/prototype` |
+| **Software Engineer (Dev)** | Screen technical design, API contracts, production implementation | `ir/design.yaml`, `01-backend-spec.yaml`, production code | `/spec`, `/grill-dev`, `/api-spec`, `/api`, `/wire` |
+| **Quality Engineer (QA)** | Test matrices, test scenarios, E2E automation | `TC-*.yaml`, Playwright E2E (`*.spec.ts`) | `/testcase`, `/scenario`, `testcase:gen`, `/test` |
 
 ---
 
-## 4. Danh mục Slash Commands chính (Cheat Sheet)
+## 4. Primary Slash Commands Cheat Sheet
 
-| Lệnh / Skill | Phase | Mục đích chính |
+| Command / Skill | Phase | Primary Purpose |
 | :--- | :--- | :--- |
-| `flowgrid setup [name]` | Phase 0 | Khởi tạo skeleton workspace và cấu hình harness. |
-| `/init` | Phase 0 | Quét workspace, nhận diện surfaces và lập repo maps. |
-| `/architecture` | Phase 0 | Khai báo kiến trúc Arc42, overview, surfaces, module, ERD. |
-| `/spec` | Phase 1 | Tạo Leaf Bundle spec (`.bundle.yaml`, `ir/`, data model). |
-| `/trace` | Phase 1 | *(Maintain)* Khảo cổ trực tiếp mã nguồn trong `source-code/`. |
-| `/legacy` | Phase 1 | *(Rebase)* Đọc Read-Only từ `source-legacy/`, trích xuất sang code mới. |
-| `/grill-bqa`, `/grill-dev` | Phase 1 | Phản biện nghiệp vụ và khả thi kỹ thuật cho spec. |
-| `/prototype`, `/grill-prototype` | Phase 1 | Sinh và review prototype giao diện tương tác sớm. |
-| `/api-spec`, `/grill-api-spec` | Phase 2 | Thiết kế và phản biện API contract backend. |
-| `/testcase`, `/grill-testcase` | Phase 2 | Xây dựng ma trận kịch bản testcase tại tests-docs hub. |
-| `testcase:gen` | Phase 2 | Tự động sinh mã kiểm thử Playwright E2E từ testcase YAML. |
-| `/wire`, `/grill-wire` | Phase 3 | Đấu nối FE với API thật, đối chiếu spec ↔ code. |
-| `/manual` | Phase 4 | Sinh User Manual từ User Flow và kết quả chạy E2E. |
-| `flowgrid publish manual` | Phase 4 | Publish User Manual lên Google Docs (kèm xử lý Anti-Quotas API). |
-| `/update-spec`, `/qa-resolve` | Bất kỳ | Cập nhật delta khi thay đổi yêu cầu hoặc đóng câu hỏi QA. |
+| `flowgrid setup [name]` | Phase 0 | Scaffolds workspace skeleton and configures agent harnesses. |
+| `/init` | Phase 0 | Discovers repositories, maps surfaces, and initializes repo maps. |
+| `/architecture` | Phase 0 | Declares Arc42 architecture, overview, surfaces, modules, and ERD. |
+| `/spec` | Phase 1 | Authors leaf bundle specifications (`.bundle.yaml`, `ir/`, data models). |
+| `/trace` | Phase 1 | *(Maintain)* Archaeological inspection directly on active code in `source-code/`. |
+| `/legacy` | Phase 1 | *(Rebase)* Strictly Read-Only extraction from `source-legacy/` into new codebase. |
+| `/grill-bqa`, `/grill-dev` | Phase 1 | Adversarial business grilling and technical viability verification. |
+| `/prototype`, `/grill-prototype` | Phase 1 | Generates and reviews living interactive prototypes. |
+| `/api-spec`, `/grill-api-spec` | Phase 2 | Authors and grills backend API contracts. |
+| `/testcase`, `/grill-testcase` | Phase 2 | Constructs test scenario matrices on the tests-docs hub. |
+| `testcase:gen` | Phase 2 | Generates Playwright E2E automation from testcase YAML. |
+| `/wire`, `/grill-wire` | Phase 3 | Wires frontend UI to live backend APIs, auditing spec ↔ code alignment. |
+| `/manual` | Phase 4 | Generates User Manuals from user journey flows and E2E test evidence. |
+| `flowgrid publish manual` | Phase 4 | Synchronizes User Manuals to Google Docs with Anti-Quotas API handling. |
+| `/update-spec`, `/qa-resolve` | Any Phase | Patches deltas upon requirement changes or closes open QA items. |
 
-*Xem chi tiết toàn bộ lệnh CLI và options nâng cao tại:* [CLI & Commands](../references/cli-and-commands.md).
+*See comprehensive CLI commands and options in:* [CLI & Commands](../references/cli-and-commands.md).

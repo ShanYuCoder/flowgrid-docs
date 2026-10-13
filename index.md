@@ -3,11 +3,11 @@ layout: home
 
 hero:
   name: "FlowGrid Docs"
-  text: "Hệ thống Tài liệu & AI Engineering Platform"
+  text: "Documentation & AI Engineering Platform"
   tagline: "Enterprise Disciplined AI Engineering Platform (Graph, DNA, Docs, Test, Codegen)"
   actions:
     - theme: brand
-      text: Bắt đầu — Overview
+      text: Getting Started — Overview
       link: /overview/
     - theme: alt
       text: README
@@ -15,25 +15,25 @@ hero:
 
 features:
   - title: 'README'
-    details: Pitch toolkit, cài đặt CLI, phase & vai trò.
+    details: Toolkit overview, CLI installation, SDLC phases & roles.
     link: /readme
   - title: 'Overview'
-    details: Toolkit là gì, phạm vi, bốn nhánh SSOT.
+    details: What is FlowGrid, scope, Arc42 SSOT hierarchy.
     link: /overview/
-  - title: 'Cấu trúc Workspace'
-    details: Skeleton SSOT trên disk (overview, architecture, surfaces, registries, qa).
+  - title: 'Workspace Structure'
+    details: SSOT disk skeleton (overview, architecture, surfaces, registries, qa).
     link: /artifacts/
   - title: 'Workflows'
-    details: Phase tổng, design / backend / test / wire, grill & gate.
+    details: Macro lifecycle, design / backend / test / wire, adversarial review & gates.
     link: /workflows/
   - title: 'References'
-    details: CLI, MCP, repo map, slash skills — cli-and-commands & skills.
+    details: CLI, MCP, repo map, slash skills & auditing tools.
     link: /references/cli-and-commands
 ---
 
 <br/>
 
 <div class="tip custom-block">
-  <p class="custom-block-title">Khung tài liệu SSOT</p>
-  <p>Site này gồm <strong>overview</strong>, <strong>cấu trúc workspace</strong>, <strong>workflows</strong>, <strong>references</strong> (CLI + skills). Slash skills đầy đủ sync vào repo dự án sau <code>flowgrid setup</code>; bản đọc trên web nằm dưới <strong>References → Skills</strong>.</p>
+  <p class="custom-block-title">SSOT Architecture Documentation</p>
+  <p>This site provides <strong>overview</strong>, <strong>workspace structure</strong>, <strong>workflows</strong>, and <strong>references</strong> (CLI + skills). Slash skills are fully synchronized into project workspaces via <code>flowgrid setup</code>; web references can be explored under <strong>References → Skills</strong>.</p>
 </div>

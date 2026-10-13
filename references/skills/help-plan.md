@@ -1,54 +1,58 @@
-# Kỹ năng: `/help-plan`
+# Skill: `/help-plan`
 
-## Tên
-`help-plan` (Action Plan & User Flow Navigation Advisor)
+## Name
+`help-plan` (Implementation Planning & User Flow Navigation Advisor)
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: **`/help-plan`**.
-- Chạy khi bạn có một yêu cầu mới, tính năng mới hoặc Change Request (CR) cần làm gấp nhưng chưa biết phải bắt đầu từ đâu, đọc file nào hay thực hiện theo thứ tự nào.
+## Usage (Command/Trigger)
+- Call via slash command: `/help-plan <requirement / CR / bug description>`
+- Used whenever starting a new requirement, feature, Change Request (CR), or bug fix where you need an actionable, grounded plan adhering to FlowGrid's lifecycle.
 
-## Input (Dữ liệu đầu vào)
-1. **`.flowgrid/config.json`**: Danh sách surfaces, projects (FE/BE, technology stack).
-2. **`inition-inventory.md`** (hoặc `adoption-inventory.md`): Danh mục ánh xạ surfaces, modules (`CMP-*`), screens (`W-*`), đường dẫn file code legacy (`source-legacy/` hoặc `source-code/`), và Common patterns (`CMN-*`).
-3. **Hiện trạng tài liệu trong Workspace**: Cấu trúc `surfaces/`, `architecture/03-user-flows/`, `model/data-models.md`, `overview/`, v.v.
-4. **Mô tả yêu cầu từ người dùng**: Ví dụ *"Tôi cần thêm 1 tenant mới"*, *"Tôi cần thêm tính năng voucher vào surface customer"*, *"Tôi cần sửa flow thanh toán"*.
+## Input
+1. **`.flowgrid/config.json`**: Surfaces, code projects, technology stacks.
+2. **`inition-inventory.md`** (or `adoption-inventory.md`): Mapping of surfaces, modules (`CMP-*`), screens (`W-*`), active code paths, and common patterns (`CMN-*`).
+3. **Workspace Documentation State**: Existing specs under `surfaces/`, user flows under `architecture/03-user-flows/`, data models in `architecture/model/data-models.md` or `common/db-erd.md`.
+4. **Active Code Repositories**: Ground-truth implementation files in `source-code/` (or `source-legacy/`).
+5. **User Task Description**: Requirement, CR text, or bug report.
 
-## Output (Kết quả mong đợi)
-Một bản **Action Plan phân cấp chi tiết từng bước (Step 1 -> 1.1, 1.2; Step 2 -> 2.1, 2.2...)** với trọng tâm **Rà soát đầy đủ User Flow**:
+## Output
+1. **Implementation Plan File (`implementation-plan-[task-slug].md`)**: A structured markdown plan with concrete checkboxes `[ ]`, file coordinates, reality checks, and decision gates.
+2. **Exhaustive User Flow Trace Proposal**: Mines `inition-inventory.md` to identify and schedule tracing for **as many related user flows as possible — ideally ALL of them** (Tier A Cross-surface, Tier B Surface-shared, Tier C Module-scope) across the 5-link flow chain (Upstream, Primary, Downstream side-effects, Failure/Rollback, System/Security).
+3. **Reality vs Requirement Discrepancy Matrix**: Unveils contradictions between what the requirement assumes and what the active codebase actually does.
+4. **Human Decision Checkpoint**: Stops to request member approval (`Proceed / Approve` vs `Pause / Research`) before code generation.
 
-1. **Rà soát toàn diện các User Flow liên quan (Mandatory Check):**
-   - **Architecture & System Flows (`architecture/03-user-flows/`):** Các luồng hạ tầng như cấp phát tài nguyên (`FLOW-*-provisioning`), phân tách dữ liệu & JWT (`FLOW-*-isolation-auth`), đồng bộ ngầm, billing, audit logging.
-   - **Product & Business User Flows:**
-     - *Upstream Flow:* Luồng khởi tạo và dữ liệu đầu vào đến từ đâu?
-     - *Primary Story Flow:* Thao tác tương tác chính của Actor tại màn hình.
-     - *Downstream Flows & Side-effects:* Hiệu ứng lan truyền sang các module/surface khác (trừ kho, bắn thông báo, hạch toán).
-     - *Failure & Rollback Flow:* Luồng xử lý khi gặp lỗi ngoại lệ, hủy hoặc hoàn tiền.
-2. **Chiến lược kiểm tra 2 cấp (Two-tier Check):**
-   - *Surface check:* Nếu tài liệu surface đã có -> Đọc hiểu; nếu chưa có -> Dựng khung (`/surfaces`) hoặc trace từ inventory (`/trace`, `/legacy`).
-   - *Module check:* Nếu module đã có -> Mở ra đọc & chuẩn bị `/update-spec`; nếu chưa có -> Khởi tạo module (`/module`), viết spec mới (`/spec`).
-3. **Lộ trình FlowGrid End-to-End:**
-   - **Step 1:** Khảo sát & làm rõ Surface.
-   - **Step 2:** Kiến trúc & User Flow (Cập nhật `FLOW-*.md`, Data models).
-   - **Step 3:** Module & Tái sử dụng Common Catalog (`CMN-*` trong `inition-inventory.md`).
-   - **Step 4:** Đặc tả Leaf Bundle Spec & Phản biện nghiệp vụ (`/spec`, `/grill-bqa`, `pnpm flowgrid:split`).
-   - **Step 5:** Prototype & Backend Contract (`/prototype`, `/api-spec`).
-   - **Step 6:** Kiểm thử tự động (`/testcase`, `pnpm flowgrid:cases:gen`).
-   - **Step 7:** Đấu nối mã nguồn thật & Chạy audit gate (`/wire`, `pnpm flowgrid:audit`).
-4. **Cheat Sheet:** Bảng tổng hợp các lệnh/skill cần chạy tuần tự.
+## Description
+- **Core Engineering Philosophy:** Never jump directly into coding or blindly trust requirement descriptions. Requirements and bug tickets frequently misstate how the system currently behaves.
+- `/help-plan` structures task execution into FlowGrid's standard 6-phase lifecycle:
+  - **Init Inventory Mining (Trace All Related Flows):** Traverses the inventory established during `/init` to uncover all interconnected user flows. Instead of scoping to an isolated screen, it schedules tracing for the complete flow graph to guarantee zero blast radius surprises.
+  - **Phase 1: Trace All Related Flows & Baseline Current Reality:** Inspect active code. Reconstruct or verify each discovered flow (`FLOW-*.md`) and screen spec (`W-*.bundle.yaml`) using `/user-flow`, `/trace` (Maintain), or `/legacy` (Rebase). Clarify the ground truth.
+  - **Phase 2: Gap Analysis & Spec Delta Update:** Analyze blast radius across all traced flows. Update specs with `/update-spec` (or `/spec`). Run `flowgrid audit spec` and `flowgrid split`.
+  - **Phase 3: Decision Gate (Human Checkpoint):**
+    - If contradictions or severe risks exist: PAUSE, log to QA inbox (`qa/<SHORT>_NNNN.yaml` with `#tech-debt:QA-*`) to research further.
+    - If clear and validated: Member clicks **Approve / Proceed** to begin implementation.
+  - **Phase 4: Design Grilling & API Contract Freeze:** Run `/grill-bqa` (business rules, 4-tier error handling), `/grill-dev` (technical readiness), and `/api-spec` (or `/api-update`) with `flowgrid api:check`.
+  - **Phase 5: Test-Driven Implementation & Wiring:** Micro-granularity TDD steps (Write failing test case -> Verify failure Red -> Minimal code via `/prototype` or `/api` -> Verify pass Green -> Refactor and wire live services via `/wire`).
+  - **Phase 6: Quality Gate & Verification:** Execute scoped Playwright E2E tests, `flowgrid audit e2e`, and `flowgrid audit fe-be`.
 
-## Description / Ý nghĩa
-- Giúp developer không bị "lạc" trong hệ sinh thái FlowGrid khi phải đối mặt với các task gấp.
-- Đặc biệt ngăn chặn rủi ro bỏ quên các User Flow liên đới và hiệu ứng lan truyền (blast radius) trên toàn hệ thống.
-- Tự động tận dụng tối đa kết quả quét từ `/init` (`inition-inventory.md`) để chỉ định đúng file legacy cần đọc, đúng surface cần vào, tránh việc viết code tùy tiện hoặc copy-paste legacy.
+## Related Skills
+- **Baseline Discovery:** `/trace` (Maintain), `/legacy` (Rebase), `/user-flow`.
+- **Spec Authoring:** `/spec`, `/update-spec`, `/module`, `/surfaces`.
+- **Review & Gates:** `/grill-bqa`, `/grill-dev`, `/api-spec`, `/testcase`, `/wire`.
+
+## Important Notes
+- Always mines `inition-inventory.md` to propose tracing **all related user flows**.
+- Always generates an `implementation-plan-[task-slug].md` file on disk.
+- Enforces **Review Focus** identifying top 5 production failure modes (Boundaries, Malformed payloads, Flow chain rollbacks, Concurrency/Race conditions, Multi-tenant security).
+- Mandates **TDD micro-granularity** in implementation tasks.
+- Never outputs vague conversational brainstorms.
+- Always stops for user review and approval before running code generation.
 
 ---
 
-## Example prompt (mẫu gọi)
+## Example Prompt
 
 ```text
-/help-plan Tôi cần thêm 1 tenant mới vào hệ thống multi-tenant, hãy phân tích inventory và lập plan giúp tôi bắt đầu từ đâu.
-```
+/help-plan
 
-```text
-/help-plan Tôi cần thêm tính năng Export Excel cho màn hình danh sách đơn hàng thuộc surface Admin, hãy lên plan chi tiết.
+Goal: Fix order status display bug and add batch cancel order action on Web Admin Order Listing screen.
+Analyze inition-inventory.md, discover all related user flows, check current reality against active code, and output an actionable implementation plan.
 ```

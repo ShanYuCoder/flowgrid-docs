@@ -1,42 +1,28 @@
 # Skill: `/decision`
 
-## Tên
+## Name
 `decision`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/decision`
+## Usage (Command/Trigger)
+- Call via slash command: `/decision <ADR-title>`
+- Used to record Architecture Decision Records (ADR) under `architecture/09-architectural-decisions/`.
 
-## Input (Dữ liệu đầu vào)
-- Quyết định kiến trúc hệ thống (Architecture Decision) cần được ghi nhận. 
-- Mối liên kết với các Module (`CMP-*`), Thành phần (`CTR-*`) hoặc Luồng nghiệp vụ (`FLOW-*`) liên quan.
+## Input
+- Architectural dilemma, evaluated alternatives, selected decision, technical justification.
 
-## Output (Kết quả mong đợi)
-- Sinh ra file tài liệu Quyết định Kiến trúc (Architecture Decision Record - ADR).
-- Vị trí lưu: `architecture/09-decisions/ADR-{NNN}-{slug}.md`. (Kèm theo cập nhật bảng mục lục Index table).
-- Sử dụng mẫu `.cursor/extracts/tpl-adr.md`.
+## Output
+- ADR document: `ADR-{NNNN}-{slug}.md` adhering to Michael Nygard's standard ADR template (Status, Context, Decision, Consequences).
 
-## Description / Ý nghĩa
-- Dành riêng cho việc ghi nhận các Quyết định Kiến trúc (ADRs) dựa trên chuẩn arc42 phần 9.
-- Giúp lưu lại lý do tại sao đội ngũ lại chọn giải pháp công nghệ này thay vì giải pháp khác (Ví dụ: Tại sao chọn Kafka thay vì RabbitMQ).
-- **Tuyệt đối cấm:**
-  - Không được lưu ngược ADR về thư mục `shared/adr` cũ (chỉ để lại file chuyển hướng stub).
-  - Không được di chuyển các file `api-catalog` hay `data-model` vào phần số 9 này.
-  - Các tài liệu hướng dẫn quy trình nội bộ (Platform process howto) phải nằm ở `platform/`, không được nhét vào `/decision`.
-
-## Các Skill liên quan
-- Kích hoạt bởi lệnh gốc `/architecture`.
+## Description
+- Records pivotal architectural choices and trade-offs made by engineering leadership.
+- Provides immutable historical rationale for future developers, preventing repeated debates over settled decisions.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
-/decision
+/decision Use PostgreSQL JSONB for Dynamic Product Attributes
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Record ADR evaluating MongoDB vs PostgreSQL JSONB; decide on PostgreSQL JSONB due to transactional consistency requirements.
 ```
-

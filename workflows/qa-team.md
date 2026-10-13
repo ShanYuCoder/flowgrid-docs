@@ -1,34 +1,34 @@
-# Workflow — QA inbox (đơn giản)
+# Workflow — QA Inbox (Simplified)
 
-**Một QA = một file.** Tên file = **mã QA** (không đổi suốt đời case đó).
+**One QA = One File.** The filename = **QA Code** (immutable throughout the lifetime of the issue).
 
-**Mã QA:** `{màn/module rút gọn}_{index}` — index tăng dần **theo prefix** (0001, 0002…).
+**QA Code format:** `{abbreviated screen/module}_{index}` — index increments sequentially **per prefix** (`0001`, `0002`…).
 
-| Ví dụ màn | Rút gọn (gợi ý) | File |
-|-----------|-----------------|------|
+| Example Screen | Abbreviation (Suggested) | File |
+|----------------|--------------------------|------|
 | `W-HOTEL-LIST` | `HOTEL-LIST` | `qa/HOTEL-LIST_0001.yaml` |
-| `cmp-adm-ord-01-02-01-02` | `ADM-AUTH` (team chọn slug cố định) | `qa/ADM-AUTH_0001.yaml` |
+| `cmp-adm-ord-01-02-01-02` | `ADM-AUTH` (team chooses fixed slug) | `qa/ADM-AUTH_0001.yaml` |
 
-Legacy FlowGrid vẫn chấp nhận id dạng `QA-<page-id>-NNNN` nếu team đã dùng — ưu tiên slug ngắn cho file mới.
+Legacy FlowGrid workspaces still accept identifiers in `QA-<page-id>-NNNN` format — prefer short slugs for new items.
 
 ---
 
-## Cấu trúc hub
+## Hub Directory Structure
 
 ```text
 qa/
-  HOTEL-LIST_0001.yaml    # SSOT — toàn bộ hội thoại + target spec
+  HOTEL-LIST_0001.yaml    # SSOT — complete conversation log + target spec
   ADM-AUTH_0002.yaml
-  index.md                # CHỈ catalog (render) — state + link + dòng cuối
+  index.md                # CATALOG ONLY (rendered) — state + link + last entry
 ```
 
-**Không** `qa/open` / `qa/resolved` / `supersedes` / nhiều file cho một case.
+**Never** create separate subdirectories like `qa/open` / `qa/resolved`, or `supersedes` chains, or multiple files for the same issue.
 
 ---
 
-## Nội dung file (SSOT)
+## File Schema (SSOT)
 
-Timeline **`updates[]`** — mỗi sự kiện **append một dòng** (không sửa/xóa dòng cũ):
+Timeline **`updates[]`** — append **one entry per event** (never edit or delete historical rows):
 
 ```yaml
 schema: flowgrid-qa-item/v1
@@ -43,61 +43,61 @@ updates:
     by: middle-dev
     kind: question
     text: |
-      Filter timezone lấy theo property hay user locale?
+      Should timezone filter resolve via property setting or user locale?
   - at: "20260930 10:00"
     by: ba-lead
     kind: answer
     text: |
-      Theo property TZ; hiển thị label UTC+7 trên UI.
+      Resolve by property TZ; display UTC+7 label on UI.
   - at: "20261001 08:00"
     by: senior
     kind: review
     text: |
-      needs-change: thêm AC khi property chưa set TZ.
+      needs-change: add AC when property has no configured TZ.
 ```
 
-**Quy ước `at`:** `YYYYMMDD HH:mm` (team) hoặc ISO — giữ **thống nhất trong repo**.
+**Timestamp format for `at`:** `YYYYMMDD HH:mm` (team convention) or ISO 8601 — keep **consistent across the repository**.
 
-| `kind` | Ai / khi |
-|--------|----------|
-| `question` | Mở QA (Log Tech Debt / AskQuestion) |
-| `answer` | Chốt quyết định — kèm patch spec (`/qa-resolve`) |
-| `review` | Senior góp ý; nếu `needs-change` trong text → `status: open` lại |
-| `note` | Ghi chú, không đổi spec |
+| `kind` | Who / When |
+|--------|------------|
+| `question` | Opening a QA item (Log Tech Debt / AskQuestion) |
+| `answer` | Finalizing a decision — accompanied by a spec patch (`/qa-resolve`) |
+| `review` | Senior feedback; if `needs-change` is in the text → sets `status: open` |
+| `note` | Informational remarks without spec alterations |
 
-**`needs-change`:** không tạo file mới — **append** `kind: review` (hoặc `note`) → `status: open` → middle append `answer` sau khi sửa spec.
+**`needs-change` handling:** Do not create a new file — **append** `kind: review` (or `note`) → set `status: open` → developer appends `answer` upon applying spec revisions.
 
 ---
 
 ## `qa/index.md`
 
-Chỉ bảng (render):
+Table overview only (rendered view):
 
-| Mã | Status | Screen | Cập nhật cuối | Tóm tắt |
-|----|--------|--------|---------------|---------|
+| ID | Status | Screen | Last Updated | Summary |
+|----|--------|--------|--------------|---------|
 
-SSOT nội dung = file YAML; index **không** copy full log.
-
----
-
-## Skill
-
-| Skill | Việc |
-|-------|------|
-| Mở QA | Tạo `qa/{CODE}_NNNN.yaml` + `updates[0]` kind `question` |
-| `/qa-resolve` | Append `answer` + patch `target` trên bundle/01 + `status: closed` (nếu chốt) |
-| `/qa-review` | Append `kind: review` — không patch bundle (trừ khi user chạy `/update-spec`) |
-
-Grill / AskQuestion: [grill-and-human-review.md](./grill-and-human-review.md) · tag `QA-*` trên field: [dsl.md § QA](../artifacts/dsl.md#vòng-đời-tech-debt--open-question-qa).
+SSOT content resides in YAML files; the index **never** copies raw log bodies.
 
 ---
 
-## Solo vs team
+## Skills
 
-| | Solo + AI | Team |
-|--|-----------|------|
-| File | 1 file / case | Cùng — senior đọc `updates[]` |
-| Trace | Đọc file từ trên xuống | Git blame + timeline |
-| Index | Tùy chọn render | Bảng trạng thái cho lead |
+| Skill | Action |
+|-------|--------|
+| Open QA | Creates `qa/{CODE}_NNNN.yaml` with initial `updates[0]` of kind `question` |
+| `/qa-resolve` | Appends `answer` + patches `target` in bundle/01 + sets `status: closed` (if resolved) |
+| `/qa-review` | Appends `kind: review` — does not patch bundle directly (unless user triggers `/update-spec`) |
 
-Template: `.flowgrid/templates/qa-item.yaml` + `qa-authoring.md` (schema `flowgrid-qa-item/v1`) · extract: `qa-inbox.md`, `qa-team.md`.
+Grilling / AskQuestion integration: [grill-and-human-review.md](./grill-and-human-review.md) · `QA-*` field-level tags: [dsl.md § QA](../artifacts/dsl.md#vòng-đời-tech-debt--open-question-qa).
+
+---
+
+## Solo vs Team Operations
+
+| Dimension | Solo + AI | Team |
+|-----------|-----------|------|
+| Files | 1 file per case | Same — senior reviews `updates[]` |
+| Tracing | Sequential top-down reading | Git blame + timeline audits |
+| Index | Optional render | Central status dashboard for leads |
+
+Templates: `.flowgrid/templates/qa-item.yaml` + `qa-authoring.md` (schema `flowgrid-qa-item/v1`) · Extracts: `qa-inbox.md`, `qa-team.md`.

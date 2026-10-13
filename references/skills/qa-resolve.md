@@ -1,22 +1,32 @@
 # Skill: `/qa-resolve`
 
-## Tên
+## Name
 `qa-resolve`
 
-## Cách dùng
-- Slash: `/qa-resolve HOTEL-LIST_0001` (hoặc legacy `QA-<page-id>-NNNN`) **kèm solution** trên các dòng sau.
-- Đọc `qa/<id>.yaml`, patch `target.path` / `target.at`, **append** `kind: answer`, `status: closed`.
+## Usage (Command/Trigger)
+- Call via slash command: `/qa-resolve <QA-ID>`
+- Used when a pending QA tech debt or open question has been answered by stakeholders.
 
-## Không dùng khi
-- Grill full screen chưa có file QA.
-- Chỉ sync API đã chốt (`/api-update`).
+## Input
+- QA file: `qa/<SHORT>_NNNN.yaml`.
+- Decision text and target specification path.
 
-## Workflow
-[workflows/qa-team.md](../../workflows/qa-team.md) · extract `qa-inbox.md`
+## Output
+- Appended `updates[]` entry with `kind: answer`.
+- Status updated: `status: closed`.
+- Surgical patch applied to the target bundle or API contract.
 
-## Example
+## Description
+- Closes open items in the QA inbox.
+- Applies the agreed business decision directly to the SSOT specification file, maintaining full historical audit trails.
+
+---
+
+## Example Prompt
 
 ```text
 /qa-resolve HOTEL-LIST_0001
-Filter timezone theo property TZ; label UTC+7 trên UI.
+
+Decision: Timezone filtering defaults to property local timezone; display UTC+7 label on UI.
+Patch target bundle at surfaces/admin/CMP-HOTEL/01/hotel-list.bundle.yaml.
 ```

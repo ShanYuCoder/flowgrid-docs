@@ -1,46 +1,33 @@
 # Skill: `/surfaces`
 
-## Tên
+## Name
 `surfaces`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/surfaces <Tên Surface>` (Ví dụ: `/surfaces "Admin Portal"`)
-- Có thể dùng kèm với `common`: `/surfaces common` (cho toàn hệ thống) hoặc `/surfaces "Admin Portal" common` (Share riêng trong phạm vi 1 Surface).
-- Có thể kết hợp cờ khảo cổ mã nguồn cũ: `/legacy /surfaces`
+## Usage (Command/Trigger)
+- Call via slash command: `/surfaces`
+- Executed during Phase 0 project setup.
 
-## Input (Dữ liệu đầu vào)
-- Tên Business Surface (VD: Customer App, Admin Portal, Integration Gateway).
-- Nếu có `/legacy`: Đọc `legacy-repos.local.json`.
-- Định danh và thông tin về người dùng (actors), kênh tương tác (channels) và phạm vi nghiệp vụ (business responsibility).
+## Input
+- High-level system architecture and target client platforms.
 
-## Output (Kết quả mong đợi)
-- Khởi tạo thư mục và sinh ra các file tài liệu Markdown lưu tại `surfaces/<Tên Surface>/`.
-- Nếu có cờ `/legacy`: Khảo cổ mã nguồn cũ và map lại thành `legacy-surface.md`.
+## Output
+- Surface catalog definitions under `surfaces/` (e.g., `surfaces/admin/`, `surfaces/portal/`, `surfaces/mobile/`).
+- Navigation models and layout boundaries per client application.
 
-## Description / Ý nghĩa
-- Dùng để thiết kế tầng **Giao diện Nghiệp vụ (Business Surfaces)**. Tầng này định nghĩa rõ "Ai (Actor) - làm gì (Business Responsibility) - trên kênh nào (Channel)".
-- Ranh giới Kỹ thuật (Surface Technical Boundary): 
-  - Thư mục Surface **CHỈ ĐƯỢC PHÉP** chứa tài liệu kỹ thuật liên quan đến UI/Page Building (UI Layout, States, Props) hoặc Data Schema của 1 API đơn lẻ. 
-  - **TUYỆT ĐỐI CẤM** nhét cấu trúc Backend server, Load balancer, cấu trúc Database ngầm vào đây.
-  - Luồng xuyên suốt (Cross-flows) trong thư mục Surface chỉ được phép là luồng điều hướng màn hình (User navigation journeys), CẤM chứa luồng kỹ thuật Backend chéo.
-- Lưu ý: **API NỘI BỘ KHÔNG PHẢI LÀ MỘT SURFACE**. Đừng bao giờ tạo thư mục `surfaces/API` để chứa API của một màn hình. **API giao tiếp ngoại vi** (webhook, Open API cho bên thứ 3) vẫn nằm trên một **surface nghiệp vụ** bình thường (ví dụ `surfaces/partner-gateway/…/api/<seq>/`) — cùng skill `/api-spec`, không tách skill riêng.
+## Description
+- Defines the top-level application surfaces (Web Admin, Client Portal, Mobile App, Partner API).
+- Isolates distinct user experiences, permissions, and deployment targets within the unified Docs Hub.
 
-## Các Skill liên quan
-- Được kích hoạt/điều phối bởi `/architecture`.
-- Nếu thiết kế chung cho toàn hệ thống → Gọi `/common`.
-- Đi sâu vào thiết kế chức năng bên trong Surface → Gọi `/module`.
+## Related Skills
+- **Preceding:** `/overview`.
+- **Subsequent:** `/module`, `/user-flow`.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
 /surfaces
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Define application surfaces for E-Commerce platform: Web Admin (admin), Customer Storefront (shop), and Mobile Delivery Driver App (driver).
 ```
-

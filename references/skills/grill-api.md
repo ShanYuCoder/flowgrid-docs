@@ -1,26 +1,25 @@
-# Skill: `/grill-api` (docs hub router)
+# Skill: `/grill-api`
 
-## Tên
+## Name
 `grill-api`
 
-## Cách dùng (Command/Trigger)
-- Slash: `/grill-api` — **chỉ trên docs hub** (hoặc consumer có skill docs đầy đủ).
-- Không thay `/grill-api-spec`; skill này **chỉ điều hướng** tới contract grill.
+## Usage (Command/Trigger)
+- Call via slash command: `/grill-api <target>`
+- Router command directing to either contract grilling (`/grill-api-spec`) or backend code audits (`/audit-api`).
+
+## Input
+- API contract or backend repository code.
 
 ## Output
-- Route tới **`/grill-api-spec`** sau khi đã có `…/api/<seq>/01-backend-spec.yaml`.
-- Thiếu `01` → handoff **`/api-spec`**.
+- Dispatches to appropriate backend grilling workflow.
 
 ## Description
-- Đọc `feature.source.base` trên `01` — portal hay `base: none` — **cùng một** `/grill-api-spec`.
-- Audit **code BE** sau implement → dùng **`/audit-api`** trên repo API (BE), không dùng slash này.
+- Central router for all API quality assurance checks in Phase 2c and Phase 3.
 
-## Liên quan
-- Contract: `/grill-api-spec` · Sinh code: bộ code `/api` · Soi code: `/audit-api`
+---
+
+## Example Prompt
 
 ```text
-/grill-api
-
-Target: {API-* | slug} — resolve 01-backend-spec.yaml
-→ /grill-api-spec
+/grill-api surfaces/admin/CMP-ADM-ORD/01/01/api/01/01-backend-spec.yaml
 ```

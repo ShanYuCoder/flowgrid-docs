@@ -1,43 +1,25 @@
 # Skill: `/model`
 
-## Tên
+## Name
 `model`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/model <function-slug hoặc --id W-*|API-*>`
-- **Sau** `/prototype` (hoặc khi spec đã rõ contract), **trước** `/wire` / parser unit.
+## Usage (Command/Trigger)
+- Call via slash command: `/model`
+- Used in Phase 2a to generate TypeScript models and DTOs from contracts.
 
-## Input (Dữ liệu đầu vào)
-- `ir/design.yaml` / API spec liên quan slug.
-- Portal workspace: chỉ tầng `models/`.
+## Input
+- `01-backend-spec.yaml` or `02-openapi.yaml`.
 
-## Output (Kết quả mong đợi)
-- Zod schema + `z.infer` types; key khớp spec/API/BE.
-- Không `$apiFetch`; không sửa service/composable/page/test trong session này.
+## Output
+- TypeScript interfaces and DTOs in FE repository (`src/models/`).
 
-## Description / Ý nghĩa
-- Implementation lane — chỉ contract types ở `models/{entity}/`.
-- Validation UI thuộc `validations/` (session khác nếu cần).
+## Description
+- Automatically maps contract schemas to frontend data models, ensuring type safety.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Khi nào:** Cần Zod/types trước wire hoặc unit parser.
+## Example Prompt
 
 ```text
-/model
-
-Function slug: {hotel-list}
-Spec: prefer `--id {W-*|API-*}`
-
-Scope: CHỈ models/{entity}/
-- Zod API contract + z.infer types
-- Key khớp spec/API/BE; validation UI để validations/
-- Không $apiFetch; không sửa service/composable/page/test
-
-Done: schema compile, types export, không import ngược tầng trên
-
-Handoff: /wire hoặc /unit (parser) sau khi có API thật
+/model surfaces/admin/CMP-ADM-ORD/01/01/api/01/01-backend-spec.yaml
 ```
-

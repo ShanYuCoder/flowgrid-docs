@@ -1,45 +1,35 @@
 # Skill: `/testcase`
 
-## Tên
+## Name
 `testcase`
 
-## Cách dùng
-- Slash: `/testcase <W-* | slug | path under cases/>`
-- **Owner:** tests-docs hub (`FLOWGRID_TESTS_DOC`) — không sửa Playwright trên e2e-root.
+## Usage (Command/Trigger)
+- Call via slash command: `/testcase <W-* or slug>`
+- Authoring skill in **Phase 2b (Tests)** on the tests-docs hub (`FLOWGRID_TESTS_DOC`).
 
 ## Input
-- **Bắt buộc:** toàn bộ `*.bundle.yaml` cùng function leaf trên docs hub (`FLOWGRID_DOCS_ROOT`).
-- Trace từ `userStories`, `acceptanceCriteria`, `spec.ui`, `design.sections`, `design.actions`, `design.stateMatrix`.
+- Full leaf specification: `*.bundle.yaml` (`userStories`, `acceptanceCriteria`, actions, `testIds`).
+- Rendered specification: `ir/generated/spec.md`.
 
 ## Output
-- `cases/<mirror-path>/TC-*.yaml` (`schemaVersion: 2`, `testMatrix`, `traceability`, `steps`, `testIds`).
-- Sau handoff: `flowgrid cases:render` → `TC-*.md` (user case VitePress).
+- Test case plan YAML: `cases/**/TC-*.yaml` (`schemaVersion: 2`).
+- Rendered human-readable test case: `TC-*.md` via `flowgrid cases:render`.
 
 ## Description
-- SSOT **plan** kiểm thử theo function — feed `testcase:gen` và grill.
-- Path mirror docs: [artifacts/tests-docs.md](../../artifacts/tests-docs.md).
-- Hướng dẫn: [tpl-testcase-plan.md](../../../harness/tests/templates/tpl-testcase-plan.md).
+- Authors comprehensive test case plans directly from business acceptance criteria.
+- Enforces multi-facet test matrices covering happy paths, business validations, authorization edge cases, and error boundaries.
+- **Traceability:** Links every test step directly back to bundle stories, ACs, and `data-testid` selectors.
 
-## Gates
-- Draft: `flowgrid audit testcase <TC> --bundle <bundle.yaml>`
-- Release: `flowgrid cases:gate --strict --docs-root $FLOWGRID_DOCS_ROOT`
-
-## Chú ý
-- Bundle thiếu story/AC → **STOP** → `/update-spec` trên docs — không bịa test.
-- **Không** sửa `TC-*.md` tay; **không** dùng generated MD làm SSOT.
-- YAML thuần — không JS thô trong giá trị (`"a".repeat(256)`).
-
-## Liên quan
-- **Trước:** bundle/spec ổn trên docs (có thể song song sau design grill round 1).
-- **Sau:** `/grill-testcase` → `cases:render` → `testcase:gen` → `/test`.
+## Related Skills
+- **Preceding:** `/spec`, `/grill-bqa`.
+- **Subsequent:** `/grill-testcase` → `flowgrid testcase:gen` → `/test`.
 
 ---
 
-## Example prompt
+## Example Prompt
 
 ```text
-/testcase
+/testcase W-ADM-ORD-01
 
-Target: W-ADM-AUTH-01 · mirror cases path under FLOWGRID_TESTS_DOC
-Read full login.bundle.yaml on docs hub before authoring TC-LOGIN-01.yaml
+Author full testcase plan for Order Listing screen covering pagination, status filtering, empty search results, and CSV export.
 ```

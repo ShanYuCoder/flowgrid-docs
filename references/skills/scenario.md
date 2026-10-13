@@ -1,33 +1,33 @@
 # Skill: `/scenario`
 
-## Tên
+## Name
 `scenario`
 
-## Cách dùng (Command/Trigger)
-- Slash: `/scenario` — **tests-docs hub** (`--type=tests`).
-- Author **SC-*** (cross-flow) sau khi docs hub có `FLOW-*.md` tương ứng.
+## Usage (Command/Trigger)
+- Call via slash command: `/scenario <FLOW-ID>`
+- Used in Phase 2b to author end-to-end multi-screen scenario test plans.
 
 ## Input
-- `FLOW-*.md` trên docs hub (`FLOWGRID_DOCS_ROOT`) — resolve theo LCA `common/user-flows/`.
-- Ma trận màn `screens: [W-*]` cho toàn journey.
+- User flow specification: `FLOW-*.md` from Docs Hub.
+- Screen list touched by the user journey (`screens: [W-*, ...]`).
 
 ## Output
-- YAML scenario dưới `scenarios/…` **mirror** path FLOW trên tests hub.
-- Sau author: `flowgrid audit scenario <SC> --tests-docs <hub>` — sửa `SC_SCREEN_NO_TC` bằng `TC-*.yaml` hoặc defer `QA-*`.
+- Scenario plan YAML: `scenarios/**/SC-*.yaml`.
 
 ## Description
-- Kịch bản **xuyên màn / xuyên module** — không thay `/testcase` (một màn).
-- FLOW mỏng hoặc thiếu → handoff docs-hub `/user-flow` hoặc `/update-spec` (prompt `/docs-hub` copy-paste).
-- Không invent business từ `common/yaml/` hay patterns.
+- Defines overarching user journey test plans spanning multiple screens and services.
+- Orchestrates sequential test execution orders and data handoffs across individual screen test cases.
 
-## Liên quan
-- Plan màn: `/testcase` · Grill plan: `/grill-testcase` · Gate: `cases:gate`
-- Workflow: [test.md](../../workflows/test.md) · Artifact: [tests-docs.md](../../artifacts/tests-docs.md)
+## Related Skills
+- **Preceding:** `/user-flow`.
+- **Subsequent:** `/testcase` (per screen) → `audit scenario`.
+
+---
+
+## Example Prompt
 
 ```text
-/scenario
+/scenario FLOW-ADM-AUTH-01
 
-FLOW: {FLOW-checkout} · screens: W-*, W-*
-Mirror path scenarios/…/FLOW-checkout/SC-*.yaml
-Run: flowgrid audit scenario … --tests-docs $FLOWGRID_TESTS_DOC
+Author cross-screen scenario plan for login, two-factor OTP verification, and first-time password reset.
 ```

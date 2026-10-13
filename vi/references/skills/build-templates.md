@@ -1,0 +1,58 @@
+# Skill: `/build-templates`
+
+> Golden sample là một **thư mục module**. Phân tích trước, ghi template khi member tiếp tục (`--yes`).
+
+## Tên
+`build-templates`
+
+## Cách dùng (Command/Trigger)
+- Gọi qua slash command: `/build-templates`
+- Dùng khi khởi tạo dự án mới hoặc khi có sự thay đổi lớn về thư viện UI/Core ở phía mã nguồn Frontend/Backend.
+
+## Input (Dữ liệu đầu vào)
+- File cấu hình `platform-repos.local.json` (Để định vị đường dẫn thư mục code FE/BE).
+- Các file `package.json` của FE/BE.
+- Các file Component dùng chung (Breadcrumb, Layout, Form, Table) trong mã nguồn Frontend.
+
+## Output (Kết quả mong đợi)
+- Bước phân tích ghi `.flowgrid/template-plan.json`.
+- Bước `--yes` ghi template vào Workspace SSOT, dưới `.flowgrid/adapters/<target>/custom/templates/`:
+  - Nuxt, Next, Nest → `.hbs`
+  - Laravel → `.stub`
+  - FastAPI → `.j2`
+  - .NET → `.scriban`
+- FE ghi `design.registry.json`. BE ghi `codegen.registry.json` dưới `.flowgrid/adapters/<target>/custom/registries/` tại Workspace SSOT (tuyệt đối không ghi vào repo code).
+
+## Description / Ý nghĩa
+- Để hệ thống có thể tự động sinh code (gencode) cho cả Frontend, Backend, và Test E2E, FlowGrid hiện đang cần gắn liền với một bộ base có sẵn của các công nghệ như Nuxt4, Next.js, Python FastAPI, Laravel... với các cấu trúc thư mục, file mẫu, và common code định sẵn.
+- **Vấn đề đặt ra:** Khi áp dụng vào các dự án có sẵn, đôi khi dự án đó không tuân thủ đúng base tiêu chuẩn của công nghệ, hoặc dùng chung công nghệ nhưng lại khác cấu trúc layout, thư viện dùng chung. Ví dụ: base FE mặc định của FlowGrid dùng `shadcn-ui`, nhưng một dự án khác lại dùng `vuetify`.
+- **Giải pháp của `/build-templates`:** Đọc một thư mục module (kể cả repo ngoài hệ thống), lập plan, rồi khi member tiếp tục thì ghi template đúng công nghệ vào repo FE hoặc BE tương ứng.
+- **Tiêu chuẩn 4 Lớp Chất Lượng (4-Layer Standard) cung cấp dữ liệu sạch cho DSL:**
+  1. **Contract Invariants (Bất biến hợp đồng):** Quét kiểu dữ liệu Props/Inputs, giá trị mặc định, validation và chuẩn bọc Response envelope `{ data, error, meta }`.
+  2. **4 Trạng thái chuẩn (4 Canonical States):** Đảm bảo template có đủ các slot/xử lý cho `Loading` (skeleton), `Empty` (không có dữ liệu), `Error` (báo lỗi & retry), và `Success / Active` (hiển thị nội dung).
+  3. **Độc lập phụ thuộc (Inversion of Control - IoC):** Loại bỏ toàn bộ URL API hoặc tên nghiệp vụ fix cứng; chuẩn hoá thành các placeholder của FlowGrid DSL.
+  4. **Golden Test Seam:** Trích xuất mẫu kiểm thử chuẩn (Vitest, Jest, PHPUnit...) để khi `testcase:gen` sinh test case có thể mount và chạy được ngay.
+
+## Các Skill liên quan
+- **Trước đó:** Khởi tạo qua `flowgrid setup` và chạy `/init` (liên kết `source-legacy/` hoặc `source-code/`) để quét cấu trúc và đề xuất Golden Sample.
+- **Sau đó:** `/spec` dùng registry vừa ghi. Template đã có được giữ. `--force` chỉ khi member muốn ghi đè.
+
+## Chú ý quan trọng
+- Phân tích (`--sample`) không ghi template, chỉ quét xuất `.flowgrid/template-plan.json`.
+- **Fast-track Build khi User xác nhận:** Khi user/member đã đồng ý theo đề xuất Golden Sample (bấm Approve/Proceed), Agent chạy ngay `--yes` để **BUILD LUÔN TEMPLATE**, tuyệt đối không thảo luận/discuss dài dòng qua lại vì đây là bước kỹ thuật đã có sẵn code mẫu rõ ràng.
+- Không ghi đè template đã sửa tay nếu member chưa yêu cầu `--force`.
+
+---
+
+## Example prompt (mẫu gọi)
+
+**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
+
+**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+
+```text
+/build-templates
+
+Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+```
+

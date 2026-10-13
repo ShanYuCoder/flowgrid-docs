@@ -1,6 +1,6 @@
-# Lệnh codegen — `testcase:gen` · `testcase:gen:api`
+# Codegen Commands — `testcase:gen` · `testcase:gen:api`
 
-CLI trên **repo code** (e2e-root). Plan SSOT: `FLOWGRID_TESTS_DOC` → `cases/**/TC-*.yaml`.
+CLI commands on the **code repository** (e2e-root). Planning SSOT: `FLOWGRID_TESTS_DOC` → `cases/**/TC-*.yaml`.
 
 Extract: [testcase-gen-cli.md](../../../harness/tests/extracts/testcase-gen-cli.md)
 
@@ -8,20 +8,20 @@ Extract: [testcase-gen-cli.md](../../../harness/tests/extracts/testcase-gen-cli.
 
 ## UI E2E — `flowgrid testcase:gen`
 
-**Điều kiện TC:** `genType: e2e`, `route`, `testIds`, `schemaVersion: 2`, `testMatrix`, `steps`.
+**TC Prerequisites:** `genType: e2e`, `route`, `testIds`, `schemaVersion: 2`, `testMatrix`, `steps`.
 
 ```bash
-# Resolve từ id (W-*, TC-*, CMP-*, SC-*, smoke, …)
+# Resolve by identifier (W-*, TC-*, CMP-*, SC-*, smoke, etc.)
 flowgrid testcase:gen --id W-ADM-AUTH-01
 flowgrid testcase:gen --id TC-LOGIN-VALID
 
-# Path trên tests hub
+# By path on tests hub
 flowgrid testcase:gen --testcase cases/admin/CMP-*/02/01/login/TC-LOGIN-01.yaml
 
-# Mọi TC e2e của một màn
+# All E2E TCs for a single screen
 flowgrid testcase:gen --feature W-ADM-AUTH-01
 
-# Toàn hub (e2e only)
+# Entire hub (e2e only)
 flowgrid testcase:gen --all
 
 # Dry-run (alias flowgrid testcase:gen:dry)
@@ -29,23 +29,23 @@ flowgrid testcase:gen --dry-run --id TC-*
 flowgrid testcase:gen:dry --testcase cases/.../TC-*.yaml
 ```
 
-| Flag | Ý nghĩa |
+| Flag | Meaning |
 |------|---------|
-| `--force` | Ghi đè spec/PO đã tồn tại |
-| `--tests-docs <path>` | Hub khi khác `FLOWGRID_TESTS_DOC` |
-| `--dry-run` / `--dry` | In path sẽ ghi, không ghi file |
+| `--force` | Overwrite existing spec and Page Object files |
+| `--tests-docs <path>` | Hub path when different from `FLOWGRID_TESTS_DOC` |
+| `--dry-run` / `--dry` | Print target paths without writing files to disk |
 
-**Output:** Page Object + `*.spec.ts` dưới `frontend.e2eRoot` (thường `tests/e2e/`).
+**Output:** Page Objects + `*.spec.ts` files under `frontend.e2eRoot` (typically `tests/e2e/`).
 
-**Trước gen:** `cases:gate --strict` (policy) · `portal:gen` / testId trên UI · [grill một màn](../../workflows/test.md#grill-single-screen).
+**Pre-Generation:** `cases:gate --strict` (policy) · `portal:gen` / UI testIds · [Single Screen Grilling](../../workflows/test.md#grill-single-screen).
 
-**Sau gen:** `/test` → `/grill-test` · `flowgrid audit e2e`.
+**Post-Generation:** `/test` → `/grill-test` · `flowgrid audit e2e`.
 
 ---
 
-## API hook — `flowgrid testcase:gen:api`
+## API Hook — `flowgrid testcase:gen:api`
 
-**Điều kiện TC:** `genType: api-e2e`, `refs.screen` = `API-*`, `api`, `apiSteps[]` (min 1).
+**TC Prerequisites:** `genType: api-e2e`, `refs.screen` = `API-*`, `api`, `apiSteps[]` (minimum 1 step).
 
 ```bash
 flowgrid testcase:gen:api --testcase cases/.../TC-PARTNER-EXPORT.yaml
@@ -56,15 +56,15 @@ flowgrid testcase:gen:api:dry --id TC-*
 
 **Output:** `tests/api-e2e/<module>/<TC-id>.api.spec.ts` (Playwright `request`).
 
-**Env:** `FLOWGRID_API_TEST_BASE_URL` hoặc key trong `api.baseUrlEnv`.
+**Environment:** `FLOWGRID_API_TEST_BASE_URL` or key defined in `api.baseUrlEnv`.
 
-**Newman:** không gen từ CLI — tag `contract-postman` trên TC; chạy collection riêng ([test-api](./test-api.md)).
+**Newman:** Not generated via CLI — tag `contract-postman` on TC; execute dedicated collection runner ([test-api](./test-api.md)).
 
 ---
 
-## Hub commands (không sinh Playwright)
+## Hub Commands (No Playwright Code Generation)
 
-Chạy từ tests-docs root (hoặc cwd + env):
+Execute from tests-docs root (or cwd + env):
 
 ```bash
 flowgrid cases:check
@@ -75,13 +75,13 @@ flowgrid cases:gate --strict --docs-root "$FLOWGRID_DOCS_ROOT"
 
 ---
 
-## Liên quan
+## Related Skills & Workflows
 
-| Việc | Skill |
-|------|--------|
-| Author plan UI | `/testcase` |
-| Author plan API | `/test-api` |
-| Grill plan | `/grill-testcase` |
-| Sửa spec | `/test` (UI) · API spec thường sửa tay `.api.spec.ts` sau gen |
+| Task | Skill |
+|------|-------|
+| Author UI Plan | `/testcase` |
+| Author API Plan | `/test-api` |
+| Grill Test Plan | `/grill-testcase` |
+| Fix Spec / Test Implementation | `/test` (UI) · API specs usually edited directly in `.api.spec.ts` post-generation |
 
 Workflow: [test.md](../../workflows/test.md)

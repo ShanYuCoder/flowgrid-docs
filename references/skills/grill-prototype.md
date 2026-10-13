@@ -1,45 +1,30 @@
 # Skill: `/grill-prototype`
 
-## Tên
+## Name
 `grill-prototype`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/grill-prototype <function-slug>`
-- **Sau** session `/prototype` (đã `gen:dry` → `gen` + implement HANDOFF), **trước** demo team, `/test`, hoặc `/wire`.
-- **`gen:dry`** không gọi trong skill này — chạy ở **đầu** session `/prototype` ([design.md](../../workflows/design.md#bước-trong-lane) bước 4–5).
+## Usage (Command/Trigger)
+- Call via slash command: `/grill-prototype <slug>`
+- Executed immediately following `/prototype` before test lane handoff.
 
-## Input (Dữ liệu đầu vào)
-- Route prototype đã chạy + `ir/design.yaml` trên docs hub (`FLOWGRID_DOCS_ROOT`).
-- Handoff từ prototype (auth bypass, testIds, mocks).
+## Input
+- Implemented prototype code in FE repository.
+- Original design spec: `ir/design.yaml`.
 
-## Output (Kết quả mong đợi)
-- Checklist đã verify; danh sách issue còn mở (tiếng Việt) cho `/test` hoặc sửa trong scope prototype.
+## Output
+- UI audit report covering layout fidelity, empty/loading/error states, long text overflow, and testIds.
+- Remediation patches applied to prototype code.
 
-## Description / Ý nghĩa
-- Audit UI prototype — **không** chạy Playwright/Vitest.
-- Extracts: verify-gate, common-ui-spec, portal-test-readiness.
+## Description
+- UI checklist verification ensuring the implemented prototype faithfully represents the design specification.
+- Verifies mock boundary isolation, ensuring no hardcoded production calls exist.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Khi nào:** Sau `/prototype`, trước demo hoặc handoff test/wire.
+## Example Prompt
 
 ```text
-/grill-prototype
+/grill-prototype order-list
 
-Function slug: {hotel-list}
-Route prototype: {/admin/hotels}
-
-Checklist (verify, sửa trong scope FE nếu rõ):
-- [ ] Khớp spec: happy path, validation message, loading/empty/error
-- [ ] Mock pagination ≥2 pages (khi spec có)
-- [ ] Không gọi backend thật; mock đúng boundary
-- [ ] Shell/registry reuse; composable mock boundary
-- [ ] testcase testIds.required ⊆ UI (E2E-TESTIDS)
-- [ ] Auth bypass documented
-- [ ] Layout: copy tiếng Việt, affordance UX chuẩn
-
-Không chạy Playwright/Vitest.
-Handoff (tiếng Việt): route, testIds ok/missing, #wire-only list, open issues → /test
+Verify layout responsiveness, empty state handling, and data-testid presence on W-ADM-ORD-01 prototype.
 ```

@@ -1,46 +1,42 @@
 # Skill: `/architecture`
 
-## Tên
+## Name
 `architecture`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/architecture`
-- Đóng vai trò là lệnh **Router (Điều hướng)** tổng phân phối các công việc liên quan đến kiến trúc tới các Skill con tương ứng.
+## Usage (Command/Trigger)
+- Call via slash command: `/architecture`
+- Executed in Phase 0 to establish system architecture documentation.
 
-## Input (Dữ liệu đầu vào)
-- Member sẽ nhập vào một khu vực kiến trúc (Operational Area), hoặc một Module (CMP ID), hoặc đơn giản là một nhu cầu chung về kiến trúc.
-- Agent tự động quét và phân giải (Resolve ID) sử dụng các lệnh nội bộ (`flowgrid_docs_route`, `flowgrid_docs_list_ids`).
+## Input
+- Technical stack specifications, deployment infrastructure, architectural constraints.
 
-## Output (Kết quả mong đợi)
-- Không trực tiếp sửa file, mà sẽ **điều hướng** sang một trong các Skill con chuyên sâu.
-- Bảng điều hướng (Route Map):
-  - Hỏi về mục đích kinh doanh, chân dung người dùng → Gọi `/overview`.
-  - Hỏi về nhóm màn hình (kênh giao tiếp) → Gọi `/surfaces`.
-  - Hỏi về Module / Chức năng (CMP) → Gọi `/module`.
-  - Hỏi về hạ tầng, vật lý → Gọi `/deployment`.
-  - Quyết định kiến trúc → Gọi `/decision`.
-  - Các quy trình nghiệp vụ chéo → Gọi `/user-flow`, `/db-erd`, `/cross-service`.
+## Output
+- Arc42-aligned documentation under `architecture/`:
+  - `01-context-and-scope.md`
+  - `02-architecture-constraints.md`
+  - `03-system-scope-and-context.md`
+  - `04-solution-strategy.md`
+  - `05-building-block-view.md`
+  - `06-runtime-view.md`
+  - `07-deployment-view.md`
+  - `08-crosscutting-concepts.md`
+  - `09-architectural-decisions.md`
+  - `10-quality-requirements.md`
+  - `11-risks/risk-register.md`
 
-## Description / Ý nghĩa
-- Tách biệt rõ ràng ranh giới giữa **Kiến trúc Kỹ thuật (Technical Architecture)** và **Đặc tả Nghiệp vụ (Business Spec)**.
-- Kiến trúc (Architecture) chỉ xoay quanh cấu trúc hệ thống, dịch vụ nội bộ, cronjobs, hạ tầng cơ sở dữ liệu và các luồng kỹ thuật cắt ngang (Cross-cutting flows như Auth).
-- Cấm lặp lại chân dung người dùng (Personas) hay use-cases chi tiết trong các file kiến trúc. Thay vào đó, nó phải đề cập thẳng vào thành phần kỹ thuật, Cloud Services và giao tiếp Backend.
-- Bắt buộc các sơ đồ thiết kế (Mermaid Flowchart / Sequence Diagram) phải mô hình hóa rõ ràng các luồng ngoại lệ và lỗi (MANDATORY ERROR FLOWS). VD: Redirect khi 401/403 IDOR, hay trạng thái Validation Fail.
+## Description
+- Documents the system's structural blueprint following international Arc42 standards.
+- Defines technology choices, communication protocols, caching strategies, and resilience patterns.
 
-## Các Skill liên quan
-- **Điều hướng đến:** Các skill như `/overview`, `/surfaces`, `/module`, `/user-flow`, `/db-erd`, `/deployment`.
+## Related Skills
+- **Paired with:** `/architecture-grill` for technical critique and validation.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
 /architecture
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Generate Arc42 system architecture documentation for microservices platform with NestJS backend, Nuxt frontend, PostgreSQL, and Redis caching.
 ```
-

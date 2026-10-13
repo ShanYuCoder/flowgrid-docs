@@ -1,51 +1,40 @@
 # Skill: `/grill-bqa`
 
-## Tên
+## Name
 `grill-bqa`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/grill-bqa <page-id/slug>`
-- Tự động trigger sau khi kỹ năng `/spec` hoàn thành hoặc chuyển giao từ `/grill`.
+## Usage (Command/Trigger)
+- Call via slash command: `/grill-bqa <page-id/slug>`
+- Automatically triggered after completing `/spec` or via `/grill` handoff.
 
-## Input (Dữ liệu đầu vào)
-- File `*.bundle.yaml` chứa thiết kế UI và logic.
-- File trung gian `ir/design.yaml` và `ir/spec.yaml` sinh ra từ bundle.
-- Yêu cầu User Prompt ban đầu (nếu có bổ sung).
+## Input
+- `*.bundle.yaml` containing UI design and business rules.
+- Intermediate IR files: `ir/design.yaml` and `ir/spec.yaml`.
 
-## Output (Kết quả mong đợi)
-- Các file `*.bundle.yaml` được làm sạch, bổ sung và chuẩn hóa về mặt Business và UI.
-- File QA Tech Debt (`qa/<SHORT>_NNNN.yaml`) nếu có thông tin chưa chốt.
-- Trạng thái `grillStatus.bqaFacts: done` và `grillStatus.bqaOpen: done`.
+## Output
+- Refined `*.bundle.yaml` with validated business rules, UX copy, and validation logic.
+- QA Tech Debt files (`qa/<SHORT>_NNNN.yaml`) if open items are deferred.
+- Status flags set: `grillStatus.bqaFacts: done` and `grillStatus.bqaOpen: done`.
 
-## Description / Ý nghĩa
-- Chuyên dùng để Review và Validate đặc tả (Spec) từ góc nhìn của Business Analyst (BA) / QA UI. Không soi các thẻ kỹ thuật (`#gen`, `codegen.profile`).
-- **Audit interlock:** `flowgrid audit spec <bundle> --type <pageType>` trước Step A, sau mỗi patch, và trước handoff `/grill-dev` (xử lý `gaps[]` / `confirms[]` — [grill-and-human-review.md](../../workflows/grill-and-human-review.md)).
-- Kiểm tra tính hợp lý của UX/UI: So sánh layout, copy, purpose với các template UI chung. Đảm bảo mô tả theo ngôn ngữ Stakeholder.
-- Bắt buộc kiểm định: UI Error Handling — **4-tier outcomes** trên mỗi action (`onSuccess`, `onBusinessErrors`, `onSecurityErrors`, `onSystemErrors` — xem harness `grill-bqa` SKILL).
-- Quá trình xử lý diễn ra qua 2 bước:
-  - **Step A:** Fact-lock (Khóa logic chuẩn hóa dữ liệu cũ, không được dùng Wizard hỏi ở bước này).
-  - **Step B:** Member Wizard (Tung form AskQuestion cho các khoảng trống thông tin).
+## Description
+- Dedicated to reviewing and validating specifications from the perspective of Business Analysts (BA) and QA Engineers.
+- Focuses purely on domain behavior, UX affordances, and user stories (ignores low-level codegen tags).
+- **Audit Interlock:** Executes `flowgrid audit spec <bundle> --type <pageType>` before Step A, after each patch, and before handing off to `/grill-dev`.
+- Enforces 4-tier UI error handling outcomes on every user action (`onSuccess`, `onBusinessErrors`, `onSecurityErrors`, `onSystemErrors`).
+- Two-step execution process:
+  - **Step A: Fact-Lock:** Locks existing explicit requirements; no interactive questions allowed here.
+  - **Step B: Member Wizard:** Interactively surfaces AskQuestion modals for genuine missing information.
 
-## Các Skill liên quan
-- **Trước đó:** Nhận đầu vào từ `/spec` hoặc `/grill`.
-- **Sau đó:** Chuyển giao sang `/grill-dev` để soi chiếu góc nhìn lập trình viên (Codegen/Tech).
-
-## Chú ý quan trọng
-- **Luật AskQuestion Tech Debt:** Trong Step B (Member Wizard), các lựa chọn đưa ra hỏi phải bao gồm option `"Log as Tech Debt"`. Nếu user chọn option này, hệ thống sẽ đẩy thẳng vướng mắc vào file QA Inbox (`qa-inbox.md`) thay vì đoán mò.
-- Không đọc các file Markdown được render (`*.md`), chỉ đọc `ir/design.yaml` và Bundle gốc.
-- Nếu chưa chạy xong `bqaFacts: done` thì tuyệt đối không được mở Step B (Wizard).
+## Important Notes
+- **Tech Debt Rule:** AskQuestion options in Step B must always include `"Log as Tech Debt"`. Selecting this routes the item directly to `qa/`.
+- Reads only `ir/design.yaml` and the original bundle — never reads rendered `*.md` files.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
 /grill-bqa
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Surface: admin-portal · Module: CMP-ADM-ORD · Scope: Order Listing Screen (W-01)
 ```
-

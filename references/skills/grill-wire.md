@@ -1,42 +1,30 @@
 # Skill: `/grill-wire`
 
-## Tên
+## Name
 `grill-wire`
 
-## Cách dùng
-- Slash: `/grill-wire` — **sau** `/wire` (API thật, mock production đã gỡ, auth restore).
-- Khác **`/wire`**: `/wire` = implement; `/grill-wire` = chỉ audit + routing gap (không sửa code hàng loạt).
+## Usage (Command/Trigger)
+- Call via slash command: `/grill-wire <screen-id>`
+- Executed on the FE repository following `/wire` implementation.
 
-## Audit bắt buộc (chuỗi)
-
-```bash
-flowgrid audit e2e --e2e-root <path> --tests-docs "$FLOWGRID_TESTS_DOC" --screen <W-*>
-flowgrid audit fe-be <bundle.yaml>
-flowgrid audit scenario <SC.yaml> --tests-docs "$FLOWGRID_TESTS_DOC"   # khi SC có màn scope
-```
+## Input
+- Wired frontend application code.
+- Test suite in `tests/e2e/`.
 
 ## Output
-- Bảng gap từ JSON (`gaps[]`, `FEBE_*`, `SC_SCREEN_NO_TC`).
-- Handoff có owner:
-  - Code/PO/spec Playwright → `/test` → `/grill-test`
-  - Plan TC thiếu facet post-wire → tests-hub `/grill-testcase`
-  - Spec/UX sai → docs `/update-spec`
-  - Contract `01` sai → docs `/api-update` → BE → `/wire` lại
+- Convergence audit execution report:
+  - `flowgrid audit e2e --screen <W-*>`
+  - `flowgrid audit fe-be <path-to-bundle>`
+  - `flowgrid audit scenario <SC.yaml>` (if part of scenario journey)
 
-## Liên kết
-- Workflow: [wire.md § grill/gates](../../workflows/wire.md#wire-gates)
-- Extract: `harness/fe/extracts/wire-audit-loop.md`
-- Harness: `harness/fe/skills/grill-wire/SKILL.md`
+## Description
+- Final automated convergence quality gate before Shipping / UAT sign-off.
+- Verifies that no mock bypasses remain, authentication is active, and post-wire E2E test passes cleanly against live endpoints.
 
-## Example prompt
+---
+
+## Example Prompt
 
 ```text
-/grill-wire
-
-Screen: W-HOTEL-LIST
-Bundle: surfaces/.../hotel-list.bundle.yaml
-SC (if any): scenarios/.../SC-booking.yaml
-
-Run audit chain; list critical/warning with handoff lane.
-Do not patch bundle from FE repo.
+/grill-wire W-ADM-ORD-01
 ```

@@ -1,23 +1,23 @@
-# Workflow — Test (tests-docs & E2E)
+# Workflow — Test (Tests-Docs & E2E)
 
-**Phạm vi (SSOT):** lane **Code + test** — **tests-docs hub** (`TC-*`, `SC-*`), grill plan, gate, render user case cho QA/Dev, automation trên **e2e-root**.
+**Scope (SSOT):** The **Code + Test** lane — specifically the **tests-docs hub** (`TC-*`, `SC-*`), test plan grilling, quality gates, rendering human-readable test cases for QA/Devs, and automation on **e2e-root**.
 
-**Không viết ở đây:** schema TC chi tiết, env, lệnh đầy đủ → [artifacts/tests-docs.md](../artifacts/tests-docs.md) · Playwright layout → [artifacts/code.md](../artifacts/code.md#e2e-root).
+**Not covered here:** Detailed TC schema, environment variables, full commands → [artifacts/tests-docs.md](../artifacts/tests-docs.md) · Playwright file layouts → [artifacts/code.md](../artifacts/code.md#e2e-root).
 
-**Thuộc macro:** [index.md#full-cycle](./index.md#full-cycle) · phase **2b Tests** · Gate: [gates.md](./gates.md#close-one-function) (bước 3–4, 7–8).
+**Part of Macro Workflows:** [index.md#full-cycle](./index.md#full-cycle) · Phase **2b Tests** · Quality Gates: [gates.md](./gates.md#close-one-function) (steps 3–4, 7–8).
 
 ---
 
-## Test cycle (Phase 2b) {#test-cycle}
+## Test Cycle (Phase 2b) {#test-cycle}
 
 ```mermaid
 flowchart TD
-  subgraph DOCS["Docs hub (nghiệp vụ)"]
+  subgraph DOCS["Docs Hub (Requirements)"]
     B["*.bundle.yaml\nuserStories · AC"]
     VP["ir/generated/spec.md"]
   end
 
-  subgraph HUB["Tests-docs hub"]
+  subgraph HUB["Tests-Docs Hub"]
     SC["/scenario → SC-*"]
     TC["/testcase → TC-*.yaml"]
     REN["cases:render → TC-*.md"]
@@ -31,7 +31,7 @@ flowchart TD
   end
 
   B --> TC
-  VP -.->|đối chiếu| TC
+  VP -.->|cross-reference| TC
   SC --> TC
   TC --> REN --> GTG
   GTG --> GEN --> T --> GT
@@ -47,38 +47,38 @@ flowchart TD
 
 ---
 
-## Ba tầng — không nhầm {#three-layers}
+## Three Distinct Layers {#three-layers}
 
-| Tầng | Root | SSOT | VitePress |
-|------|------|------|-----------|
+| Layer | Root | SSOT | VitePress Portal |
+|-------|------|------|------------------|
 | **Docs** | `FLOWGRID_DOCS_ROOT` | `*.bundle.yaml`, `ir/*` | Port **5173** — `spec.md`, `data-model.md`, `api.md` |
-| **Tests-docs** | `FLOWGRID_TESTS_DOC` | `cases/**/TC-*.yaml`, `scenarios/**/SC-*` | Port **5174** — `TC-*.md` sau `cases:render` |
-| **Automation** | `e2e-root` | `*.spec.ts`, Page Objects | Không phải plan SSOT |
+| **Tests-docs** | `FLOWGRID_TESTS_DOC` | `cases/**/TC-*.yaml`, `scenarios/**/SC-*` | Port **5174** — `TC-*.md` generated via `cases:render` |
+| **Automation** | `e2e-root` | `*.spec.ts`, Page Objects | Implementation target, not planning SSOT |
 
-**Coverage toàn project:** mỗi function leaf docs có `TC-*` mirror path; cross-flow có `SC-*` + `audit scenario`; gate `--strict` + `FLOWGRID_DOCS_ROOT` buộc **traceability** về bundle.
+**Project-Wide Coverage:** Every functional leaf in docs has a mirroring path in `TC-*`; cross-functional flows have `SC-*` + `audit scenario`; quality gates with `--strict` + `FLOWGRID_DOCS_ROOT` enforce strict **traceability** back to the bundle.
 
-Hướng dẫn author: [harness/tests/templates/tpl-testcase-plan.md](../../harness/tests/templates/tpl-testcase-plan.md) (init → tests hub).
-
----
-
-## SSOT đọc/ghi {#ssot-reading}
-
-| Vai trò | Đọc (review / walkthrough) | Ghi |
-|---------|----------------------------|-----|
-| BA / PO | Docs VitePress `spec.md` (AC, scenarios) | Không author `TC` — gap → `/update-spec` |
-| QA | Tests VitePress `TC-*.md` (bước, ma trận, trace) | `/testcase`, `/scenario` trên YAML |
-| Dev FE | `TC-*.md` + `ir/design.yaml` (`testIds`) | `/test`, không sửa plan YAML tùy tiện |
-| Lead release | `cases:gate --strict` JSON | Không bypass trace/matrix |
-
-**Grill testcase** đọc **toàn bộ** `*.bundle.yaml` — không tách `ir/spec` + `ir/design` khi thiết kế coverage.
-
-**Excel UAT:** deliverable xuất **sau** YAML/MD chốt — [tests-docs § Excel](../artifacts/tests-docs.md#vận-hành-team-vs-deliverable-excel).
+Authoring guide: [harness/tests/templates/tpl-testcase-plan.md](../../harness/tests/templates/tpl-testcase-plan.md) (from initialization to tests hub).
 
 ---
 
-## E2E lane (automation) {#test-e2e-lane}
+## SSOT Read / Write Responsibilities {#ssot-reading}
 
-Unit Vitest/PHPUnit — lane riêng trên repo FE/BE; không gộp vào diagram dưới.
+| Role | Reads (Review / Walkthrough) | Writes |
+|------|------------------------------|--------|
+| BA / PO | Docs VitePress `spec.md` (AC, scenarios) | Does not author `TC` — routes gaps to `/update-spec` |
+| QA | Tests VitePress `TC-*.md` (steps, matrices, traces) | `/testcase`, `/scenario` in YAML |
+| FE Dev | `TC-*.md` + `ir/design.yaml` (`testIds`) | `/test`, avoids modifying YAML plan files directly |
+| Release Lead | `cases:gate --strict` JSON | Never bypasses trace/matrix criteria |
+
+**Grill testcase** reviews the **entire** `*.bundle.yaml` — never decouple `ir/spec` and `ir/design` when designing coverage.
+
+**UAT Excel Exports:** Deliverables exported **after** YAML/MD are locked — [tests-docs § Excel](../artifacts/tests-docs.md#team-operations-vs-excel-deliverables).
+
+---
+
+## E2E Lane (Automation) {#test-e2e-lane}
+
+Vitest/PHPUnit units run on separate lanes within FE/BE repos; excluded from diagram below.
 
 ```mermaid
 flowchart TD
@@ -100,53 +100,53 @@ flowchart TD
   GT --> LIFE
   LIFE --> DONE
 
-  GT -.->|thiếu PO/spec| TEST
+  GT -.->|missing PO/spec| TEST
 ```
 
-### Ba lớp assertion (một spec E2E)
+### Three Assertion Tiers (Single E2E Spec)
 
-| Lớp | Mục đích |
-|-----|----------|
-| Functional (steps TC) | Flow, mock/real API, `data-testid` |
-| Semantic (`#e2e:*`) | Layout, overflow, console |
-| Axe (WCAG) | Violations nghiêm trọng |
+| Tier | Purpose |
+|------|---------|
+| Functional (TC steps) | Flow assertions, mock/real API verification, `data-testid` |
+| Semantic (`#e2e:*`) | Layout integrity, overflow detection, clean browser console |
+| Axe (WCAG) | Critical accessibility violation audits |
 
-Chi tiết: [code.md § E2E](../artifacts/code.md#e2e-root).
+Details: [code.md § E2E](../artifacts/code.md#e2e-root).
 
 ### `/grill-testcase` vs `/grill-test`
 
-| Skill | Root | Việc |
+| Skill | Root | Responsibility |
 | --- | --- | --- |
-| **`/grill-testcase`** | **tests-docs** | Plan YAML: `cases:gate --strict`, `audit testcase --bundle`, matrix facet, gap spec → docs |
-| **`/grill-test`** | **e2e-root** | TC ↔ PO ↔ `*.spec.ts`, semantic `#e2e:*` — sau `/test` green |
+| **`/grill-testcase`** | **tests-docs** | YAML Plan: `cases:gate --strict`, `audit testcase --bundle`, facet matrix, spec gap → docs |
+| **`/grill-test`** | **e2e-root** | TC ↔ PO ↔ `*.spec.ts`, semantic `#e2e:*` — executed after `/test` is green |
 
-### Pre-wire vs post-wire
+### Pre-Wire vs Post-Wire
 
-Cùng `TC-*.yaml`: `lifecycle` ≠ wire → mocks; `wire` → API thật. Handoff [wire.md § pre/post](./wire.md#pre-wire-post-wire).
+Using the same `TC-*.yaml`: `lifecycle` ≠ wire runs on mocks; `wire` targets real backend APIs. Handoff details: [wire.md § Pre/Post](./wire.md#pre-wire-post-wire).
 
-**API hook:** xem [§ Grill API hook](#grill-api-hook) · chi tiết [tests-docs § API hook](../artifacts/tests-docs.md#api-hook-tc).
+**API Hooks:** See [§ Grill API Hook](#grill-api-hook) · Details: [tests-docs § API Hook](../artifacts/tests-docs.md#api-hook-tc).
 
 ---
 
-## Grill kỹ — ba mode {#grill-modes}
+## Deep Grill — Three Modes {#grill-modes}
 
-Ba lộ trình **tách session** — không gộp `/grill-testcase` (hub) với `/grill-test` (e2e-root) trong một lệnh chat.
+Three distinct workflows requiring **separate sessions** — never combine `/grill-testcase` (hub) with `/grill-test` (e2e-root) in one chat prompt.
 
-| Mode | SSOT plan | Grill hub | Grill automation |
-|------|-----------|-----------|------------------|
-| **Một màn** `W-*` | `cases/…/TC-*.yaml` (`e2e`) | `/grill-testcase` + gate | `/grill-test` sau `/test` |
-| **Flow dài** `SC-*` | `scenarios/…/SC-*` + N× `TC` | `audit scenario` + gate cả cụm | E2E theo từng TC / thứ tự CI |
-| **API hook** | `TC` `api-e2e` | `/test-api` + `/grill-testcase` | `testcase:gen:api` (+ Newman tùy chọn) |
+| Mode | SSOT Plan | Hub Grilling | Automation Grilling |
+|------|-----------|--------------|---------------------|
+| **Single Screen** `W-*` | `cases/…/TC-*.yaml` (`e2e`) | `/grill-testcase` + gate | `/grill-test` after `/test` |
+| **Multi-Screen Flow** `SC-*` | `scenarios/…/SC-*` + N× `TC` | `audit scenario` + cluster gate | E2E per TC / CI sequence |
+| **API Hook** | `TC` `api-e2e` | `/test-api` + `/grill-testcase` | `testcase:gen:api` (+ optional Newman) |
 
-Extract agent: `harness/tests/extracts/grill-screen-tc.md`, `grill-scenario-flow.md`, `grill-api-hook.md`.
+Agent extracts: `harness/tests/extracts/grill-screen-tc.md`, `grill-scenario-flow.md`, `grill-api-hook.md`.
 
-### 1 — Một màn chức năng (`W-*`) {#grill-single-screen}
+### 1 — Single Functional Screen (`W-*`) {#grill-single-screen}
 
-Mục tiêu: coverage **đủ facet** trên **one** function leaf, trace về bundle, rồi mới codegen UI E2E.
+Objective: Achieve **full facet coverage** for **one** functional leaf, traced back to the bundle, before generating UI E2E code.
 
 ```mermaid
 flowchart TD
-  B["Đọc cả *.bundle.yaml"]
+  B["Read complete *.bundle.yaml"]
   TC["/testcase → TC-*.yaml\ngenType: e2e"]
   CHK["cases:check · audit testcase --bundle"]
   REN["cases:render → TC-*.md"]
@@ -158,144 +158,144 @@ flowchart TD
   B --> TC --> CHK --> REN --> GTG --> GEN --> T --> GT
 ```
 
-| # | Kiểm tra grill (plan) | Lệnh / skill |
-|---|------------------------|--------------|
-| 1 | Bundle có story/AC — không bịa test | STOP → `/update-spec` |
-| 2 | `traceability` khớp `W-*`, scenarios, `AC-*`, `btn_*` | `audit testcase --bundle` |
-| 3 | Union `testMatrix` facet trên màn (không chỉ happy) | `cases:gate --strict` |
-| 4 | QA đọc user case trên VitePress tests hub | `cases:render` |
-| 5 | `testIds.required` khớp design sau split | grill-dev / spot DOM |
-| 6 | Spec chạy xanh scoped | `/test` |
-| 7 | TC ↔ PO ↔ `*.spec.ts` | `/grill-test`, `audit e2e` |
+| # | Grill Plan Verification | Command / Skill |
+|---|-------------------------|-----------------|
+| 1 | Bundle contains user stories/AC — no fabricated test steps | STOP → `/update-spec` |
+| 2 | `traceability` matches `W-*`, scenarios, `AC-*`, `btn_*` | `audit testcase --bundle` |
+| 3 | Screen-level union of `testMatrix` facets (not just happy path) | `cases:gate --strict` |
+| 4 | QA reads rendered test cases on VitePress tests hub | `cases:render` |
+| 5 | `testIds.required` matches design post-split | grill-dev / spot DOM |
+| 6 | Scoped spec passes cleanly (green) | `/test` |
+| 7 | Alignment across TC ↔ PO ↔ `*.spec.ts` | `/grill-test`, `audit e2e` |
 
-Có thể **nhiều file** `TC-*.yaml` cùng folder (smoke + regression) — gate gộp facet theo `refs.screen`.
+Multiple `TC-*.yaml` files may coexist in one folder (smoke + regression) — gates aggregate facets grouped by `refs.screen`.
 
-### 2 — Scenario flow dài (`SC-*`) {#grill-scenario-flow}
+### 2 — Multi-Screen Scenario Flows (`SC-*`) {#grill-scenario-flow}
 
-Mục tiêu: luồng **xuyên màn** bám `FLOW-*.md` trên docs — không flatten `scenarios/auth/…`.
+Objective: Validate **end-to-end user journeys** adhering to `FLOW-*.md` in docs — do not flatten `scenarios/auth/…`.
 
 ```mermaid
 flowchart TD
-  FLOW["FLOW-*.md trên docs"]
+  FLOW["FLOW-*.md in docs"]
   SC["/scenario → SC-*.yaml\nscreens: [W-*, …]"]
-  TCs["/testcase mỗi W-*\nrefs.scenario = SC-*"]
+  TCs["/testcase for each W-*\nrefs.scenario = SC-*"]
   AUD["audit scenario"]
-  GTG["grill-testcase + gate strict"]
+  GTG["grill-testcase + strict gate"]
   E2E["testcase:gen × N\nCI order / env bridge"]
 
   FLOW --> SC --> TCs --> AUD --> GTG --> E2E
 ```
 
-| # | Kiểm tra grill | Ghi chú |
-|---|----------------|---------|
-| 1 | `FLOW-*.md` tồn tại trước SC | Thin FLOW → docs `/user-flow` |
-| 2 | `SC.screens[]` = mọi `W-*` chạm trong journey | Khớp prose FLOW |
-| 3 | Mỗi `W-*` có `TC-*.yaml` **hoặc** defer `QA-*` | `SC_SCREEN_NO_TC` |
-| 4 | Mỗi TC vẫn pass trace/matrix **per screen** | `audit testcase --bundle` từng leaf |
-| 5 | Walkthrough: SC + từng `TC-*.md` render | VitePress 5174 |
-| 6 | Automation | Spec riêng/màn; không một file TC 50 bước |
+| # | Grill Verification | Notes |
+|---|--------------------|-------|
+| 1 | `FLOW-*.md` exists prior to authoring SC | Thin FLOW → docs `/user-flow` |
+| 2 | `SC.screens[]` includes all `W-*` touched in journey | Matches prose in FLOW |
+| 3 | Every `W-*` has a corresponding `TC-*.yaml` **or** explicit `QA-*` deferral | `SC_SCREEN_NO_TC` check |
+| 4 | Each TC individually passes trace/matrix **per screen** | `audit testcase --bundle` per leaf |
+| 5 | Walkthrough: SC + rendered `TC-*.md` files | VitePress port 5174 |
+| 6 | Automation | Dedicated spec per screen; avoid monolithic 50-step TC files |
 
-**UI + API trong cùng journey:** hai plan — `genType: e2e` (tạo data) + `genType: api-e2e` (hook) — cùng `refs.scenario`; CI truyền `orderId` / token qua env giữa job (xem API hook).
+**UI + API within same journey:** Two plans — `genType: e2e` (data generation) + `genType: api-e2e` (hook) — sharing `refs.scenario`; CI bridges `orderId` / tokens via env across jobs (see API hooks).
 
-### 3 — API hook (Playwright `request` · Newman tùy chọn) {#grill-api-hook}
+### 3 — API Hooks (Playwright `request` · Optional Newman) {#grill-api-hook}
 
-Mục tiêu: kiểm HTTP **partner / webhook / public API** — SSOT contract trên docs `01`, plan trên tests-docs.
+Objective: Validate HTTP endpoints for **partners / webhooks / public APIs** — SSOT contract in docs `01`, test plan in tests-docs.
 
 ```mermaid
 flowchart LR
-  subgraph DOCS["Docs hub"]
+  subgraph DOCS["Docs Hub"]
     O1["01-backend-spec"]
     GAS["/grill-api-spec"]
   end
-  subgraph HUB["Tests-docs"]
+  subgraph HUB["Tests-Docs"]
     TA["/test-api\nTC api-e2e"]
     GTG["/grill-testcase"]
   end
   subgraph RUN["e2e-root"]
     PG["testcase:gen:api\n*.api.spec.ts"]
     PW["Playwright request"]
-    NM["Newman optional"]
+    NM["Optional Newman"]
   end
 
   O1 --> GAS --> TA --> GTG --> PG --> PW
   TA -.->|tag contract-postman| NM
 ```
 
-| Bước | Việc | Skill / lệnh |
-|------|------|----------------|
-| 1 | Contract `01` + grill API | [backend.md](./backend.md) |
+| Step | Action | Skill / Command |
+|------|--------|-----------------|
+| 1 | Contract `01` + API grill | [backend.md](./backend.md) |
 | 2 | Author `TC` — `apiSteps[]`, `testMatrix` (401/403/404/422…) | `/test-api` · `TC.example-api.yaml` |
-| 3 | Grill plan như UI TC | `audit testcase`, `cases:gate --strict` |
-| 4 | Gen Playwright | `flowgrid testcase:gen:api` → `tests/api-e2e/**` |
-| 5 | Chạy CI | `FLOWGRID_API_TEST_BASE_URL`; secret qua env |
-| 6 | (Tùy) Collection đối tác | Newman trong `integrations/postman/`; tag `contract-postman` — **không** thay YAML SSOT |
+| 3 | Grill test plan identically to UI TCs | `audit testcase`, `cases:gate --strict` |
+| 4 | Generate Playwright test suite | `flowgrid testcase:gen:api` → `tests/api-e2e/**` |
+| 5 | Execute in CI pipeline | `FLOWGRID_API_TEST_BASE_URL`; secrets via env |
+| 6 | (Optional) Partner Collections | Newman in `integrations/postman/`; tag `contract-postman` — **never** replaces YAML SSOT |
 
-| Công cụ | Vai trò |
-|---------|---------|
-| **Playwright `request`** (FlowGrid gen) | Lane chuẩn — trace `TC` ↔ spec, `audit e2e` |
-| **Newman** | Replay collection partner / HMAC phức tạp — job CI riêng, link tag trên TC |
-| **BE unit** (Supertest/pytest) | Chữ ký webhook, idempotency, DLQ — bổ sung, không thay plan hub |
+| Tool | Role |
+|------|------|
+| **Playwright `request`** (FlowGrid gen) | Standard pipeline — traces `TC` ↔ spec, `audit e2e` |
+| **Newman** | Partner collection replays / complex HMAC workflows — isolated CI job linked via tag |
+| **BE Unit** (Supertest/pytest) | Webhook signatures, idempotency, DLQ verifications — complementary, not replacing hub plans |
 
-Portal tạo đơn + partner gọi export: SC gồm **TC UI** + **TC api-e2e** — grill `audit scenario` phải thấy cả hai.
-
----
-
-## Điều kiện trước lane {#preconditions}
-
-- Docs leaf có bundle đủ `userStories` / `acceptanceCriteria` (hoặc team chấp nhận defer có `QA-*`).
-- `flowgrid check` / split ổn trên bundle trước grill testcase hàng loạt.
-- `FLOWGRID_DOCS_ROOT` + `FLOWGRID_TESTS_DOC` cấu hình (`flowgrid doctor`).
-- Path `cases/…` **mirror** `surfaces/…` — không path phẳng `cases/admin/auth/W-*` ad-hoc.
+Portal order creation + partner export call: SC couples **UI TC** + **api-e2e TC** — `audit scenario` grilling must identify both.
 
 ---
 
-## Bước trong lane {#steps}
+## Preconditions Before Entering Lane {#preconditions}
 
-| Thứ tự | Việc | Vai trò | Skill / gate |
-|--------|------|---------|----------------|
-| 0 | (Tùy) Cross-flow inventory | QA / BA | `/scenario` khi có `FLOW-*.md` |
-| 1 | Testcase YAML v2 | QA | `/testcase`, `cases:check` |
-| 2 | Render user case | QA / any | `flowgrid cases:render` → mở VitePress tests hub |
-| 3 | Grill plan | QA + member | `/grill-testcase`, `audit testcase --bundle` |
-| 4 | Gate tests-docs | QA / release | `cases:gate --strict` + `FLOWGRID_DOCS_ROOT` |
-| 5 | Gen Playwright | Dev / QA | `testcase:gen` (`genType: e2e`) |
-| 5b | API hook plan | QA / Dev | `/test-api`, `genType: api-e2e` |
-| 6 | Implement & green | Dev | `/test`, `test:e2e` scoped |
-| 7 | Grill automation | Dev + QA | `/grill-test` |
-| 8 | Audit plan ↔ chạy | QA | `flowgrid audit e2e` (policy) |
-
-Mốc đóng leaf: [gates.md § Đóng một function](./gates.md#close-one-function) bước 3–4, 7–8.
-
-### Nội dung `TC-*.yaml` (tóm tắt)
-
-- `schemaVersion: 2`, `testMatrix` đủ facet, `steps`, `traceability`, `testIds.required`.
-- `story` / `description` giàu nghiệp vụ — `title` ngắn; dùng `meaning`/`purpose` từ bundle khi viết bước.
-- Mẫu: `harness/tests/templates/TC.example.yaml`.
-
-### Vòng grill (ai làm gì)
-
-| Bước | Ai | Việc |
-|------|-----|------|
-| Spec / testIds | BA / Dev | `ui.testIds`, `#e2e:*` khi cần |
-| `portal:gen` | script | `data-testid` trên UI |
-| `testcase:gen` | script | PO + `.spec.ts` |
-| `/test` | Dev + AI | Fixture gap, scoped green |
-| `/grill-test` | Dev + AI | Matrix TC ↔ PO ↔ spec |
+- Docs leaf has a bundle with complete `userStories` / `acceptanceCriteria` (or accepted deferral with `QA-*`).
+- `flowgrid check` / split succeeds on the bundle prior to batch testcase grilling.
+- `FLOWGRID_DOCS_ROOT` + `FLOWGRID_TESTS_DOC` configured (`flowgrid doctor`).
+- Path `cases/…` strictly **mirrors** `surfaces/…` — avoid ad-hoc flat paths.
 
 ---
 
-## Sign-off test plan (tùy team) {#test-signoff}
+## Workflow Steps {#steps}
 
-Trước `testcase:gen` hàng loạt hoặc trước release IT:
+| Order | Action | Role | Skill / Gate |
+|-------|--------|------|--------------|
+| 0 | (Optional) Cross-flow inventory | QA / BA | `/scenario` when `FLOW-*.md` exists |
+| 1 | Testcase YAML v2 authoring | QA | `/testcase`, `cases:check` |
+| 2 | Render human-readable user cases | QA / Any | `flowgrid cases:render` → open VitePress tests hub |
+| 3 | Grill test plan | QA + Member | `/grill-testcase`, `audit testcase --bundle` |
+| 4 | Tests-docs quality gate | QA / Release | `cases:gate --strict` + `FLOWGRID_DOCS_ROOT` |
+| 5 | Generate Playwright test suite | Dev / QA | `testcase:gen` (`genType: e2e`) |
+| 5b | Author API hook plan | QA / Dev | `/test-api`, `genType: api-e2e` |
+| 6 | Implement & reach green state | Dev | `/test`, scoped `test:e2e` |
+| 7 | Grill automation implementation | Dev + QA | `/grill-test` |
+| 8 | Audit plan vs execution | QA | `flowgrid audit e2e` (policy) |
 
-| # | Mục | Kiểm tra |
-|---|-----|----------|
-| 1 | **Gate** | `cases:gate --strict` pass với `FLOWGRID_DOCS_ROOT` |
-| 2 | **Trace** | Mỗi TC có `traceability` khớp bundle screen/scenario/AC/actions |
-| 3 | **Matrix** | Union facet trên màn đủ (audit / gate) — không chỉ happy path |
-| 4 | **Readable** | `TC-*.md` trên VitePress — QA walkthrough không cần mở YAML |
-| 5 | **Docs parity** | Spot AC trên `spec.md` ↔ `acceptanceRefs` |
-| 6 | **Defer** | Gap chỉ qua `QA-*` / `coverage_deferred` có chủ đích |
+Leaf closure milestones: [gates.md § Close One Function](./gates.md#close-one-function) steps 3–4, 7–8.
+
+### Summary of `TC-*.yaml` Content
+
+- `schemaVersion: 2`, comprehensive `testMatrix` facets, `steps`, `traceability`, `testIds.required`.
+- Business-rich `story` / `description` — concise `title`; leverage `meaning`/`purpose` from bundle when drafting steps.
+- Template: `harness/tests/templates/TC.example.yaml`.
+
+### Grill Cycles (Who Does What)
+
+| Step | Who | Responsibility |
+|------|-----|----------------|
+| Spec / testIds | BA / Dev | `ui.testIds`, `#e2e:*` when necessary |
+| `portal:gen` | Script | Injects `data-testid` onto UI |
+| `testcase:gen` | Script | Page Objects + `.spec.ts` |
+| `/test` | Dev + AI | Resolves fixture gaps, achieves scoped green pass |
+| `/grill-test` | Dev + AI | Validates TC ↔ PO ↔ spec matrix alignment |
+
+---
+
+## Test Plan Sign-off (Voluntary per Team) {#test-signoff}
+
+Prior to batch `testcase:gen` or IT release sign-off:
+
+| # | Item | Verification |
+|---|------|--------------|
+| 1 | **Gate** | `cases:gate --strict` passes with `FLOWGRID_DOCS_ROOT` |
+| 2 | **Trace** | Every TC has `traceability` matching bundle screen/scenario/AC/actions |
+| 3 | **Matrix** | Comprehensive union of facets across the screen (audit / gate) — not just happy path |
+| 4 | **Readability** | `TC-*.md` rendered in VitePress — QA walkthroughs without opening raw YAML |
+| 5 | **Docs Parity** | Spot-check AC in `spec.md` ↔ `acceptanceRefs` |
+| 6 | **Deferrals** | Uncovered gaps explicitly mapped to `QA-*` / `coverage_deferred` |
 
 ```text
 Test plan sign-off: <screen W-*> | reviewer | date | cases:gate strict OK
@@ -305,20 +305,20 @@ Test plan sign-off: <screen W-*> | reviewer | date | cases:gate strict OK
 
 ## Handoff {#handoff}
 
-- **Design lùi:** gap nghiệp vụ → docs `/update-spec` (paste prompt từ `/grill-testcase`).
-- **Wire:** post-wire E2E scoped — [wire.md](./wire.md).
-- **Backend:** API-only flows — [backend.md](./backend.md) + `api-e2e` TC.
+- **Upstream Design updates:** Domain gaps discovered → docs `/update-spec` (paste prompt from `/grill-testcase`).
+- **Wire:** Post-wire scoped E2E — [wire.md](./wire.md).
+- **Backend:** API-only flows — [backend.md](./backend.md) + `api-e2e` TCs.
 
 ---
 
-## Liên kết nhanh
+## Quick Links
 
-| Chủ đề | Trang |
-|--------|--------|
-| Schema, mirror, API hook | [artifacts/tests-docs.md](../artifacts/tests-docs.md) |
+| Topic | Page |
+|-------|------|
+| Schema, directory mirroring, API hooks | [artifacts/tests-docs.md](../artifacts/tests-docs.md) |
 | Skill `/testcase` | [references/skills/testcase.md](../references/skills/testcase.md) |
-| `testcase:gen` / `cases:*` CLI | [references/skills/testcase-gen.md](../references/skills/testcase-gen.md) |
-| CLI extract (agent) | [testcase-gen-cli.md](../../harness/tests/extracts/testcase-gen-cli.md) |
+| CLI commands `testcase:gen` / `cases:*` | [references/skills/testcase-gen.md](../references/skills/testcase-gen.md) |
+| CLI agent extract | [testcase-gen-cli.md](../../harness/tests/extracts/testcase-gen-cli.md) |
 | Design sign-off (test entry) | [design-leaf-signoff.md](./design-leaf-signoff.md) |
-| Grill một màn / SC / API hook | [§ Grill kỹ](./test.md#grill-modes) |
+| Grilling modes (single screen / SC / API hook) | [§ Deep Grill](./test.md#grill-modes) |
 | `/test-api` | [references/skills/test-api.md](../references/skills/test-api.md) |

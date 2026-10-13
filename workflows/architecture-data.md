@@ -1,99 +1,99 @@
-# Phase 0 — Data model & ERD
+# Phase 0 — Data Model & ERD
 
-**Phạm vi:** mô hình dữ liệu **trước** `/spec` leaf — cùng nhóm Phase 0 với `/overview`, `/surfaces`, `/module`, `/user-flow`.
+**Scope:** Modeling data structures **prior to** authoring leaf specifications via `/spec` — part of the Phase 0 group alongside `/overview`, `/surfaces`, `/module`, and `/user-flow`.
 
-**Không viết ở đây:** field/column từng màn (Design) · contract BE đầy đủ (lane 2c `01`) · migration SQL.
+**Not covered here:** Screen-level fields/columns (Design phase) · Complete backend contracts (Phase 2c `01`) · SQL database migrations.
 
-**Macro:** [index.md § Phase 0](./index.md#phase-0-data-model) · Design handoff: [design.md § Data](./design.md#data-model-two-stages).
-
----
-
-## Hai tầng (không gộp một file)
-
-| Tầng | Khi | Skill / artifact | Độ chi tiết |
-|------|-----|------------------|-------------|
-| **1 — ERD tổng** | Module mới, entity/bảng mới, đổi ownership, cross-module | `/db-erd` → `<LCA>/common/db-erd.md` | Entity, quan hệ, trường **chính**, owner `CMP-*` / surface |
-| **2 — Screen binding** | Từng `W-*` / leaf bundle | `/spec` → `spec.entities` + `design.sections[].db` | Cột/form ↔ **table.column**; list `columns[].key` ↔ DB hoặc `#derived-data` |
-| **3 — Contract BE** | Sau design inventory ổn | `/api-spec` → `01-backend-spec.yaml` | `modules[].entities[]`, `fields[]`, endpoint — SSOT codegen BE |
-
-Tầng 1 = **Phase 0**. Tầng 2 = **Phase 1 Design**. Tầng 3 = **2c** (có thể draft sớm trong grill-dev).
-
-Prose bổ trợ (không thay ERD): `common/data-model/` — vd. [`derived-data`](../../templates/project-skeleton/surfaces/common/data-model/derived-data.md).
+**Part of Macro Workflows:** [index.md § Phase 0](./index.md#phase-0-data-model) · Design Handoff: [design.md § Data](./design.md#data-model-two-stages).
 
 ---
 
-## Thứ tự Phase 0 (gợi ý)
+## Three Tiers (Kept in Separate Artifacts)
+
+| Tier | When | Skill / Artifact | Level of Granularity |
+|------|------|------------------|----------------------|
+| **1 — Global ERD** | New module, new entities/tables, ownership shifts, cross-module relationships | `/db-erd` → `<LCA>/common/db-erd.md` | Entities, relationships, **primary** fields, owning `CMP-*` / surface |
+| **2 — Screen Binding** | Individual `W-*` / leaf bundle | `/spec` → `spec.entities` + `design.sections[].db` | Columns/forms ↔ **table.column**; list `columns[].key` ↔ DB or `#derived-data` |
+| **3 — BE Contract** | Following stable design inventory | `/api-spec` → `01-backend-spec.yaml` | `modules[].entities[]`, `fields[]`, endpoints — SSOT for BE codegen |
+
+Tier 1 = **Phase 0**. Tier 2 = **Phase 1 Design**. Tier 3 = **Phase 2c** (can be drafted early in grill-dev).
+
+Supplementary prose (does not replace the ERD): `common/data-model/` — e.g. [`derived-data`](../../templates/project-skeleton/surfaces/common/data-model/derived-data.md).
+
+---
+
+## Recommended Phase 0 Sequence
 
 ```text
 /overview (+ operational areas)
-    → /surfaces (nếu cần)
-    → /module (CMP-* boundary, Depends on)
-    → /user-flow (FLOW-* touch data)
-    → /db-erd (ERD tại LCA — xem common-scope)
-    → (optional) /cross-service khi gọi service/aggregate khác module
+    → /surfaces (if necessary)
+    → /module (CMP-* boundaries, dependencies)
+    → /user-flow (FLOW-* touching data)
+    → /db-erd (ERD at LCA — see common-scope)
+    → (optional) /cross-service when invoking external services/aggregates
 ```
 
-**LCA** cho `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — cùng quy tắc với `common/patterns/`.
+**LCA Scope** for `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — follows identical scoping rules as `common/patterns/`.
 
 ---
 
-## Khi bắt buộc `/db-erd`
+## When `/db-erd` is Mandatory
 
-- Module / cluster **mới** hoặc thêm **bảng/entity** dùng chung.
-- Đổi **quan hệ** (1-n, n-n) hoặc **ownership** (tenant, aggregate).
-- Legacy adopt: map schema cũ → entity nghiệp vụ (`/legacy /db-erd`).
+- **New** module / cluster or introducing shared **tables/entities**.
+- Modifying **cardinality** (1-to-many, many-to-many) or **ownership** boundaries (tenants, aggregate roots).
+- Legacy adoption: mapping legacy schemas → business entities (`/legacy /db-erd`).
 
-**Có thể skip** (nhảy thẳng Design): sửa màn trong CMP đã có `db-erd.md` ổn định, **không** thêm bảng/cột persisted mới — chỉ UI/validation/copy.
+**When it can be skipped** (jumping directly to Design): Modifying a screen in a CMP with a stable, existing `db-erd.md`, where **no new persisted tables/columns** are introduced — pure UI/validation/copy changes.
 
 ---
 
-## Nội dung tối thiểu `db-erd.md`
+## Minimum Content Requirements for `db-erd.md`
 
 - Mermaid `erDiagram`.
-- Mỗi entity: tên nghiệp vụ, **owner** (module/surface), PK logic, vài attribute chính.
-- Cardinality + ghi chú delete/soft-delete nếu product quan tâm.
-- Link tới `FLOW-*` / `CMP-*` tiêu thụ entity — **không** paste ER vào từng bundle.
+- Per entity: Business name, **owner** (module/surface), logical primary key, key domain attributes.
+- Cardinality + notes regarding hard/soft deletion where relevant to product behavior.
+- Links to consumer `FLOW-*` / `CMP-*` — **never** duplicate the ER diagram inside individual bundles.
 
 ---
 
-## Handoff sang Design (`/spec`)
+## Handoff to Design (`/spec`)
 
-Agent **đọc** (walk LCA) `common/db-erd.md` trước khi ghi `db:` trên field.
+The AI Agent **reads** (walking up the LCA path) `common/db-erd.md` before populating `db:` fields.
 
-Trên leaf bundle:
+On the leaf bundle:
 
-1. **`spec.entities` / `spec.relationships`** — subset entity của màn (tóm tắt, không thay ERD).
-2. **`design.sections[].db`** — `schema` (table hoặc tên entity ER), `field` (column), `enumMapping` nếu có.
-3. **`spec.ui.list.columns[].key`** — khớp `field` hoặc tag `#derived-data` trong `data-model/derived-data.md`.
-4. **`bind.field`** — tên payload/API; grill-dev + `01` phải cùng hướng.
+1. **`spec.entities` / `spec.relationships`** — subset of entities relevant to the screen (summary; never replaces the ERD).
+2. **`design.sections[].db`** — `schema` (table or ER entity name), `field` (column name), `enumMapping` if applicable.
+3. **`spec.ui.list.columns[].key`** — corresponds to `field` or `#derived-data` declared in `data-model/derived-data.md`.
+4. **`bind.field`** — payload/API field name; aligned across grill-dev and `01`.
 
-Chi tiết authoring: [bundle-authoring.md § Data model](../../templates/shared/bundle-authoring.md#data-model--phase-0-erd-vs-screen-detail).
+Authoring specifications: [bundle-authoring.md § Data model](../../templates/shared/bundle-authoring.md#data-model--phase-0-erd-vs-screen-detail).
 
-Sau split: `entities` + layout `db` → **`ir/design.yaml`** (không vào `ir/spec.yaml` business MD).
+Post-split: `entities` + layout `db` → **`ir/design.yaml`** (excluded from `ir/spec.yaml` business prose).
 
-**Review member:** `ir/generated/data-model.md` (gom theo bảng, hỗ trợ multi-table) + optional `design.dataModel.tables[]` trên bundle — [tpl-screen-data-model.md](../../templates/shared/tpl-screen-data-model.md). Audit: `flowgrid audit spec` → `warnings` `category: db`.
-
----
-
-## Ba tên hay lệch (cố ý tách vai)
-
-| Khái niệm | Ví dụ | Vai trò |
-|-----------|--------|---------|
-| Entity ER (diagram) | `Customer`, `Order` | `db-erd.md` |
-| Table / schema (physical) | `customers`, `orders` | `design.db.schema`, `01` `table:` |
-| Codegen entity | `CustomerEntity` | `gen.codegen.entity`, OpenAPI model name |
-
-Giữ map trong `01` hoặc comment ngắn trên bundle — không engine enforce.
+**Team Review:** `ir/generated/data-model.md` (aggregated by table, supporting multi-table views) + optional `design.dataModel.tables[]` on the bundle — [tpl-screen-data-model.md](../../templates/shared/tpl-screen-data-model.md). Automated audits: `flowgrid audit spec` → `warnings` under `category: db`.
 
 ---
 
-## Gap đã biết (process, không gate)
+## Three Distinct Naming Roles
 
-- `audit spec` chưa verify ERD ↔ `db:` (có thể thêm **warnings** sau).
-- **Team review (VitePress):** `spec.md` (gồm **bảng cột list**) + sibling `data-model.md` — không bắt BA mở `ir/design.yaml`. Dev implement vẫn dùng `ir/design` + `01`.
+| Concept | Example | Responsibility |
+|---------|---------|----------------|
+| Entity ER (Diagram) | `Customer`, `Order` | `db-erd.md` |
+| Table / Schema (Physical) | `customers`, `orders` | `design.db.schema`, `01` `table:` |
+| Codegen Entity | `CustomerEntity` | `gen.codegen.entity`, OpenAPI model identifier |
+
+Maintain mappings within `01` or as concise comments on the bundle — not strictly enforced by engine scripts.
 
 ---
 
-## Skill & reference
+## Known Process Gaps (Guidelines, Not Gates)
 
-- Harness: `/db-erd` · Hub: [references/skills/db-erd.md](../references/skills/db-erd.md)
+- `audit spec` does not yet verify ERD ↔ `db:` correspondence (may report **warnings** in future versions).
+- **VitePress Team Review:** `spec.md` (including **list column tables**) + sibling `data-model.md` — BAs are never required to open `ir/design.yaml`. Implementation engineers consume `ir/design` + `01`.
+
+---
+
+## Skills & References
+
+- Harness: `/db-erd` · Documentation Hub: [references/skills/db-erd.md](../references/skills/db-erd.md)

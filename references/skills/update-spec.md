@@ -1,48 +1,32 @@
 # Skill: `/update-spec`
 
-## Tên
+## Name
 `update-spec`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/update-spec <bundle-id>`
-- Dùng để vá/cập nhật nhỏ (delta update) trên một Spec đã tồn tại, thay vì viết mới toàn bộ.
+## Usage (Command/Trigger)
+- Call via slash command: `/update-spec <page-id/slug>`
+- Used whenever modifying an existing specification bundle based on stakeholder feedback, UAT, or QA discoveries.
 
-## Input (Dữ liệu đầu vào)
-- `ir/design.yaml` (nếu liên quan tới giao diện, tech).
-- `ir/spec.yaml` (nếu liên quan tới nội dung chữ / acceptance).
-- File bundle gốc `*.bundle.yaml`.
+## Input
+- Target `*.bundle.yaml` and change requests.
 
-## Output (Kết quả mong đợi)
-- File `*.bundle.yaml` được patch (sửa đổi) cục bộ.
-- Gắn thêm tag `#update:*` và tăng `specRevision`.
-- Đổi trạng thái `featureStatus` từ `wire` sang `need-update` nếu cần.
-- Chạy `flowgrid split` và kiểm tra tính toàn vẹn thành công.
+## Output
+- Updated `*.bundle.yaml`.
+- Re-split IR files: `ir/design.yaml` and `ir/spec.yaml`.
+- Re-rendered documentation portal: `ir/generated/spec.md`.
 
-## Description / Ý nghĩa
-- Cập nhật **cục bộ (Delta Update)**: Dùng khi có thay đổi nhỏ (một kịch bản, 1 khối UI, 1 trường API) trên hệ thống hiện hành. Không dùng để viết lại toàn bộ từ đầu (full rewrite).
-- Bảo toàn dữ liệu: Nghiêm cấm xóa các dấu vết legacy (legacy evidence) hay các khối dữ liệu không liên quan trong lúc cập nhật.
-- Bảo toàn Ma trận lỗi: Khi sửa action hoặc endpoint, bắt buộc phải giữ và cập nhật ma trận xử lý lỗi UI (`onSuccess`, `onCommonError`, `onSpecificError`) và API Hashtags (`#err:*`).
-- Không tự ý thêm nhãn `codegen` hoặc `gen:` mà không có sự xác nhận của Dev (phải chuyển giao sang `/grill-dev`).
-
-## Các Skill liên quan
-- **Trước đó:** Nhận feedback/issue cần thay đổi nhỏ (từ `qa-resolve` hoặc thay đổi requirement mới).
-- **Sau đó:** Tuỳ thuộc vào thành phần cập nhật, có thể phải gọi `/grill-bqa` (nếu sửa UX/copy) hoặc `/grill-dev` (nếu sửa tech/API), rồi mới tới `/prototype`.
-
-## Chú ý quan trọng
-- **Luật AskQuestion Tech Debt:** Nếu thông tin cập nhật bị hổng (gap), phải dùng AskQuestion Form. Bắt buộc có option `"Log as Tech Debt"`. Nếu user chọn, ghi nợ vào `qa/` (`qa-inbox.md`), tuyệt đối không tự chế (invent) business data.
-- Không đọc và viết vào thẳng các file `*.md` hay sửa trực tiếp thư mục `ir/`. Phải sửa `bundle.yaml` rồi split.
+## Description
+- Official mutation entry point for specifications in Phase 1 and downstream change loops.
+- Applies surgical edits to the leaf bundle, then automatically triggers `flowgrid split` and `flowgrid render`.
+- **Inviolable Rule:** Never edit generated `ir/*` or `ir/generated/*.md` files by hand — always route changes through `/update-spec`.
 
 ---
 
-## Example prompt (mẫu gọi)
-
-**Quy tắc:** một session = một command · chat mới khi đổi phase · cập nhật `.harness/progress.md` nếu có.
-
-**Khi nào:** Gọi khi scope khớp mô tả skill ở trên.
+## Example Prompt
 
 ```text
 /update-spec
 
-Surface: {admin-web} · Module: {CMP-…} · Scope: {mô tả ngắn}
+Target: surfaces/admin/CMP-ADM-ORD/01/01/order-list.bundle.yaml
+Change: Add batch order status update action with confirmation modal and reason text field.
 ```
-

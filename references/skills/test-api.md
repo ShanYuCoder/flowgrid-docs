@@ -1,26 +1,26 @@
 # Skill: `/test-api`
 
-**API hook / partner / webhook** — tests-docs `genType: api-e2e` + CLI `testcase:gen:api`.
+**API Hook / Partner / Webhook** — tests-docs `genType: api-e2e` + CLI `testcase:gen:api`.
 
-Workflow grill: [test.md § API hook](../../workflows/test.md#grill-api-hook) · artifact: [tests-docs § API hook](../../artifacts/tests-docs.md#api-hook-tc).
+Grill Workflow: [test.md § API Hook](../../workflows/test.md#grill-api-hook) · Artifact Guide: [tests-docs § API Hook](../../artifacts/tests-docs.md#api-hook-tc).
 
-## Khi dùng
+## When to Use
 
-- HTTP integration **không** gộp bước portal trong cùng file TC (webhook, partner export, public API).
-- Bước HTTP trong **SC flow dài** — file TC riêng (`api-e2e`) cùng `refs.scenario` với TC UI (`e2e`).
+- HTTP integration **without** coupling portal steps into the same TC file (webhooks, partner exports, public APIs).
+- HTTP steps inside **long scenario flows (SC)** — dedicated TC file (`api-e2e`) sharing `refs.scenario` with UI TCs (`e2e`).
 
-## Điều kiện docs
+## Docs Prerequisites
 
-- `01-backend-spec.yaml` đã có — `/api-spec`, `/grill-api-spec` ([backend.md](../../workflows/backend.md)).
-- `refs.screen`: `API-*` khớp contract leaf.
+- `01-backend-spec.yaml` already exists — author via `/api-spec`, `/grill-api-spec` ([backend.md](../../workflows/backend.md)).
+- `refs.screen`: `API-*` matching leaf contract.
 
-## Author (tests-docs)
+## Authoring (Tests-Docs Hub)
 
-- `schemaVersion: 2`, `genType: api-e2e`, `api` + `apiSteps[]`, `testMatrix`, `steps[]` (human).
-- Mẫu: `harness/tests/templates/TC.example-api.yaml`.
-- Grill plan: `/grill-testcase` + `cases:gate --strict` (cùng rule UI TC).
+- `schemaVersion: 2`, `genType: api-e2e`, `api` + `apiSteps[]`, `testMatrix`, human-readable `steps[]`.
+- Template: `harness/tests/templates/TC.example-api.yaml`.
+- Plan grilling: `/grill-testcase` + `cases:gate --strict` (shares rules with UI TCs).
 
-## Playwright (chuẩn FlowGrid)
+## Playwright Execution (FlowGrid Standard)
 
 ```bash
 flowgrid testcase:gen:api --testcase cases/.../TC-....yaml
@@ -28,20 +28,20 @@ flowgrid testcase:gen:api:dry --id TC-...
 ```
 
 - Output: `<e2eRoot>/tests/api-e2e/<module>/<id>.api.spec.ts` (Playwright `request`).
-- Env: `FLOWGRID_API_TEST_BASE_URL` hoặc tên trong `api.baseUrlEnv`.
-- Sau gen: chỉnh auth/HMAC trong spec — secret chỉ trên CI.
+- Environment: `FLOWGRID_API_TEST_BASE_URL` or key defined in `api.baseUrlEnv`.
+- Post-generation: Adjust authentication/HMAC in spec — secrets stored strictly in CI env.
 
-## Newman (tùy chọn)
+## Newman (Optional)
 
-- **Không** thay `TC-*.yaml` SSOT — dùng khi đối tác bàn giao collection hoặc script phức tạp.
-- Tag TC: `contract-postman`; chạy `newman` job CI riêng; vẫn giữ `api-e2e` TC cho gate/trace.
-- Chi tiết: [test.md#grill-api-hook](../../workflows/test.md#grill-api-hook).
+- **Does not replace** `TC-*.yaml` SSOT — utilized when partners provide Postman collections or complex HMAC scripts.
+- Tag TC: `contract-postman`; run `newman` in separate CI job; retain `api-e2e` TC for gates/traceability.
+- Details: [test.md § API Hook](../../workflows/test.md#grill-api-hook).
 
-## Liên quan
+## Related Skills & Commands
 
-| Việc | Skill / lệnh |
+| Task | Skill / Command |
 | --- | --- |
-| Plan UI một màn | `/testcase`, [grill màn](../../workflows/test.md#grill-single-screen) |
-| Flow dài | `/scenario`, [grill SC](../../workflows/test.md#grill-scenario-flow) |
-| Grill plan hub | `/grill-testcase` |
-| Sửa spec Playwright | `/test` (FE repo) — UI lane; API hook thường ít PO, sửa trực tiếp `.api.spec.ts` |
+| Single Screen UI Plan | `/testcase`, [Single Screen Grilling](../../workflows/test.md#grill-single-screen) |
+| Multi-Screen Scenario Flow | `/scenario`, [Scenario Grilling](../../workflows/test.md#grill-scenario-flow) |
+| Hub Plan Grilling | `/grill-testcase` |
+| Edit Playwright Spec | `/test` (FE repo) — UI lane; API hooks rarely use Page Objects, edit `.api.spec.ts` directly |

@@ -1,42 +1,42 @@
-# Workflow: Xây dựng Tài liệu Hướng dẫn Người dùng (User Manual)
+# Workflow: Building End-User Documentation (User Manuals)
 
-Trong hệ sinh thái **FlowGrid**, tài liệu hướng dẫn người dùng cuối (User Manual) không được viết hoàn toàn thủ công. Thay vào đó, nó là sự kết hợp tự động giữa **Thông số Kỹ thuật (Spec)** và **Kết quả Test Tự động (E2E Evidence)**, đảm bảo luôn khớp 100% với hệ thống thực tế.
+Within the **FlowGrid** ecosystem, end-user manuals are never written purely by hand. Instead, they represent an automated synthesis between **Technical Specifications (Spec)** and **Automated Testing Evidence (E2E Screenshots)**, guaranteeing 100% parity with active systems.
 
-Tài liệu này hướng dẫn chi tiết quy trình từ lúc sinh tài liệu bằng AI cho đến lúc đồng bộ lên **Google Docs** cho khách hàng sử dụng.
-
----
-
-## 1. Điều kiện tiên quyết (Prerequisites)
-
-Trước khi tiến hành build User Manual, bạn cần đảm bảo:
-1. **Spec & Flow đã được chốt:** Đã có file User Flow (VD: `surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`).
-2. **Automation Test (Phase 4):** Automation Test (Playwright/Cypress) đã được chạy thành công và lưu ảnh chụp màn hình thực tế (Evidence) tại thư mục `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
-3. **Cấu hình Google Docs API:** Hệ thống cần quyền truy cập vào Google Workspace của công ty bằng Service Account. 
-   - Tải file JSON Key của Service Account từ Google Cloud Console.
-   - Đổi tên file thành `google-credentials.json` và đặt vào thư mục gốc của workspace (hoặc thư mục `.secrets/`).
-   - **ĐẶC BIỆT LƯU Ý:** Bắt buộc phải thêm `google-credentials.json` và `.secrets/` vào file `.gitignore` để tránh rò rỉ key bảo mật lên Github.
-   - FlowGrid Adapter sẽ tự động đọc file này (thông qua biến môi trường `GOOGLE_APPLICATION_CREDENTIALS` hoặc đọc trực tiếp từ thư mục gốc).
+This guide details the complete workflow from AI-assisted draft generation to synchronizing live deliverables on **Google Docs** for end users and stakeholders.
 
 ---
 
-## 2. Bước 1: Sinh bản nháp Local (Local Generation)
+## 1. Prerequisites
 
-Mọi User Manual đều bắt nguồn từ Local dưới dạng định dạng Markdown, đóng vai trò là **SSOT (Single Source of Truth)**. Tài liệu hướng dẫn sử dụng được xây dựng xoay quanh **User Flow (Luồng nghiệp vụ)** chứ không phải đi liệt kê từng trường trên giao diện.
+Before building a User Manual, verify the following:
+1. **Spec & Flow Finalized:** User Flow documentation exists (e.g., `surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`).
+2. **Automated Testing (Phase 4):** Automation tests (Playwright/Cypress) have executed cleanly, saving actual visual screenshot evidence under `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
+3. **Google Docs API Configured:** System has access to the organization's Google Workspace via a Service Account.
+   - Download the Service Account JSON Key from Google Cloud Console.
+   - Rename the key to `google-credentials.json` and place it in the workspace root (or `.secrets/`).
+   - **CRITICAL SECURITY NOTE:** Ensure `google-credentials.json` and `.secrets/` are added to `.gitignore` to prevent committing secrets to GitHub.
+   - The FlowGrid Adapter automatically detects this credential (via `GOOGLE_APPLICATION_CREDENTIALS` or workspace root lookup).
 
-**Câu lệnh thực thi:**
+---
+
+## 2. Step 1: Local Generation
+
+All User Manuals originate locally as Markdown documents acting as the **Single Source of Truth (SSOT)**. Documentation is structured around **User Flows (Business Journeys)** rather than exhausting individual screen field inventories.
+
+**Execution Command:**
 ```bash
 flowgrid docs /manual FLOW-ADM-TENANT-SETUP
 ```
 
-**AI sẽ làm gì?**
-1. **Đọc User Flow:** Lấy luồng tương tác, các bước rẽ nhánh (VD: Chọn Doanh nghiệp thì làm gì tiếp theo) từ file `FLOW-*.md`.
-2. **Tham chiếu Spec (tổng quan):** Chỉ đọc file Spec Kỹ thuật (`W-*`) để nắm ý nghĩa của các khối thông tin lớn. BỎ QUA toàn bộ các validate lặt vặt (như required, email, số điện thoại, max-length 50) vì chúng hiển nhiên hoặc UI đã tự báo lỗi.
-3. **Dịch sang ngôn ngữ End-User:** AI tập trung viết theo dạng hướng dẫn hành trình: "Bước 1: Vào mục X... Bước 2: Nhập thông tin Y".
-4. **Ghép ảnh E2E:** Tự động chèn link tham chiếu đến file ảnh trong `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
-5. **Khởi tạo Tracking:** Gắn khối YAML Frontmatter vào đầu file.
+**What the AI Agent Does:**
+1. **Parses User Flow:** Extracts user journey steps and decision branches (e.g. "If Enterprise selected, proceed to Step X") from `FLOW-*.md`.
+2. **References Technical Spec (High-Level):** Inspects the Technical Spec (`W-*`) to capture high-level semantic purposes. Bypasses trivial form validations (e.g. required, email format, phone digits, max-length 50) as these are self-explanatory or handled by UI prompts.
+3. **Translates to End-User Language:** Focuses on human-oriented guides: "Step 1: Navigate to Section X... Step 2: Input details for Y".
+4. **Embeds E2E Visual Evidence:** Automatically injects markdown image links referencing `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
+5. **Initializes Tracking Metadata:** Appends YAML Frontmatter metadata headers.
 
-**Kết quả:**
-Sinh ra file tại `surfaces/admin/user-manuals/tenant/FLOW-ADM-TENANT-SETUP.md`.
+**Deliverable:**
+Generated at `surfaces/admin/user-manuals/tenant/FLOW-ADM-TENANT-SETUP.md`.
 
 ```markdown
 ---
@@ -44,48 +44,48 @@ gdoc_id: ""
 gdrive_image_id: "" 
 content_hash: ""
 ---
-# Hướng dẫn tạo đơn hàng
-Dưới đây là giao diện thực tế:
+# Order Creation Guide
+Below is the live application interface:
 ![Screen Evidence](../../../qa/e2e/evidence/W-ADM-ORD-01-main.png)
 ...
 ```
 
 ---
 
-## 3. Bước 2: Đồng bộ lên Google Docs (Publishing)
+## 3. Step 2: Publishing to Google Docs
 
-End-User không bao giờ đọc file Markdown. Họ cần một đường link Google Docs thân thiện. 
+End users do not browse raw markdown files. They expect a polished, shareable Google Doc link.
 
-**Câu lệnh thực thi:**
+**Execution Command:**
 ```bash
 flowgrid publish manual W-ADM-ORD-01 --target=gdocs
 ```
 
-**Luồng hoạt động của Publisher Adapter (`gdocs-adapter.mjs`):**
+**Publisher Adapter Architecture (`gdocs-adapter.mjs`):**
 
-1. **Kiểm tra thay đổi (Hash Bypass):**
-   - Adapter gom nội dung file Markdown + mã nhị phân của file ảnh `.png` để tạo thành một mã băm MD5 (Hash).
-   - So sánh với `content_hash` lưu ở lần chạy trước.
-   - **Tác dụng:** Nếu tài liệu không có thay đổi, tiến trình sẽ Dừng Lại. Điều này giúp dự án có hàng trăm màn hình **tránh bị chặn Quotas (giới hạn API) của Google**.
+1. **Change Detection (Hash Bypass):**
+   - The adapter combines Markdown content + binary image data to compute an MD5 hash.
+   - Compares the hash with `content_hash` recorded during previous runs.
+   - **Benefit:** If no content or images changed, execution exits cleanly. This shields projects with hundreds of screens from **hitting Google Docs API quota rate limits**.
 
-2. **Upload Ảnh E2E lên Google Drive:**
-   - Google Docs API không cho phép nhúng file local.
-   - Adapter sẽ upload ảnh `.png` lên Google Drive, lấy một URL công khai tạm thời.
+2. **Uploads E2E Screenshots to Google Drive:**
+   - The Google Docs API does not embed local binary files directly.
+   - The adapter uploads the `.png` image to Google Drive, acquiring a temporary public URL.
 
-3. **Cập nhật Google Doc (Clear & Replace):**
-   - Nếu `gdoc_id` chưa có: Tạo mới một Google Doc và ghi ID lại vào file markdown.
-   - Nếu đã có `gdoc_id`: Gọi hàm `batchUpdate` -> Xóa toàn bộ nội dung cũ (`deleteContentRange`) -> Chèn nội dung & ảnh mới.
-   - **Tác dụng:** Giữ nguyên vĩnh viễn một đường link Google Doc để share cho khách hàng/nội bộ, không bao giờ bị đứt link.
+3. **Updates Google Doc (Clear & Replace):**
+   - If `gdoc_id` is missing: Creates a new Google Doc and writes the document ID back to the local Markdown frontmatter.
+   - If `gdoc_id` exists: Calls `batchUpdate` -> wipes existing contents (`deleteContentRange`) -> writes updated content and embeds new images.
+   - **Benefit:** Preserves a permanent, static Google Doc link shared with clients or team members without link breakage.
 
 ---
 
-## 4. Chiến lược Cập nhật (Update Strategy)
+## 4. Update Strategy
 
-> **Luật bất thành văn:** Tài liệu trên Google Docs là **Read-Only (Chỉ đọc)**.
+> **Fundamental Rule:** Documents published to Google Docs are **Strictly Read-Only**.
 
-Nếu có thành viên (BA, Customer Success) muốn chỉnh sửa User Manual, quy trình sẽ phải đi ngược từ gốc:
-1. Sửa trực tiếp logic trên file Spec Kỹ thuật (Hoặc sửa thủ công trên file `.md` local nếu chỉ đổi câu chữ).
-2. Chạy E2E lấy ảnh mới (Nếu có đổi UI).
-3. Chạy lệnh `flowgrid publish`.
+If stakeholders (BAs, Customer Success leads) wish to modify the manual, changes must flow from the source:
+1. Update business logic in the Technical Spec (or edit local `.md` prose directly for wording adjustments).
+2. Re-run E2E tests to refresh visual screenshot evidence (if UI layout changed).
+3. Execute `flowgrid publish`.
 
-**Tuyệt đối không sửa trực tiếp văn bản trên giao diện Google Docs.** Vì hệ thống dùng cơ chế *Clear & Replace*, mọi chỉnh sửa trực tiếp trên Cloud sẽ bị xóa sạch vào lần Publish tiếp theo từ Local lên. Đây là nguyên tắc bảo vệ tính toàn vẹn dữ liệu SSOT (Single Source of Truth) của FlowGrid.
+**Never edit document text directly inside the Google Docs web UI.** Because the publishing adapter utilizes a *Clear & Replace* mechanism, direct cloud edits will be permanently overwritten upon the next local publish. This rule protects the single source of truth (SSOT) integrity of the FlowGrid repository.

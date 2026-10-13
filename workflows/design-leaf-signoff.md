@@ -1,57 +1,57 @@
-# Design leaf — sign-off rubric (voluntary)
+# Design Leaf — Sign-off Rubric (Voluntary)
 
-**Phạm vi:** một function leaf (`surfaces/<surface>/CMP-*/<NN…>/<slug>.bundle.yaml`) **trước** lane Test / codegen production.
+**Scope:** A function leaf (`surfaces/<surface>/CMP-*/<NN…>/<slug>.bundle.yaml`) **prior to** Test lane / production codegen.
 
-**Không phải engine gate** — lead/BA ký khi member đã tuân [design.md](./design.md) và skill grill. Chat-only “done” không thay checklist.
+**Not an engine gate** — Lead/BA signs off once the engineer has followed [design.md](./design.md) and grill skills. Chat-only "done" does not replace this checklist.
 
-**Liên quan:** [gates.md](./gates.md) · [grill-and-human-review.md](./grill-and-human-review.md) · audit `flowgrid audit spec` (structural).
-
----
-
-## Khi dùng
-
-- Đóng Design cho một `W-*` / leaf bundle.
-- Handoff sang `/testcase`, BE `/api-spec`, FE `/prototype` (theo policy team).
-- Review nội bộ mục tiêu chất lượng SSOT **~9** (đủ trace, đủ codegen, BA đọc được).
+**Related:** [gates.md](./gates.md) · [grill-and-human-review.md](./grill-and-human-review.md) · audit command `flowgrid audit spec` (structural).
 
 ---
 
-## Rubric — 6 mục (tất cả phải OK)
+## When to Use
 
-| # | Mục | Kiểm tra |
-|---|-----|----------|
-| 1 | **Audit structural** | `flowgrid audit spec <bundle> --type <profile>` — không còn `gaps[]` chưa xử lý; `confirms[]` đã chốt hoặc chuyển `qa` có chủ đích. |
-| 2 | **Business readable** | **VitePress** `ir/generated/spec.md` (+ `data-model.md` nếu có DB): stories, **list columns**, scenarios, AC — không chỉ placeholder. |
-| 3 | **Trace UI ↔ story** | Spot 2–3 scenario: thao tác map được từ `design.actions` / `design.sections` (handoff, validation messages VI). |
-| 4 | **API contract** | `api/<seq>/01-backend-spec.yaml` khớp `ir/design.yaml` `apiRef`; nếu có BE trong scope: `flowgrid audit fe-be` không blocker. |
-| 5 | **Codegen readiness** | `grillStatus.dev: done` (theo flow); `flowgrid gen:dry` (FE policy) pass; `gen.codegen` + tags grill-dev đã ghi. |
-| 6 | **QA inbox** | `qa` rỗng hoặc chỉ debt đã accept; không `openQuestions` ẩn trong bundle thay QA file. |
-
-### Tùy chọn (khuyến nghị, không chặn sign-off)
-
-| # | Mục | Kiểm tra |
-|---|-----|----------|
-| 7 | **Data model** | LCA `db-erd.md` đọc được; persisted controls có `db.schema`/`db.field`; `spec.entities` không rỗng khi form/list có nhiều field DB; list column computed → `#derived-data`. [architecture-data.md](./architecture-data.md) |
-
-- `/grill-prototype` không còn issue **SSOT** (copy, state, mock) trước test lane.
-- `registry:sync` trên FE base đã chạy; DSL tag khớp `design.registry.json`.
-- Đọc `ir/generated` dictionary/matrix với BA non-tech.
+- Closing Design for a `W-*` / leaf bundle.
+- Handoff to `/testcase`, BE `/api-spec`, FE `/prototype` (per team policy).
+- Internal review aiming for SSOT quality score **~9** (sufficient tracing, ready for codegen, human-readable by BAs).
 
 ---
 
-## Ghi nhận sign-off (thủ công)
+## Rubric — 6 Criteria (All Must Pass)
 
-Gợi ý một dòng trên bundle hoặc PR description:
+| # | Item | Verification |
+|---|------|--------------|
+| 1 | **Structural audit** | `flowgrid audit spec <bundle> --type <profile>` — no unhandled `gaps[]`; `confirms[]` resolved or deliberately routed to `qa`. |
+| 2 | **Business readable** | **VitePress** `ir/generated/spec.md` (+ `data-model.md` if DB exists): stories, **list columns**, scenarios, AC — meaningful content, not placeholders. |
+| 3 | **Trace UI ↔ story** | Spot-check 2–3 scenarios: user interactions map cleanly to `design.actions` / `design.sections` (handoff, validation messages). |
+| 4 | **API contract** | `api/<seq>/01-backend-spec.yaml` matches `ir/design.yaml` `apiRef`; if BE is in scope: `flowgrid audit fe-be` has no blockers. |
+| 5 | **Codegen readiness** | `grillStatus.dev: done` (per workflow); `flowgrid gen:dry` (FE policy) passes; `gen.codegen` + grill-dev tags are recorded. |
+| 6 | **QA inbox** | `qa` is empty or only contains accepted debt; no hidden `openQuestions` inside the bundle bypassing QA files. |
+
+### Optional (Recommended, Non-blocking)
+
+| # | Item | Verification |
+|---|------|--------------|
+| 7 | **Data model** | LCA `db-erd.md` is readable; persisted controls define `db.schema`/`db.field`; `spec.entities` is non-empty when form/list includes multiple DB fields; computed list columns → `#derived-data`. See [architecture-data.md](./architecture-data.md). |
+
+- `/grill-prototype` has no remaining **SSOT** discrepancies (copy, state, mock) before entering the test lane.
+- `registry:sync` on FE base has completed; DSL tags match `design.registry.json`.
+- Review `ir/generated` dictionary/matrix together with non-technical BAs.
+
+---
+
+## Recording Sign-off (Manual)
+
+Suggested single-line log in the bundle or PR description:
 
 ```text
 Design sign-off: <page-id> | reviewer: <name> | date: YYYY-MM-DD | rubric: 6/6
 ```
 
-Không bắt buộc field YAML — tránh engine phụ thuộc thứ tự grill.
+YAML field is not mandatory — prevents the engine from hard-coupling to grill ordering.
 
 ---
 
-## Không dùng rubric để
+## Do Not Use This Rubric To
 
-- Fail `split` khi `grillStatus.dev: done` nhưng `bqaOpen` chưa done (engine lock — **out of scope**).
-- Thay grill BQA/Dev — rubric là **sau** khi flow đã chạy.
+- Fail `split` when `grillStatus.dev: done` but `bqaOpen` is not done (engine lock — **out of scope**).
+- Replace BQA/Dev grill skills — the rubric is applied **after** the workflow has run.

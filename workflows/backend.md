@@ -1,16 +1,16 @@
-# Workflow — Backend (API & code)
+# Workflow — Backend (API & Code)
 
-**Phạm vi (SSOT):** lane **Code + test** — phần **backend**: contract leaf (`01`), OpenAPI sibling, grill API, codegen, unit BE, align FE–BE trước wire.
+**Scope (SSOT):** The **Code + Test** lane — specifically the **backend**: leaf contract (`01`), sibling OpenAPI, API grilling, codegen, BE unit tests, and FE–BE alignment prior to wiring.
 
-**Không viết ở đây:** cấu trúc leaf / bundle ↔ IR → [artifacts/docs.md](../artifacts/docs.md) · artifact code multi-repo → [artifacts/code.md](../artifacts/code.md) · tham số CLI → [references/cli-and-commands.md](../references/cli-and-commands.md) · map lệnh audit → [references/audit-commands.md](../references/audit-commands.md).
+**Not covered here:** Leaf structure / bundle ↔ IR → [artifacts/docs.md](../artifacts/docs.md) · Multi-repo code artifacts → [artifacts/code.md](../artifacts/code.md) · CLI parameter references → [references/cli-and-commands.md](../references/cli-and-commands.md) · Audit command mappings → [references/audit-commands.md](../references/audit-commands.md).
 
-**Thuộc macro:** [index.md#full-cycle](./index.md#full-cycle) · phase **2c API** (song song 2a scaffold FE, 2b tests; hội tụ tại [wire.md](./wire.md)). Data model tầng 3: [architecture-data.md](./architecture-data.md) · Design handoff: [design.md § Handoff](./design.md#handoff-ra-lane-khác).
+**Part of Macro Workflows:** [index.md#full-cycle](./index.md#full-cycle) · Phase **2c API** (runs in parallel with 2a FE scaffolding, 2b tests; converges at [wire.md](./wire.md)). Data Model Layer 3: [architecture-data.md](./architecture-data.md) · Design Handoff: [design.md § Handoff](./design.md#handoff-to-downstream-lanes).
 
 ---
 
-## API cycle (Phase 2c) {#api-cycle}
+## API Cycle (Phase 2c) {#api-cycle}
 
-Gam **amber** khớp [full cycle](./index.md#full-cycle). Entry sau Design khi actions / `apiRef` đã rõ (hoặc ngay từ đầu cho **BE-only**).
+Amber color scheme matches the [Full Cycle](./index.md#full-cycle) workflow. Entry occurs after Design once actions / `apiRef` are clear (or immediately for **BE-only** features).
 
 ```mermaid
 flowchart TD
@@ -48,7 +48,7 @@ flowchart TD
   APR -->|no| US --> GAS
   APR -->|yes| DRY --> GEN --> UNIT --> AUDIT --> OUT
   PORT -.->|portal delta| US
-  GEN -.->|sai contract| US
+  GEN -.->|contract breach| US
 
   classDef entry fill:#FEF3C7,stroke:#B45309,color:#78350F
   classDef contract fill:#FDE68A,stroke:#D97706,color:#92400E
@@ -65,7 +65,7 @@ flowchart TD
   class OUT out
 ```
 
-### Portal ↔ BE repo (rút gọn)
+### Portal ↔ BE Repo (Condensed)
 
 ```mermaid
 flowchart TD
@@ -79,19 +79,19 @@ flowchart TD
   CODE --> OUT["/audit-api → /wire"]
   US["/api-update"]
   PS -.->|portal delta| US
-  S2 -.->|sai| US
-  C -.->|sai| US
+  S2 -.->|mismatch| US
+  C -.->|mismatch| US
   US -->|re-grill| S2
 ```
 
-### Sub-lane: shared types (`contract-gen`)
+### Sub-lane: Shared Types (`contract-gen`)
 
 ```mermaid
 flowchart LR
   IR["01-backend-spec · design entities"]
   REG["contract-field.registry.json"]
   GEN["contract-gen"]
-  OUT["models / DTO shared"]
+  OUT["models / shared DTOs"]
   PG["FE imports types"]
 
   IR --> GEN
@@ -100,145 +100,145 @@ flowchart LR
   OUT --> PG
 ```
 
-`contract:gen`, envelope, list wire: [artifacts/code.md](../artifacts/code.md#contract-field-registry) · [§ Portal ↔ API](../artifacts/code.md#portal-api).
+`contract:gen`, envelopes, list wiring: [artifacts/code.md](../artifacts/code.md#contract-field-registry) · [§ Portal ↔ API](../artifacts/code.md#portal-api).
 
 ---
 
-## SSOT — ai đọc gì {#ssot-reading}
+## SSOT — Who Reads What {#ssot-reading}
 
-| Vai trò | Đọc (review / sign-off) | Ghi / implement |
-|---------|-------------------------|-----------------|
-| BA / PO | [VitePress](../artifacts/docs.md#team-reading--một-mặt-ssot-chung-review--uat--sign-off) `ir/generated/spec.md` + `data-model.md`; endpoint tóm tắt `ir/generated/api.md` | Không sửa `01` tay — delta qua `/update-spec` / Dev |
-| Dev BE (contract) | Site `api.md` trước; chi tiết codegen: `api/<seq>/01-backend-spec.yaml` | `/api-spec`, `/api-update`, `/grill-api-spec` |
-| Dev FE (integration) | `ir/design.yaml` `apiRef`, mock `03` | Không dùng `01` làm input layout — grill-prototype đọc design |
-| Agent BE codegen | **`01-backend-spec.yaml` only** — không `ir/design.yaml` / `ir/spec.yaml` | `flowgrid api-gen` với `--spec` tới `01` |
+| Role | Reads (Review / Sign-off) | Writes / Implements |
+|------|---------------------------|---------------------|
+| BA / PO | [VitePress](../artifacts/docs.md#team-reading--một-mặt-ssot-chung-review--uat--sign-off) `ir/generated/spec.md` + `data-model.md`; endpoint summary `ir/generated/api.md` | Do not hand-edit `01` — route deltas via `/update-spec` / Dev |
+| BE Dev (Contract) | Site `api.md` first; codegen details: `api/<seq>/01-backend-spec.yaml` | `/api-spec`, `/api-update`, `/grill-api-spec` |
+| FE Dev (Integration) | `ir/design.yaml` `apiRef`, mock `03` | Do not use `01` for layout inputs — grill-prototype references design |
+| Agent BE Codegen | **`01-backend-spec.yaml` only** — never `ir/design.yaml` / `ir/spec.yaml` | `flowgrid api-gen` with `--spec` pointing to `01` |
 
-**Quy tắc file:**
+**File Rules:**
 
-- Một function leaf: `api/<seq>/01-backend-spec.yaml` = **một module + một primary entity** (không gộp cả CMP vào một `01`).
-- `flowgrid check` chỉ cho `*.bundle.yaml` ↔ IR — **không** chạy trên `01`.
-- Sau sửa `01`: `api:check` → `openapi_gen` → `openapi_render` → `render` (cập nhật `api.md`).
+- Single function leaf: `api/<seq>/01-backend-spec.yaml` = **one module + one primary entity** (never collapse an entire CMP into one `01`).
+- `flowgrid check` validates `*.bundle.yaml` ↔ IR only — **does not** run on `01`.
+- After modifying `01`: `api:check` → `openapi_gen` → `openapi_render` → `render` (updates `api.md`).
 
-Đọc chung trên site: `ir/generated/spec.md`, `data-model.md`, `api.md` (VitePress leaf sidebar). Authoring & OpenAPI chain: [tpl-api-contract.md](../../templates/shared/tpl-api-contract.md).
+Unified portal view: `ir/generated/spec.md`, `data-model.md`, `api.md` (VitePress leaf sidebar). Authoring & OpenAPI toolchain: [tpl-api-contract.md](../../templates/shared/tpl-api-contract.md).
 
 ---
 
 ## Shared API Architecture & Conflict Prevention (Team Interlock) {#shared-api-architecture}
 
-Để giải quyết triệt để bài toán **tranh chấp ID & conflict git** khi 2+ Member phát triển các màn hình dùng chung API song song (ví dụ: màn Detail `W-01` và màn Edit `W-02` cùng gọi `GET /api/v1/orders/{id}`), FlowGrid áp dụng mô hình 2 tầng kết hợp:
+To systematically resolve **ID contention and Git merge conflicts** when multiple developers work in parallel on screens consuming the same API (e.g., Detail screen `W-01` and Edit screen `W-02` both calling `GET /api/v1/orders/{id}`), FlowGrid establishes a two-tiered architectural pattern:
 
 ### 1. Top-Down Module API (PM/Leader Pre-Allocation)
-- Khi PM/Leader tạo Spec tầng Module (`CMP-*.module.yaml` qua `/module`), Leader **có thể quy hoạch trước API dùng chung** chứa danh sách các API cốt lõi của Module đó.
-- Các API này được lưu tập trung ngay từ đầu để làm khung tham chiếu chung.
+- When PM/Leader defines a Module-level Spec (`CMP-*.module.yaml` via `/module`), the Lead **pre-allocates the shared API roster** detailing primary endpoints.
+- These endpoints are centralized from day one to serve as the unified reference contract.
 
 ### 2. Centralized Shared API Storage (Contract-First Reference)
-- **Tách biệt định nghĩa API khỏi thư mục Feature**: Toàn bộ API dùng chung không lưu lẻ tẻ trong thư mục màn hình `CMP-*/api/`, mà đưa về 2 thư mục quản lý tập trung trên Docs-hub:
-  - `surfaces/common/yaml/`: **Global System Common APIs** — Upload file, OTP, Master Data,...
-  - `common/yaml/<slug>/`: **Domain Shared APIs** (ở cấp LCA module) — Detail `GET /orders/{id}`, Create `POST /orders`, Update `PUT /orders/{id}`,...
-- **Contract-First Pre-Design**: BE Lead / Tech Lead thiết kế chi tiết DTO và Schema contract tại các file API tập trung này **trước** khi giao việc cho FE Member.
-- **Reference Binding**: Trong các Leaf Spec (`W-*.bundle.yaml`), FE Member **chỉ tái sử dụng bằng `#reuse-api` + `reuseFrom`** trỏ tới API chung. Thư mục Feature màn hình (`CMP-*`) chỉ chứa UI layout spec và Private API (nếu có).
-- **Zero-Conflict Git Merge**: Nhờ file API chung đã được pre-design ở vị trí tập trung, Member A và Member B làm 2 màn hình song song chỉ đọc/link tới file đó mà không sửa nó, đảm bảo PR merge 100% không conflict.
+- **Decouple API Definitions from Feature Folders**: Shared APIs are not placed haphazardly in feature subdirectories (`CMP-*/api/`), but centrally maintained in Docs-hub:
+  - `surfaces/common/yaml/`: **Global System Common APIs** — File uploads, OTP, Master Data, etc.
+  - `common/yaml/<slug>/`: **Domain Shared APIs** (at module LCA level) — Detail `GET /orders/{id}`, Create `POST /orders`, Update `PUT /orders/{id}`, etc.
+- **Contract-First Pre-Design**: BE Lead / Tech Lead models DTO schemas and endpoint contracts in these centralized files **prior** to tasking FE developers.
+- **Reference Binding**: In Leaf Specs (`W-*.bundle.yaml`), FE engineers **only reference via `#reuse-api` + `reuseFrom`** pointing to the shared API. The feature directory (`CMP-*`) contains strictly UI layout specs and private APIs (if any).
+- **Zero-Conflict Git Merges**: Because shared API contracts are pre-designed centrally, developers working on parallel screens only link to the file without editing it, guaranteeing **100% conflict-free PR merges**.
 
 ---
 
-## Hai chế độ entry {#entry-modes}
+## Two Entry Modes {#entry-modes}
 
-| Chế độ | `feature.source` | Input grill-api | `audit fe-be` |
-|--------|------------------|-----------------|---------------|
-| **Portal-backed** | `base` ≠ `none` | `ir/design.yaml` + `01` | **Có** — `apiRef` ↔ endpoint/entity trên `01` |
-| **BE-only** | `base: none` (webhook, partner, public API) | **`01` only** — không coi `ir/design.yaml` là contract | Không (không bundle portal) |
+| Mode | `feature.source` | Grill-API Input | `audit fe-be` |
+|------|------------------|-----------------|---------------|
+| **Portal-backed** | `base` ≠ `none` | `ir/design.yaml` + `01` | **Required** — `apiRef` ↔ endpoint/entity in `01` |
+| **BE-only** | `base: none` (webhook, partner, public API) | **`01` only** — ignores `ir/design.yaml` as contract | None (no portal bundle) |
 
-**Reuse API:** action/item `#reuse-api` + `reuseFrom` trên design — **không** duplicate trio `01/02/03` trên leaf reuse.
+**Reuse API:** Declare actions/items with `#reuse-api` + `reuseFrom` on design — **do not** duplicate the `01/02/03` trio in the consuming leaf.
 
-Hashtag domain: `#call-external`, `#cross-entity-service` · codegen: `#gen:*` (grill gán, script thực thi). Chi tiết skill: harness `/grill-api-spec`, `/api-spec`.
-
----
-
-## Điều kiện trước lane {#preconditions}
-
-- **Docs hub in-repo** (hoặc `FLOWGRID_DOCS_ROOT`): SSOT `01` nằm dưới `surfaces/…`, không mirror tùy tiện sang BE repo làm nguồn sửa.
-- **Portal-backed:** Design đủ để map actions → endpoint; rubric Design mục API: [design-leaf-signoff.md](./design-leaf-signoff.md) (mục 4).
-- **BE repo:** adapter đã init (`api-gen`, `api-unit-gen` theo stack) — path resolve qua config / env ([code.md](../artifacts/code.md)).
-- **Entity / bảng mới:** ERD Phase 0 đã cập nhật hoặc team chấp nhận skip có ghi nhận ([architecture-data.md](./architecture-data.md)).
+Domain hashtags: `#call-external`, `#cross-entity-service` · Codegen hashtags: `#gen:*` (assigned during grilling, executed by codegen scripts). Skill references: harness `/grill-api-spec`, `/api-spec`.
 
 ---
 
-## Router `/api` (chọn command) {#api-router}
+## Preconditions Before Entering Lane {#preconditions}
 
-| Trạng thái | Command |
-|------------|---------|
-| Chưa có `01-backend-spec` | `/api-spec` |
+- **Docs hub in-repo** (or `FLOWGRID_DOCS_ROOT`): SSOT `01` resides under `surfaces/…`; never mirror haphazardly into the BE repo as an editable source.
+- **Portal-backed:** Design is sufficient to map actions → endpoints; Design rubric item: [design-leaf-signoff.md](./design-leaf-signoff.md) (item 4).
+- **BE repo:** Adapter is initialized (`api-gen`, `api-unit-gen` per stack) — paths resolved via config / env ([code.md](../artifacts/code.md)).
+- **New entities / tables:** Phase 0 ERD is updated or team explicitly notes acceptance of omission ([architecture-data.md](./architecture-data.md)).
+
+---
+
+## Router `/api` (Command Selection) {#api-router}
+
+| State | Command |
+|-------|---------|
+| No `01-backend-spec` yet | `/api-spec` |
 | Portal delta / `pendingTechDebt` | `/api-update` |
-| Chỉ sửa BE nội bộ | `/api-update --be-only` |
-| Chưa codegen-ready | `/grill-api-spec` |
-| Grill + `approval.status` pass | `/api` → `api-gen` |
+| Internal BE modifications only | `/api-update --be-only` |
+| Not codegen-ready | `/grill-api-spec` |
+| Grilling + `approval.status` passed | `/api` → `api-gen` |
 
-**Một session = một command** — đọc `.harness/progress.md` trước khi tiếp tục cùng feature slug. Đổi phase (spec → gen → wire) → chat mới (cùng policy [design.md](./design.md#một-session--một-command)).
+**Single session = Single command** — consult `.harness/progress.md` before resuming the same feature slug. Phase transitions (spec → gen → wire) require a new session (per policy in [design.md](./design.md#single-session--single-command)).
 
-### Chuỗi thường gặp
+### Common Sequences
 
-| Mục tiêu | Chuỗi |
-|----------|--------|
-| Feature mới (portal) | `/api-spec` → `render` → `/grill-api-spec` → approval → `api-gen:dry` → `api-gen` |
-| Portal đổi spec | `/api-update` → re-grill → gates → gen lại phần impact |
-| Pilot từng phần | `/api-spec` (list) → grill → code → `/api-update` (export, …) |
+| Objective | Sequence |
+|-----------|----------|
+| New feature (portal-backed) | `/api-spec` → `render` → `/grill-api-spec` → approval → `api-gen:dry` → `api-gen` |
+| Portal spec changes | `/api-update` → re-grill → gates → re-generate impacted layers |
+| Incremental pilot | `/api-spec` (list) → grill → code → `/api-update` (export, etc.) |
 | Webhook / partner | `/api-spec` (`base: none`) → `/grill-api-spec` → `/api` |
 
-### Gap loop
+### Gap Loop
 
-| Khi | Hành động |
-|-----|-----------|
-| `grill-api-spec` hoặc codegen **sai** | `/api-update` → **re-grill** |
-| Portal đổi spec giữa chừng | `/api-update` (không full `/api-spec` lại từ đầu) |
-| `pendingTechDebt` / QA | Merge qua `/api-update` hoặc `/qa-resolve` trên target `01` |
-
----
-
-## Bước trong lane {#steps}
-
-| Thứ tự | Việc | Vai trò | Skill / gate (ví dụ) |
-|--------|------|---------|----------------------|
-| 1 | Inventory endpoint từ design / requirement | Dev BE / fullstack | `/api-spec` → `01` + `02` + mock |
-| 2 | Render đọc site | Member (any) | `flowgrid render` → `ir/generated/api.md` |
-| 3 | Grill contract + hashtag codegen | Dev + member | `/grill-api-spec` |
-| 4 | Gates contract (docs hub) | Dev BE | `audit api`; portal: `audit fe-be`; `api:check`; `openapi_gen`; `openapi_render` |
-| 5 | Dry-run codegen | Dev BE | `flowgrid api-gen:dry -- --spec …/01` |
-| 6 | Gen + implement + unit | Dev BE | `/api`, `api-unit-gen`, `/unit`, `/grill-api-unit` |
-| 7 | Audit trước wire | Dev BE | `/audit-api` · lặp `audit fe-be` nếu portal đổi |
-
-Mốc trong chuỗi đóng leaf: [gates.md § Contract BE](./gates.md#close-one-function) (bước 5).
-
-### `/api-spec` — đầu ra
-
-- `api/<seq>/01-backend-spec.yaml` — SSOT BE (modules, entities, endpoints, errors, `codegen.profile`).
-- Sibling `02-openapi.yaml` (gen, không sửa tay khi thiếu field — vá `01` rồi gen lại).
-- `03-mock.yaml` (tùy stack / policy prototype).
-- Portal: giữ `apiRef` trên `ir/design.yaml` khớp path/method trên `01`.
-
-### Grill trong Backend
-
-- **Reuse & matrix:** `#reuse-api`, HTTP/error matrix (409, 422, 403), optimistic locking, permission.
-- **BE-only:** auth scheme, idempotency, retry, partner errors (`#err:signature-invalid`, …).
-- **Readiness:** `approval.status`, `codegen.profile|entity|module`, `endpoints[].action`, `#gen:*` — thiếu → STOP, không `api-gen`.
-
-Grill vs audit: [grill-and-human-review.md](./grill-and-human-review.md). Audit **không** thay member chốt `confirms[]`.
+| Condition | Action |
+|-----------|--------|
+| `grill-api-spec` or codegen **fails** | `/api-update` → **re-grill** |
+| Portal spec updates mid-flight | `/api-update` (avoid re-running full `/api-spec` from scratch) |
+| `pendingTechDebt` / QA items | Resolve via `/api-update` or `/qa-resolve` on target `01` |
 
 ---
 
-## Sign-off contract API (tùy team) {#api-signoff}
+## Workflow Steps {#steps}
 
-Voluntary — không engine lock thứ tự grill Design. Gợi ý trước `api-gen` production:
+| Order | Action | Role | Skill / Gate (example) |
+|-------|--------|------|------------------------|
+| 1 | Inventory endpoints from design / requirements | BE / Fullstack Dev | `/api-spec` → `01` + `02` + mock |
+| 2 | Render documentation portal view | Any member | `flowgrid render` → `ir/generated/api.md` |
+| 3 | Grill contract + codegen hashtags | Dev + Member | `/grill-api-spec` |
+| 4 | Contract quality gates (docs hub) | BE Dev | `audit api`; portal: `audit fe-be`; `api:check`; `openapi_gen`; `openapi_render` |
+| 5 | Dry-run codegen | BE Dev | `flowgrid api-gen:dry -- --spec …/01` |
+| 6 | Generate, implement & unit test | BE Dev | `/api`, `api-unit-gen`, `/unit`, `/grill-api-unit` |
+| 7 | Pre-wire audit | BE Dev | `/audit-api` · re-run `audit fe-be` if portal changed |
 
-| # | Mục | Kiểm tra |
-|---|-----|----------|
-| 1 | **Structural** | `flowgrid audit api` — `gaps[]` xử lý hoặc `#tech-debt:QA-*` có chủ đích |
-| 2 | **FE–BE** (portal) | `flowgrid audit fe-be` — `apiRef` ↔ `01` không blocker |
+Milestones in leaf closure: [gates.md § Contract BE](./gates.md#close-one-function) (milestone 5).
+
+### Technical Deliverables of `/api-spec`
+
+- `api/<seq>/01-backend-spec.yaml` — SSOT BE contract (modules, entities, endpoints, errors, `codegen.profile`).
+- Sibling `02-openapi.yaml` (generated; never edit manually — patch `01` and re-generate).
+- `03-mock.yaml` (per stack / prototype policy).
+- Portal-backed: Maintain `apiRef` in `ir/design.yaml` matching paths/methods in `01`.
+
+### Grilling in Backend
+
+- **Reuse & matrix:** `#reuse-api`, HTTP/error matrices (409, 422, 403), optimistic locking, permissions.
+- **BE-only:** Auth scheme, idempotency, retries, partner error catalogs (`#err:signature-invalid`, etc.).
+- **Readiness:** `approval.status`, `codegen.profile|entity|module`, `endpoints[].action`, `#gen:*` — missing prerequisites → STOP, do not run `api-gen`.
+
+Grill vs audit comparisons: [grill-and-human-review.md](./grill-and-human-review.md). Audit does **not** replace human sign-off on `confirms[]`.
+
+---
+
+## API Contract Sign-off (Voluntary per Team) {#api-signoff}
+
+Voluntary — not an engine lock on Design grill order. Recommended prior to production `api-gen`:
+
+| # | Item | Verification |
+|---|------|--------------|
+| 1 | **Structural** | `flowgrid audit api` — `gaps[]` resolved or deliberately routed to `#tech-debt:QA-*` |
+| 2 | **FE–BE** (portal) | `flowgrid audit fe-be` — `apiRef` ↔ `01` has no blockers |
 | 3 | **Toolchain** | `api:check`, `openapi_gen`, `openapi_render` exit 0 |
-| 4 | **Readable** | VitePress `api.md` + (nếu cần) member đọc `02` preview — BA hiểu phạm vi endpoint |
-| 5 | **Approval** | `approval.status: approved` trên `01` theo policy team |
-| 6 | **QA** | Không `openQuestions` ẩn trên `01`; debt trong `qa` đã accept |
+| 4 | **Readability** | VitePress `api.md` + (if needed) `02` preview — BA understands endpoint scope |
+| 5 | **Approval** | `approval.status: approved` on `01` per team policy |
+| 6 | **QA** | No hidden `openQuestions` on `01`; tech debt in `qa` is accepted |
 
-Ghi nhận (PR / progress):
+Sign-off entry (PR / progress):
 
 ```text
 API sign-off: <page-id or API-id> | seq: <api/01> | reviewer: <name> | date: YYYY-MM-DD
@@ -248,18 +248,18 @@ API sign-off: <page-id or API-id> | seq: <api/01> | reviewer: <name> | date: YYY
 
 ## Handoff {#handoff}
 
-- **Wire:** sau grill API + unit policy → [wire.md](./wire.md) (`/wire`, E2E post-wire).
-- **Test:** [test.md](./test.md) song song khi `TC-*` đã có — partner/webhook: Newman / BE integration hoặc Playwright `request` ([§ API hook](./test.md#integration-api-hooks)).
-- **Design lùi:** portal đổi UX ảnh hưởng contract → `/api-update` hoặc `/update-spec` + split, không patch lệch chỉ trên BE repo.
-- **FE scaffold:** phase 2a có thể chạy trước wire; contract types qua `contract-gen` khi policy bật.
+- **Wire:** Following API grill + unit test coverage → [wire.md](./wire.md) (`/wire`, post-wire E2E).
+- **Test:** [test.md](./test.md) runs in parallel once `TC-*` exists — partner/webhook: Newman / BE integration or Playwright `request` ([§ API hook](./test.md#integration-api-hooks)).
+- **Design updates:** UX changes affecting contracts → `/api-update` or `/update-spec` + split; do not patch BE repositories in isolation.
+- **FE scaffold:** Phase 2a can proceed before wire; type contracts imported via `contract-gen` when enabled.
 
 ---
 
-## Liên kết nhanh
+## Quick Links
 
-| Chủ đề | Trang |
-|--------|--------|
-| Đóng một `W-*` (mốc 5 BE) | [gates.md](./gates.md#close-one-function) |
-| Design sign-off (mục API) | [design-leaf-signoff.md](./design-leaf-signoff.md) |
+| Topic | Page |
+|-------|------|
+| Closing a leaf `W-*` (Milestone 5 BE) | [gates.md](./gates.md#close-one-function) |
+| Design sign-off (API criteria) | [design-leaf-signoff.md](./design-leaf-signoff.md) |
 | OpenAPI skill | [references/skills/openapi.md](../references/skills/openapi.md) |
 | Grill API | [references/skills/grill-api-spec.md](../references/skills/grill-api-spec.md) |

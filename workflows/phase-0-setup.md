@@ -1,242 +1,241 @@
-# Phase 0 — Setup & Khởi tạo dự án
+# Phase 0 — Setup & Project Initialization
 
-Tài liệu này hướng dẫn bước khởi tạo đầu tiên (Phase 0) với lệnh `flowgrid setup` và phân bổ luồng làm việc theo **3 ngữ cảnh thực tế của dự án**:
-1. **Greenfield:** Làm sản phẩm mới hoàn toàn.
-2. **Maintain:** Tiếp tục phát triển và bảo trì codebase hiện có.
-3. **Rebase / Modernization:** Đập đi làm lại từ hệ thống legacy cũ.
+This guide details the first setup step (Phase 0) using the `flowgrid setup` command and workflow execution across **3 real-world project contexts**:
+1. **Greenfield:** Building a completely new product from scratch.
+2. **Maintain:** Continuing development and maintenance on an existing codebase.
+3. **Rebase / Modernization:** Rebuilding from an older legacy system.
 
 ---
 
-## Sơ đồ điều hướng Phase 0
+## Phase 0 Flowchart
 
 ```mermaid
 flowchart TD
-  START(["Bắt đầu: flowgrid setup [workspace]"]) --> CHOICE{"Ngữ cảnh dự án?"}
+  START(["Start: flowgrid setup [workspace]"]) --> CHOICE{"Project Context?"}
 
-  %% Nhánh 1: Greenfield
-  CHOICE -->|1. Greenfield<br/>(Làm mới tinh)| GF_DOCS["Phát triển overview, architecture<br/>Liệt kê surfaces"]
-  GF_DOCS --> GF_REPO["Tạo các repo code mới<br/>vào source-code/"]
-  GF_REPO --> GF_INIT["Chạy /init<br/>(Lập bản đồ repo & surfaces)"]
+  %% Branch 1: Greenfield
+  CHOICE -->|1. Greenfield<br/>(Brand new product)| GF_DOCS["Author overview, architecture<br/>Define surfaces"]
+  GF_DOCS --> GF_REPO["Create code repos<br/>under source-code/"]
+  GF_REPO --> GF_INIT["Run /init<br/>(Map repos & surfaces)"]
   GF_INIT --> NEXT_PHASE
 
-  %% Nhánh 2: Maintain
-  CHOICE -->|2. Maintain<br/>(Phát triển dự án cũ)| MT_REPO["Đưa repo code hiện tại<br/>vào source-code/"]
-  MT_REPO --> MT_INIT["Chạy /init<br/>(Quét & nhận diện cấu hình)"]
-  MT_INIT --> MT_NEXT["Sang Phase Design:<br/>Dùng kèm /trace khảo cổ chi tiết"]
+  %% Branch 2: Maintain
+  CHOICE -->|2. Maintain<br/>(Existing codebase)| MT_REPO["Place existing repos<br/>under source-code/"]
+  MT_REPO --> MT_INIT["Run /init<br/>(Scan & identify config)"]
+  MT_INIT --> MT_NEXT["Enter Design Phase:<br/>Use /trace for codebase archaeology"]
   MT_NEXT --> NEXT_PHASE
 
-  %% Nhánh 3: Rebase
-  CHOICE -->|3. Rebase<br/>(Đập đi làm lại)| RB_LEGACY["Đưa code cũ vào source-legacy/<br/>(STRICTLY READ-ONLY)"]
-  RB_LEGACY --> RB_EXTRACT["Chạy /extract-legacy<br/>(Bóc tách modules & surfaces cũ)"]
-  RB_EXTRACT --> RB_NEW["Khởi tạo repo code mới<br/>đưa vào source-code/"]
-  RB_NEW --> RB_INIT["Chạy /init<br/>(Cấu hình dự án mới)"]
-  RB_INIT --> RB_NEXT["Sang Phase Design:<br/>Dùng kèm /legacy trích xuất tính năng"]
+  %% Branch 3: Rebase
+  CHOICE -->|3. Rebase<br/>(System modernization)| RB_LEGACY["Place legacy code in source-legacy/<br/>(STRICTLY READ-ONLY)"]
+  RB_LEGACY --> RB_EXTRACT["Run /extract-legacy<br/>(Extract legacy modules & surfaces)"]
+  RB_EXTRACT --> RB_NEW["Initialize new target code repos<br/>under source-code/"]
+  RB_NEW --> RB_INIT["Run /init<br/>(Configure new project)"]
+  RB_INIT --> RB_NEXT["Enter Design Phase:<br/>Use /legacy for feature recovery"]
   RB_NEXT --> NEXT_PHASE
 
-  NEXT_PHASE(["Chuyển sang chu kỳ tính năng:<br/>Design ➔ Codegen ➔ Test ➔ Wire"])
+  NEXT_PHASE(["Transition to feature lifecycle:<br/>Design ➔ Codegen ➔ Test ➔ Wire"])
 ```
 
 ---
 
-## Chi tiết từng kịch bản
+## Detailed Scenarios
 
-### 1. Kịch bản Greenfield (Dự án mới hoàn toàn)
+### 1. Greenfield Scenario (Brand New Project)
 
-Áp dụng khi bắt đầu một sản phẩm mới từ con số 0.
+Applies when building a product entirely from scratch.
 
-- **Bước 1: Khởi tạo khung workspace**
+- **Step 1: Initialize Workspace Skeleton**
   ```bash
   flowgrid setup my-project [--mode=base|custom]
   ```
-  CLI hỗ trợ 2 chế độ scaffolding:
-  - **`base` (mặc định):** Nạp đầy đủ bộ khung skeleton + seed common patterns/components mẫu chuẩn (`surfaces/common`, `03-user-flows/FLOW-login.md`, global templates) làm tài liệu tham khảo khởi đầu.
-  - **`custom`:** Chỉ khởi tạo khung cấu trúc docs cốt lõi và VitePress dev hub (`.vitepress/`, `architecture/`, `overview/`, `registries/`, `source-code/`), **không** nạp các file common và templates mẫu của skeleton — giữ workspace sạch sẽ theo nhu cầu riêng của dự án.
-- **Bước 2: Xây dựng tài liệu định hướng cấp cao**
-  - Viết tài liệu tại `overview/index.md` (Tầm nhìn, Persona, Mục tiêu phát hành).
-  - Khai báo kiến trúc tại `architecture/` (Arc42, Ràng buộc kỹ thuật, ERD cơ sở dữ liệu).
-  - Định nghĩa danh mục bề mặt ứng dụng tại `surfaces/` (Liệt kê các surfaces: Web Admin, Mobile App, Portal,...).
-- **Bước 3: Khởi tạo repo mã nguồn**
-  - Tạo hoặc clone các repository mã nguồn mới vào thư mục `source-code/` (khuyến nghị dưới dạng Git Submodule).
-- **Bước 4: Nhận diện cấu hình**
-  - Mở Agent AI và chạy skill **`/init`** để quét workspace, tạo file cấu hình liên kết `platform-repos.local.json` và map toàn bộ surfaces.
-- **Tiếp theo:** Thành viên chuyển sang tham khảo các phase tiếp theo trong workflow: [Design](./design.md) ➔ [Backend](./backend.md) ➔ [Test](./test.md) ➔ [Wire](./wire.md).
+  The CLI supports two scaffolding modes:
+  - **`base` (default):** Populates the full skeleton framework + standard sample common patterns/components (`surfaces/common`, `03-user-flows/FLOW-login.md`, global templates) as initial reference documentation.
+  - **`custom`:** Scaffolds only core docs structure and VitePress dev hub (`.vitepress/`, `architecture/`, `overview/`, `registries/`, `source-code/`), **without** injecting skeleton sample common files and templates — keeping the workspace clean tailored to custom project needs.
+- **Step 2: Formulate High-Level Directives**
+  - Author documentation in `overview/index.md` (Vision, Personas, Release Goals).
+  - Declare architecture under `architecture/` (Arc42, Technical Constraints, Database ERD).
+  - Define application surface catalog under `surfaces/` (List surfaces: Web Admin, Mobile App, Portal, etc.).
+- **Step 3: Initialize Code Repositories**
+  - Create or clone new source code repositories under `source-code/` (recommended as Git Submodules).
+- **Step 4: Identify Configurations**
+  - Open AI Agent and run the **`/init`** skill to inspect workspace, generate link config `platform-repos.local.json`, and map all surfaces.
+- **Next:** Proceed with downstream lifecycle phases: [Design](./design.md) ➔ [Backend](./backend.md) ➔ [Test](./test.md) ➔ [Wire](./wire.md).
 
 ---
 
-### 2. Kịch bản Maintain (Bảo trì & Phát triển tiếp dự án cũ)
+### 2. Maintain Scenario (Maintenance & Extension of Existing Project)
 
-Áp dụng khi đưa một hệ thống đang chạy vào quy chuẩn FlowGrid để tiếp tục mở rộng tính năng mới hoặc nâng cấp mà không viết lại từ đầu.
+Applies when onboarding an active codebase into FlowGrid standards to add features or upgrade without rewriting from scratch.
 
-- **Bước 1: Khởi tạo khung workspace**
+- **Step 1: Initialize Workspace Skeleton**
   ```bash
   flowgrid setup my-project
   ```
-- **Bước 2: Tích hợp mã nguồn hiện có**
-  - Clone hoặc đưa toàn bộ repository mã nguồn hiện tại vào thư mục `source-code/`.
-- **Bước 3: Cấu hình và nhận diện**
-  - Chạy skill **`/init`** trên Agent AI để quét codebase, nhận diện công nghệ, tự động lập repo maps và phân bổ surfaces theo cấu trúc thực tế của code.
-- **Bước 4: Sang phase Design & Khảo cổ**
-  - Khi bắt tay vào làm tính năng mới hoặc sửa đổi tính năng cũ trong phase [Design](./design.md), **bắt buộc sử dụng kèm skill `/trace`**:
-    - Agent sẽ quét trực tiếp mã nguồn trong `source-code/` để đối chiếu logic, trích xuất ngược Data Model, API contract và luồng nghiệp vụ hiện hữu sang file spec chuẩn.
-    - Giúp viết spec chuẩn xác mà không sợ làm đứt gãy các logic ngầm của hệ thống cũ.
+- **Step 2: Mount Existing Source Code**
+  - Clone or move all current source repositories into `source-code/`.
+- **Step 3: Configuration & Archaeology**
+  - Run the **`/init`** skill in the AI Agent to scan codebase, detect technology stacks, generate repo maps, and associate surfaces matching the actual code structure.
+- **Step 4: Enter Design Phase with Archaeology**
+  - When initiating or modifying features in the [Design](./design.md) phase, **consistently use the `/trace` skill**:
+    - The Agent scans active code in `source-code/` to verify logic, reverse-engineering Data Models, API contracts, and business flows into standardized spec files.
+    - Guarantees accurate specifications without breaking implicit system behaviors.
 
 ---
 
-### 3. Kịch bản Rebase / Modernization (Đập đi làm lại từ hệ thống cũ)
+### 3. Rebase / Modernization Scenario (Modernizing Legacy Systems)
 
-Áp dụng khi nâng cấp toàn diện (ví dụ chuyển từ Monolith cũ sang Microservices, hoặc từ PHP/WebForms sang Nuxt/Next/NestJS), giữ nguyên nghiệp vụ nhưng đổi mới công nghệ.
+Applies when performing an architectural overhaul (e.g., migrating from Monolith to Microservices, or PHP/WebForms to Nuxt/Next/NestJS), preserving domain business rules while adopting modern tech stacks.
 
-- **Bước 1: Khởi tạo khung workspace**
+- **Step 1: Initialize Workspace Skeleton**
   ```bash
   flowgrid setup my-project
   ```
-- **Bước 2: Cách ly mã nguồn legacy**
-  - Đưa toàn bộ repository code cũ vào thư mục `source-legacy/`.
-  - **Quy tắc bất biến:** `source-legacy/` là **STRICTLY READ-ONLY**. Tuyệt đối không sửa đổi và không copy-paste code thô từ thư mục này sang code mới.
-- **Bước 3: Khảo cổ tổng quan với `/extract-legacy`**
-  - Mở Agent AI và chạy skill **`/extract-legacy`**:
-    - Agent quét sâu cấu trúc code cũ để bóc tách sơ đồ module, danh sách màn hình, danh mục API và các rule dùng chung (`CMN-*`).
-    - Kết xuất danh mục chức năng vào `surfaces/` và `architecture/`.
-- **Bước 4: Khởi tạo codebase mới**
-  - Tạo repository cho hệ thống công nghệ mới và đặt vào `source-code/`.
-  - Chạy skill **`/init`** để kết nối hệ thống mới với tài liệu SSOT vừa bóc tách.
-- **Bước 5: Sang phase Design & Phục hồi tính năng**
-  - Khi bắt đầu làm từng màn hình/tính năng ở phase [Design](./design.md), **sử dụng kèm skill `/legacy`**:
-    - Agent đọc mã nguồn cũ tương ứng từ `source-legacy/`, trích xuất 100% logic nghiệp vụ lõi, DTO, validation rule và trạng thái giao diện vào bản spec mới.
-    - Đảm bảo hệ thống mới kế thừa trọn vẹn nghiệp vụ cũ mà mã nguồn sạch 100%, không bị vướng rác kỹ thuật.
+- **Step 2: Isolate Legacy Codebase**
+  - Place old source repositories into `source-legacy/`.
+  - **Inviolable Rule:** `source-legacy/` is **STRICTLY READ-ONLY**. Never modify or copy-paste raw code from this directory into new codebases.
+- **Step 3: Global Legacy Extraction with `/extract-legacy`**
+  - Run the **`/extract-legacy`** skill in the AI Agent:
+    - Deep scans legacy source trees to extract module maps, screen catalogs, API rosters, and common rules (`CMN-*`).
+    - Emits functional catalogs into `surfaces/` and `architecture/`.
+- **Step 4: Initialize New Codebase**
+  - Create repositories for the new tech stack and place them under `source-code/`.
+  - Run the **`/init`** skill to bind the new code repositories to the extracted SSOT documents.
+- **Step 5: Enter Design Phase with Feature Recovery**
+  - When authoring screens/features in the [Design](./design.md) phase, **use the `/legacy` skill**:
+    - The Agent reads corresponding legacy code from `source-legacy/`, extracting 100% of core domain rules, DTOs, validation constraints, and UI states into the new spec.
+    - Ensures clean-slate new code inheriting domain behavior without legacy technical debt.
 
 ---
 
-## 4. Bộ kỹ năng & Cơ chế Ngăn chặn Duplicate Code (Anti-Copy-Paste Guard)
+## 4. Skills & Anti-Copy-Paste Guard
 
-Một trong những vấn đề lớn nhất khi bảo trì hoặc hiện đại hóa hệ thống legacy là **code bị copy-paste trùng lặp tràn lan** qua nhiều module (cùng một Confirm Modal, bảng phân trang, hay logic xuất Excel bị viết lại ở 4–5 controller/view khác nhau).
+A critical problem during maintenance or modernization is **widespread duplicate copy-paste code** across modules (e.g., the same Confirm Modal, pagination table, or Excel export logic re-implemented across 4–5 controllers/views).
 
-FlowGrid thiết lập chuỗi kỹ năng khép kín để triệt tiêu triệt để vấn đề này ngay từ Phase 0:
+FlowGrid enforces a closed-loop skill set to eliminate code duplication starting at Phase 0:
 
 ```mermaid
 flowchart TD
-  INIT["1. /init quét legacy<br/>Bóc tách CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Cảnh báo Whole Page Duplication"] --> COMMON["2. /common <CMN-ID><br/>Đặc tả Rule dùng chung tại <LCA>/common/patterns/*.md"]
-  COMMON --> IMPL["3. Single Implementation & Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Đăng ký vào Workspace SSOT .flowgrid/registries/"]
-  IMPL --> SPEC["4. /spec cưỡng chế tái sử dụng<br/>Gắn tag #pattern hoặc #reuse-api<br/>Agent & Codegen từ chối copy-paste code legacy"]
-  SPEC --> SAFETRACE["5. /trace & /legacy khảo cổ an toàn<br/>Trích xuất logic nghiệp vụ, giữ source-legacy READ-ONLY"]
+  INIT["1. /init scans legacy<br/>Extracts CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Whole Page Duplication warnings"] --> COMMON["2. /common <CMN-ID><br/>Specifies common rules at <LCA>/common/patterns/*.md"]
+  COMMON --> IMPL["3. Single Implementation & Registry<br/>Write 1 canonical implementation in shared/ (FE/BE)<br/>Register in Workspace SSOT .flowgrid/registries/"]
+  IMPL --> SPEC["4. /spec enforces reuse<br/>Attaches #pattern or #reuse-api tags<br/>Agent & Codegen reject legacy copy-paste"]
+  SPEC --> SAFETRACE["5. /trace & /legacy safe archaeology<br/>Extracts domain rules, leaves source-legacy READ-ONLY"]
 ```
 
-### Chi tiết các kỹ năng ngăn chặn duplicate:
+### Anti-Duplication Skill Breakdown:
 
-1. **Skill `/init` (Quét, Phân loại Common & Định vị Nơi Gen Code)**:
-   - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động phân thành **2 nhóm xử lý khác biệt**:
-     - **Nhóm 1 — Existing Commons (Đã có code sẵn trong base/shared):** Các component/service đã được viết sẵn trong thư mục dùng chung (như `ConfirmModal.vue`, `BaseServiceImpl.php`). Với nhóm này, **KHÔNG lên plan gen lại code**, chỉ liệt kê danh sách để bổ sung file Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) nhằm hoàn thiện SSOT.
-     - **Nhóm 2 — Duplicate Candidates (Mã nguồn bị copy-paste nhiều nơi):** Các đoạn logic/giao diện bị nhân bản ở 3–4 nơi mà chưa có component dùng chung. Nhóm này **mới cần lên Action Plan** với đầy đủ Target Placement Check (Target Repo, Target Code Path, Target Docs Path) để sinh 1 bản cài đặt chuẩn duy nhất vào `shared/`.
-   - **Định vị chính xác nơi gen Common (Target Placement Check):** Trong các hệ thống lớn hoặc multi-repo, Agent không để mơ hồ mà đối chiếu với `projects` trong `.flowgrid/config.json` để chỉ định rõ 3 tọa độ cho từng Duplicate Candidate trong `inition-inventory.md`:
-     1. *Owning Surface & Target Repo:* Repo sở hữu đích (ví dụ `admin-fe`, `booking-portal`, hay `core-api`).
-     2. *Target Code Path:* Đường dẫn file mã nguồn cụ thể sẽ sinh (ví dụ `source-code/admin-fe/src/components/Common/ConfirmModal.vue` thay vì nói chung chung).
-     3. *Target Docs Path (LCA):* Đường dẫn file Markdown User Stories trong Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
-   - **Cảnh báo nhân bản cả trang (`Whole Page Duplication Warnings`)**: Nếu phát hiện 2 file màn hình giống nhau đến 90–95% (như `CreateUser.vue` và `EditUser.vue`), Agent **không** tạo `CMN-*` mà khuyến nghị gộp thành một Form Spec đa hình duy nhất (`mode: create | edit`).
+1. **Skill `/init` (Scan, Common Classification & Placement Discovery)**:
+   - In Common Discovery mode, the Agent scans controllers, services, routers, and views for duplicate logic appearing across 2+ locations, grouping findings into **two distinct categories**:
+     - **Category 1 — Existing Commons (Already implemented in base/shared):** Components/services already present in shared libraries (e.g., `ConfirmModal.vue`, `BaseServiceImpl.php`). **DO NOT plan code generation** for these; only generate Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) to complete the SSOT documentation.
+     - **Category 2 — Duplicate Candidates (Duplicated in multiple places):** Logic/UI duplicated across 3–4 locations lacking a shared component. These **require an Action Plan** with full Target Placement Checks (Target Repo, Target Code Path, Target Docs Path) to generate a single canonical implementation into `shared/`.
+   - **Target Placement Check:** In large or multi-repo projects, the Agent cross-references `projects` in `.flowgrid/config.json` to assign coordinates in `inition-inventory.md`:
+     1. *Owning Surface & Target Repo:* Destination repository (e.g., `admin-fe`, `booking-portal`, or `core-api`).
+     2. *Target Code Path:* Explicit source code file path (e.g., `source-code/admin-fe/src/components/Common/ConfirmModal.vue`).
+     3. *Target Docs Path (LCA):* Markdown User Stories file path in Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
+   - **Whole Page Duplication Warnings:** If 2 screen files are 90–95% identical (e.g., `CreateUser.vue` and `EditUser.vue`), the Agent recommends a single polymorphic Form Spec (`mode: create | edit`) rather than creating a `CMN-*`.
 
-2. **Skill `/common <CMN-ID>` (Đặc tả User Stories & Sinh code dùng chung)**:
-   - **Chỉ dùng file Markdown `.md` mô tả User Stories & Rules:** Các thành phần common đều được code sẵn trong base (`shared/`), **TUYỆT ĐỐI KHÔNG TẠO FILE YAML CHO COMMON VÀ KHÔNG PHÂN TÁCH IR**. Tạo file YAML cho common là thừa thãi và sai chuẩn.
-   - **Phân biệt 2 trường hợp thực thi:**
-     - *Với Existing Common (Đã có code sẵn):* Agent chỉ đọc code và sinh duy nhất file `.md` User Stories, **tuyệt đối không gen lại code**.
-     - *Với Duplicate Candidate (Chưa có code chung):* Member duyệt Action Plan ➔ Agent lần lượt sinh file `.md` User Stories + **gen code 1 bản cài đặt chuẩn vào `shared/`** + đăng ký vào registry.
-   - **Quy trình Plan ➔ Tự động thực thi khi Approve / Proceed:**
-     - Agent đề xuất Action Plan ngắn gọn (mô tả User Stories dự kiến và file code cần tạo).
-     - Member xem qua, điều chỉnh nếu cần rồi bấm **Approve** hoặc **Proceed**.
-     - Agent tự động thực thi lần lượt các phase mà không hỏi vòng vo:
-       1. Sinh file `.md` User Stories & Behavior tại `<LCA>/common/patterns/<CMN-ID>.md`.
-       2. Sinh mã nguồn cài đặt (Single Implementation) vào thư mục `shared/` (`shared/components/` cho FE hoặc `shared/services/` cho BE).
-       3. Tự động đăng ký vào Workspace SSOT registry (`.flowgrid/registries/design.registry.json` hoặc `.flowgrid/registries/be-capabilities.registry.json` / `.flowgrid/adapters/<target>/custom/registries/codegen.registry.json`). Tuyệt đối không sinh thư mục `registries/` vào repo code.
+2. **Skill `/common <CMN-ID>` (User Stories Spec & Shared Code Generation)**:
+   - **Markdown `.md` Only for Stories & Rules:** Common components reside in base/shared (`shared/`). **NEVER CREATE YAML FILES OR IR ARTIFACTS FOR COMMONS**. Creating YAML for commons is redundant.
+   - **Execution Branches:**
+     - *Existing Common:* Agent reads existing code and generates only the Markdown User Stories `.md` file; **never regenerates code**.
+     - *Duplicate Candidate:* Member approves Action Plan ➔ Agent generates User Stories `.md` + **generates single canonical implementation into `shared/`** + registers in registry.
+   - **Plan ➔ Fast-track Execution on Approve / Proceed:**
+     - Agent drafts a concise Action Plan (target User Stories and code paths).
+     - Member reviews and clicks **Approve** or **Proceed**.
+     - Agent executes steps without circular confirmations:
+       1. Generates User Stories & Behavior at `<LCA>/common/patterns/<CMN-ID>.md`.
+       2. Generates code implementation into `shared/` (`shared/components/` for FE or `shared/services/` for BE).
+       3. Registers in Workspace SSOT registry (`.flowgrid/registries/design.registry.json` or `.flowgrid/registries/be-capabilities.registry.json` / `.flowgrid/adapters/<target>/custom/registries/codegen.registry.json`). Never creates `registries/` directories inside code repositories.
 
-3. **Nguyên tắc an toàn tuyệt đối: Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy**:
-   - Mục đích tạo Common: Đoạn code này được phát hiện đang bị copy-paste duplicate ở 3–4 nơi trong code cũ. Ta tạo sẵn 1 bản chuẩn hoá duy nhất trong `shared/` để **các tính năng phát triển tiếp theo sử dụng**, triệt tiêu nguy cơ copy duplicate lần thứ 3, thứ 4.
-   - **Tuyệt đối KHÔNG tự ý sửa đổi hay refactor code trong `source-legacy/`**: Thư mục legacy luôn là **READ-ONLY**. Không thay thế code cũ đang chạy để tránh 100% nguy cơ regression hoặc làm degrade hệ thống cũ.
+3. **Absolute Safety Rule: Create For The Future — NEVER Mutate Legacy Code**:
+   - The purpose of Common creation: The code was detected as duplicated across old modules. We establish a single canonical implementation in `shared/` for **future features to consume**, preventing future duplication.
+   - **STRICTLY NEVER modify or refactor code in `source-legacy/`**: The legacy tree is **READ-ONLY**. Do not replace existing working code to avoid regression risks.
 
-4. **Skill `/spec` & Codegen (Cưỡng chế Anti-Copy-Paste Guard)**:
-   - Khi bất kỳ thành viên nào phát triển màn hình hoặc API mới qua `/spec`, bundle bắt buộc gắn tag `#pattern: <CMN-ID>` hoặc `#reuse-api: <CMN-ID>`.
-   - Agent AI và Codegen engine **tuyệt đối từ chối việc copy-paste code thô từ legacy** vào module mới; bắt buộc `import` và tái sử dụng component/service chung đã được đăng ký trong `shared/`.
+4. **Skill `/spec` & Codegen (Anti-Copy-Paste Guard Enforcement)**:
+   - When authoring screens or APIs via `/spec`, bundles must attach `#pattern: <CMN-ID>` or `#reuse-api: <CMN-ID>`.
+   - The AI Agent and Codegen engine **strictly reject raw copy-paste from legacy code**, enforcing `import` and reuse of registered components in `shared/`.
 
-5. **Bộ đôi `/trace` & `/legacy` (Kế thừa nghiệp vụ sạch sẽ)**:
-   - `/trace` (dự án Maintain): Quét code hiện hữu để đối chiếu data model và logic ngầm mà không làm gãy luồng.
-   - `/legacy` (dự án Rebase): Chỉ đọc Read-Only từ `source-legacy/`, trích xuất 100% nghiệp vụ lõi sang bản spec mới, triệt tiêu toàn bộ rác kỹ thuật cũ.
+5. **Archaeology Pair: `/trace` & `/legacy`**:
+   - `/trace` (Maintain projects): Scans active code to cross-reference data models and implicit logic without breaking flows.
+   - `/legacy` (Rebase projects): Read-only extraction from `source-legacy/`, porting 100% of domain logic into clean new specs.
 
 ---
 
-## 5. Huấn luyện Template từ Golden Sample (`build-template-code`)
+## 5. Template Training from Golden Sample (`build-template-code`)
 
-Sau khi chuẩn hóa các thành phần dùng chung, thách thức tiếp theo là **làm sao để Agent AI và engine Codegen sinh mã mới đúng 100% theo kiến trúc, thư viện UI và coding convention riêng của dự án** (không bị lệch chuẩn theo template mặc định).
+After standardizing common components, the next challenge is ensuring that the **AI Agent and Codegen engine generate code matching 100% of project conventions, UI libraries, and architectural patterns** without drifting into generic defaults.
 
-FlowGrid giải quyết bài toán này bằng công cụ `build-template-code` (kèm skill `/build-templates`) để học tự động từ một **Golden Sample** (module mẫu chuẩn).
+FlowGrid accomplishes this with `build-template-code` (paired with `/build-templates`), learning automatically from a **Golden Sample** (canonical module).
 
-### 5.1. Golden Sample là gì?
-Ở cuối tài liệu `inition-inventory.md`, Agent AI sẽ phân tích toàn bộ codebase và đề xuất **Golden Sample** — module hoặc surface có kiến trúc phân tầng sạch đẹp, chuẩn mực và rõ layer nhất trong dự án (ví dụ phân tách rõ Controller ➔ Service ➔ Repository ➔ DTO hoặc View ➔ Component, có đầy đủ CRUD và validation mẫu mực).
+### 5.1. What is a Golden Sample?
+At the end of `inition-inventory.md`, the AI Agent analyzes the codebase and identifies a **Golden Sample** — the module or surface exhibiting the cleanest architecture, clearest separation of concerns (e.g., Controller ➔ Service ➔ Repository ➔ DTO or View ➔ Component), and complete CRUD/validation examples.
 
-### 5.2. Quy trình huấn luyện Template (Tri-Sync)
+### 5.2. Template Training Workflow (Tri-Sync)
 
 ```mermaid
 flowchart TD
-  SAMPLE["Golden Sample<br/>(Module chuẩn mực được đề xuất ở inition-inventory.md)"] --> PLAN["Bước 1: flowgrid build-template-code --sample=<path><br/>(Phân tích cấu trúc, xuất template-plan.json)"]
-  PLAN --> REVIEW["Member Review kế hoạch<br/>(Kiểm tra danh sách template & placeholders)"]
-  REVIEW --> APPLY["Bước 2: flowgrid build-template-code --yes<br/>(Chấp thuận ghi template vào Workspace SSOT .flowgrid/adapters/<target>/custom/)"]
-  APPLY --> SYNC["Tự động cập nhật Workspace SSOT Registry<br/>(.flowgrid/adapters/<target>/custom/registries/)"]
-  SYNC --> NEW_DEV["Phát triển tính năng mới:<br/>/spec ➔ flowgrid gen sinh mã chuẩn 100%"]
+  SAMPLE["Golden Sample<br/>(Identified in inition-inventory.md)"] --> PLAN["Step 1: flowgrid build-template-code --sample=<path><br/>(Analyzes structure, outputs template-plan.json)"]
+  PLAN --> REVIEW["Member reviews plan<br/>(Inspects template list & placeholders)"]
+  REVIEW --> APPLY["Step 2: flowgrid build-template-code --yes<br/>(Applies templates to Workspace SSOT .flowgrid/adapters/<target>/custom/)"]
+  APPLY --> SYNC["Automatically syncs Workspace SSOT Registry<br/>(.flowgrid/adapters/<target>/custom/registries/)"]
+  SYNC --> NEW_DEV["Develop new features:<br/>/spec ➔ flowgrid gen produces 100% compliant code"]
 ```
 
-### 5.3. Hướng dẫn thực thi từng bước:
+### 5.3. Step-by-Step Execution:
 
-#### Bước 1: Phân tích module mẫu và xuất kế hoạch (`--sample`)
-Chỉ định đường dẫn tới thư mục module mẫu (chấp nhận đường dẫn tương đối hoặc tuyệt đối):
+#### Step 1: Analyze Sample Module & Output Plan (`--sample`)
+Specify the path to the sample module (relative or absolute):
 
 ```bash
 flowgrid build-template-code --sample=./source-code/src/modules/orders
 ```
 
-*Cơ chế an toàn:* Bước này **hoàn toàn chưa ghi đè hay thay đổi bất kỳ file template nào**. CLI chỉ quét và tạo ra file kế hoạch `.flowgrid/template-plan.json` chứa:
-- Danh sách các file template dự kiến sinh.
-- Các vị trí placeholder được nhận diện (`{{entity}}`, `{{fields}}`, `{{actions}}`).
-- Các component UI và endpoints API được bóc tách.
+*Safety Guarantee:* This step **does not overwrite any existing templates**. The CLI only scans and generates `.flowgrid/template-plan.json` containing:
+- List of projected template files.
+- Identified placeholder positions (`{{entity}}`, `{{fields}}`, `{{actions}}`).
+- Extracted UI components and API endpoints.
 
-#### Bước 2: Build luôn template khi User Approve (`--yes`)
-- **Fast-track Build khi User xác nhận đề xuất:**
-  - Khi user / member đã xem đề xuất Golden Sample (từ `inition-inventory.md` hoặc sau khi chạy `--sample`) và bấm **Approve** hoặc **Proceed**:
-  - Agent chạy ngay lệnh `flowgrid build-template-code --yes` để **BUILD LUÔN TEMPLATE**.
-  - **Tuyệt đối không chạy thảo luận/discuss dài dòng qua lại.** Người thực hiện công đoạn này là dân kỹ thuật (tech lead / dev) đọc hiểu được code; khi họ đã bấm approve là họ đã nắm rõ kết quả và muốn hoàn tất ngay. Thêm nữa, việc sinh template vào `.flowgrid/` hoàn toàn chưa sửa đổi code cũ legacy nên tuyệt đối an toàn, không có rủi ro degrade.
+#### Step 2: Build Templates on User Approval (`--yes`)
+- **Fast-track Build on User Approval:**
+  - Once the user/member reviews the Golden Sample proposal and clicks **Approve** or **Proceed**:
+  - The Agent immediately executes `flowgrid build-template-code --yes` to **BUILD TEMPLATES IMMEDIATELY**.
+  - **Do not engage in lengthy discussions.** Technical leads and engineers understand the code; approval signals readiness to proceed. Furthermore, generating templates into `.flowgrid/` does not alter legacy code, ensuring safety.
 
 ```bash
 flowgrid build-template-code --yes
 ```
 
-CLI sẽ ghi các file template tương ứng vào Workspace SSOT `.flowgrid/adapters/<target>/custom/` (tuyệt đối **không** ghi vào repo code):
+The CLI writes template files into Workspace SSOT `.flowgrid/adapters/<target>/custom/` (never into code repositories):
 
-| Công nghệ | Đuôi template | File Registry tại Workspace SSOT (`.flowgrid/adapters/<target>/custom/registries/`) |
+| Technology | Template Extension | Registry File in Workspace SSOT (`.flowgrid/adapters/<target>/custom/registries/`) |
 | :--- | :--- | :--- |
 | **Nuxt, Next, NestJS** | `.hbs` (Handlebars) | `design.registry.json` (FE) · `codegen.registry.json` (BE) |
 | **Laravel / PHP** | `.stub` | `codegen.registry.json` |
 | **FastAPI / Python** | `.j2` (Jinja2) | `codegen.registry.json` |
 | **.NET / C#** | `.scriban` | `codegen.registry.json` |
 
-*Ghi đè khi cần thiết:* Nếu cần cập nhật lại toàn bộ template đã tồn tại, thêm cờ `--force`:
+*Overwriting when necessary:* To refresh all existing templates, supply `--force`:
 ```bash
 flowgrid build-template-code --yes --force
 ```
 
-#### Bước 3: Phát triển tính năng mới với Custom Template
-Kể từ thời điểm này, toàn bộ quy trình phát triển chức năng mới diễn ra tự động và chuẩn xác:
-1. Viết spec với `/spec` (kế thừa các mã `CMN-*`).
-2. Phản biện nghiệp vụ và giao diện với `/grill-bqa`, `/prototype`.
-3. Khi chạy lệnh sinh code (`flowgrid gen`), hệ thống sẽ tự động sử dụng bộ custom template vừa được huấn luyện để sinh mã đúng 100% quy chuẩn dự án mà không cần dev phải sửa tay.
+#### Step 3: Feature Development with Custom Templates
+From this point onward, new feature development runs smoothly:
+1. Author specifications with `/spec` (inheriting `CMN-*`).
+2. Critique domain and UI flows with `/grill-bqa`, `/prototype`.
+3. Running `flowgrid gen` generates code strictly following project custom templates without manual refactoring.
 
 ---
 
-## 6. Xem tài liệu SSOT trực tiếp trên Local (`pnpm docs:dev`)
+## 6. Local SSOT Documentation Server (`pnpm docs:dev`)
 
-Đến đây, quá trình cài đặt và thiết lập Phase 0 đã hoàn tất! Bạn có thể khởi chạy server tài liệu để xem giao diện web trực quan của toàn bộ hệ thống SSOT:
+Phase 0 setup is now complete! You can run the documentation server to browse the interactive web portal of the Workspace SSOT:
 
 ```bash
 pnpm docs:dev
-# hoặc: flowgrid dev
+# or: flowgrid dev
 ```
 
-Lệnh này khởi chạy VitePress dev server tại `http://localhost:5173` giúp bạn và toàn bộ team:
-- Đọc chi tiết các tài liệu kiến trúc Arc42, cấu trúc surfaces, data model, ERD và API contract dưới dạng web động.
-- Tự động cập nhật tức thì (Hot Reload) mỗi khi Agent AI hoặc team chỉnh sửa các file Markdown/YAML trên disk.
-- Là nơi đối chiếu trực quan duy nhất giữa BA, Dev và QA trong suốt vòng đời dự án.
-
+This launches the VitePress dev server at `http://localhost:5173`:
+- Explore Arc42 architecture, surface topologies, data models, ERDs, and API contracts as an interactive portal.
+- Realtime Hot Reload on Markdown/YAML updates made on disk by the team or AI Agents.
+- The single visual source of truth bridging BAs, Developers, and QA engineers across the project lifecycle.

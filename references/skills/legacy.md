@@ -1,37 +1,37 @@
-# Kỹ năng: `/legacy`
+# Skill: `/legacy`
 
-## Tên
+## Name
 `legacy`
 
-## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/legacy` hoặc dùng kết hợp `/legacy /spec`.
-- Dành riêng cho kịch bản **Rebase / Modernization** (đập đi xây mới từ code cũ).
+## Usage (Command/Trigger)
+- Call via slash command: `/legacy` or in combination: `/legacy /spec`.
+- Exclusively designed for **Rebase / Modernization** (rebuilding modern systems from legacy systems).
 
-## Input (Dữ liệu đầu vào)
-- **Thư mục đọc:** `source-legacy/` (**Strictly READ-ONLY**).
-- Bản danh sách ánh xạ chức năng từ `extract-legacyion-inventory.md`.
+## Input
+- Legacy codebase directory: `source-legacy/` (**STRICTLY READ-ONLY**).
+- Legacy functional inventory extracted via `/extract-legacy`.
 
-## Output (Kết quả mong đợi)
-- **Thư mục ghi:** `source-code/` (và các file spec SSOT tương ứng).
-- Đọc hiểu 100% logic nghiệp vụ lõi (controllers, services, validation rules, state machine) từ mã nguồn cũ.
-- Tái cấu trúc và xuất sang dạng Leaf Bundle spec chuẩn (`.bundle.yaml`, `ir/`, `01-backend-spec.yaml`) và code mới đặt trong `source-code/`.
+## Output
+- Target codebase directory: `source-code/`.
+- Clean specifications: `.bundle.yaml`, `ir/`, and `01-backend-spec.yaml`.
+- 100% extraction of core business logic, validation rules, state machines, and DTOs into modern architecture.
 
-## Quy tắc bắt buộc [CỰC KỲ QUAN TRỌNG]
-- **`source-legacy/` là STRICTLY READ-ONLY:** Tuyệt đối cấm sửa đổi, thêm mới hay xóa bất kỳ file nào trong thư mục này.
-- **Cấm copy-paste rác kỹ thuật:** Không bê nguyên xi code cũ sang hệ thống mới. Chỉ kế thừa logic nghiệp vụ và viết lại theo kiến trúc mới chuẩn mực.
-- **Ghi toàn bộ vào `source-code/`:** Mọi output codegen và specs đều được lưu trữ trực tiếp vào thư mục mã nguồn mới.
+## Inviolable Rules
+- **`source-legacy/` is STRICTLY READ-ONLY:** Never modify, add, or delete files within this folder.
+- **Strictly prohibit raw copy-pasting:** Never transfer legacy code directly into new repos. Re-architect logic cleanly according to project golden samples.
+- **All outputs write to `source-code/`:** New code and SSOT specs live exclusively in modern directories.
 
-## Description / Ý nghĩa
-- Trong các dự án đập đi xây lại, thách thức lớn nhất là làm sao để giữ trọn vẹn nghiệp vụ phức tạp của hệ thống cũ mà không bị "nhiễm độc" bởi cấu trúc code tệ hại trước đây.
-- `/legacy` là công cụ lọc sạch nghiệp vụ: đọc logic từ code cũ, lọc bỏ rác kỹ thuật, và chuyển hóa thành kiến trúc mới tinh gọn và sạch sẽ trong `source-code/`.
+## Description
+- In modernization projects, the greatest challenge is preserving intricate legacy business rules while eliminating accumulated technical debt.
+- `/legacy` acts as a business logic distillation filter: reads domain behavior from legacy files, removes legacy workarounds, and outputs clean modern code.
 
 ---
 
-## Example prompt (mẫu gọi)
+## Example Prompt
 
 ```text
 /legacy /spec
 
-Màn hình: Quản lý khách hàng (Customer Management)
-Hãy đọc logic cũ tại source-legacy/app/Http/Controllers/CustomerController.php để trích xuất toàn bộ nghiệp vụ, validation và API sang spec mới cho hệ thống trong source-code/.
+Screen: Customer Management
+Read legacy logic from source-legacy/app/Http/Controllers/CustomerController.php to extract all validation, business rules, and API specifications into the new architecture under source-code/.
 ```

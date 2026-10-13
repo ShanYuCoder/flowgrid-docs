@@ -116,28 +116,26 @@ The Agent MUST inspect controllers, router definitions, middleware/guards, servi
 
 ---
 
-## 4. Rule: Code-First Common Reconciliation Matrix (Native Project vs Tool Patterns)
+## 4. Rule: Mandatory Template & Common Sync with Smart Selective Reconciliation
 
-> [!IMPORTANT]
-> **CODE-FIRST PRIORITY PRINCIPLE**: Existing project code is ALWAYS the single source of truth. FlowGrid generic templates must NEVER overwrite, delete, or supersede working code in the project.
+> [!CRITICAL] MANDATORY INIT SYNC & CODE-FIRST RULE
+> 1. **Always Sync Templates & Common at Init:** During `/init` (or `flowgrid setup`), the system **MUST ALWAYS sync** global templates (`.flowgrid/templates/`) and base common patterns (`surfaces/common/`) into the target repo/workspace SSOT.
+> 2. **Selective Analysis (Favor Project Over Tool):** During the deep scan, the Agent analyzes and reconciles native project code against tool patterns. **If an equivalent component or pattern already exists in the project, ALWAYS use and retain the project's native implementation; NEVER take the tool's implementation or overwrite project code.**
 
-During the deep scan, the Agent MUST categorize all discovered commons into the following 4 categories:
+The Agent MUST categorize all commons into the following 4 categories:
 
 | Category | Description | Processing Rule | Docs Hub Placement |
 | :--- | :--- | :--- | :--- |
 | **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract (props, slots, events, methods) as the official spec. | `<LCA>/common/patterns/<id>.md` (e.g. `surfaces/common/patterns/breadcrumb.md`) |
-| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Reconciliation**: Offer user choice via `AskQuestion`. Default: **Retain Native Implementation**. Never silently overwrite with tool templates. | `<LCA>/common/patterns/<id>.md` |
+| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document the project's existing implementation as the SSOT standard. | `<LCA>/common/patterns/<id>.md` |
 | **Category 3: Duplicate Candidates** | Logic/UI copy-pasted across 2+ locations without an abstraction (e.g. ad-hoc delete modals or duplicate pagination code). | **Common Action Plan**: Flag in `common-plan.md` for refactoring into a single shared implementation in `shared/`. | `<LCA>/common/patterns/<id>.md` upon approval |
-| **Category 4: Common Gaps** | Standard enterprise capabilities absent in the project (e.g. no standard confirmation dialog, unhandled error format). | **On-Demand Recommendation**: Document in inventory under `5.4 Common Recommendations & Gaps`. User can adopt FlowGrid's catalog via `flowgrid add base-common`. | Cataloged on demand |
+| **Category 4: Common Gaps** | Standard enterprise capabilities absent in the project (e.g. no standard confirmation dialog, unhandled error format). | **Adopt Tool Standard**: The pre-synced tool pattern in `surfaces/common/` is retained and cataloged as the official recommendation for the team to adopt. | Cataloged in `surfaces/common/` & inventory §5.4 |
 
-### Conflict Resolution Wizard Prompt (AskQuestion Heuristic)
-When an overlap is detected between existing project code (e.g. `webbeds`'s `src/components/Breadcrumb.vue` or custom `DeleteDialog.vue`) and FlowGrid's standard base catalog:
-- The Agent informs the user:
-  - *Detected Native Implementation:* `<path-to-file>`
-  - *Standard Catalog Equivalent:* FlowGrid `<pattern-id>`
-- The Agent prompts via `AskQuestion`:
-  - **Option 1 (Recommended):** `(Recommended) Retain & Document Native Implementation (Use project's own code as workspace SSOT, no file modifications)`
-  - **Option 2:** `Standardize on FlowGrid Base Pattern (Import FlowGrid's recommended base pattern via 'flowgrid add base-common')`
+### Selective Reconciliation Heuristic
+When an overlap is detected between existing project code (e.g. `src/components/Breadcrumb.vue` or custom `DeleteDialog.vue`) and FlowGrid's synced base patterns:
+- The Agent verifies the native file exists and functions.
+- The Agent **preserves the project's native implementation as the single source of truth**, taking the project's contract rather than forcing the tool's generic pattern.
+- If the project already has its own implementation, any placeholder pattern from the tool is safely superseded by the project's version.
 
 ---
 

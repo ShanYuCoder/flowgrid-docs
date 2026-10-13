@@ -1,17 +1,29 @@
 # Skill: `/qa-review`
 
-## Tên
+## Name
 `qa-review`
 
-## Cách dùng
-- Slash: `/qa-review HOTEL-LIST_0001` — senior append `kind: review` trên **cùng file** QA.
-- `needs-change` → `status: open`; middle sửa spec rồi append `answer` hoặc `/qa-resolve`.
+## Usage (Command/Trigger)
+- Call via slash command: `/qa-review <QA-ID>`
+- Used by Senior Engineers or Leads to review QA resolutions or request revisions.
 
-## Khác `/qa-resolve`
-| | `/qa-resolve` | `/qa-review` |
-|--|----------------|--------------|
-| Việc | Chốt solution + patch SSOT + append answer | Góp ý / approved / needs-change |
-| Patch bundle | Có | Không (handoff `/update-spec` nếu patch sai) |
+## Input
+- QA file: `qa/<SHORT>_NNNN.yaml`.
+- Review remarks.
 
-## Workflow team
-[workflows/qa-team.md](../../workflows/qa-team.md)
+## Output
+- Appended `updates[]` entry with `kind: review`.
+- Re-opens item (`status: open`) if `needs-change` is indicated.
+
+## Description
+- Manages peer review on QA inbox items without modifying specification files directly.
+
+---
+
+## Example Prompt
+
+```text
+/qa-review HOTEL-LIST_0001
+
+needs-change: Add explicit acceptance criteria when the property has no configured timezone.
+```
