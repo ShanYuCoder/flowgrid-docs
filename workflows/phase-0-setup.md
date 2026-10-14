@@ -115,40 +115,41 @@ FlowGrid enforces a closed-loop skill set to eliminate code duplication starting
 
 ```mermaid
 flowchart TD
-  INIT["1. /init scans legacy<br/>Extracts CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Whole Page Duplication warnings"] --> COMMON["2. /common <CMN-ID><br/>Specifies common rules at <LCA>/common/patterns/*.md"]
-  COMMON --> IMPL["3. Single Implementation & Registry<br/>Write 1 canonical implementation in shared/ (FE/BE)<br/>Register in Workspace SSOT .flowgrid/registries/"]
+  INIT["1. /init scans legacy<br/>Extracts CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Pre-registers in DSL Registry (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/>Specifies common rules at <LCA>/common/patterns/*.md"]
+  COMMON --> IMPL["3. Single Implementation & Registry Promotion<br/>Write 1 canonical implementation in shared/ (FE/BE)<br/>Promote status: planned ➔ implemented in .flowgrid/registries/"]
   IMPL --> SPEC["4. /spec enforces reuse<br/>Attaches #pattern or #reuse-api tags<br/>Agent & Codegen reject legacy copy-paste"]
   SPEC --> SAFETRACE["5. /trace & /legacy safe archaeology<br/>Extracts domain rules, leaves source-legacy READ-ONLY"]
 ```
 
 ### Anti-Duplication Skill Breakdown:
 
-1. **Skill `/init` (Scan, Common Classification & Placement Discovery)**:
+1. **Skill `/init` (Scan, Common Classification, Placement Discovery & DSL Registry Pre-Registration)**:
    - In Common Discovery mode, the Agent scans controllers, services, routers, and views for duplicate logic appearing across 2+ locations, grouping findings into **two distinct categories**:
-     - **Category 1 — Existing Commons (Already implemented in base/shared):** Components/services already present in shared libraries (e.g., `ConfirmModal.vue`, `BaseServiceImpl.php`). **DO NOT plan code generation** for these; only generate Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) to complete the SSOT documentation.
-     - **Category 2 — Duplicate Candidates (Duplicated in multiple places):** Logic/UI duplicated across 3–4 locations lacking a shared component. These **require an Action Plan** with full Target Placement Checks (Target Repo, Target Code Path, Target Docs Path) to generate a single canonical implementation into `shared/`.
+     - **Category 1 — Existing Commons (Already implemented in base/shared):** Components/services already present in shared libraries (e.g., `ConfirmModal.vue`, `BaseServiceImpl.php`). **DO NOT plan code generation** for these; generate Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) to complete the SSOT documentation, and register into DSL Registry (`design.registry.json` or `be-capabilities.registry.json`) with `status: "implemented"`.
+     - **Category 2 — Duplicate Candidates (Duplicated in multiple places):** Logic/UI duplicated across 2+ locations lacking a shared component. These **require an Action Plan (`common-plan.md`)** with full Target Placement Checks (Target Repo, Target Code Path, Target Docs Path) to generate a single canonical implementation into `shared/` for **NEW features and future updates to use**. **STRICTLY NEVER modify or refactor existing code where duplicates were found** — prevent duplication from this point forward without risking regressions on running code.
+   - **DSL Registry Pre-Registration (`status: "planned"`):** `/init` pre-registers duplicate candidates directly into Workspace SSOT registries (`design.registry.json` / `be-capabilities.registry.json`) with `status: "planned"` and standard tags (`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`). This empowers `/spec` to immediately reference shared components for upcoming screens without generating redundant ad-hoc components (`#needs-component`).
    - **Target Placement Check:** In large or multi-repo projects, the Agent cross-references `projects` in `.flowgrid/config.json` to assign coordinates in `inition-inventory.md`:
      1. *Owning Surface & Target Repo:* Destination repository (e.g., `admin-fe`, `booking-portal`, or `core-api`).
      2. *Target Code Path:* Explicit source code file path (e.g., `source-code/admin-fe/src/components/Common/ConfirmModal.vue`).
      3. *Target Docs Path (LCA):* Markdown User Stories file path in Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
    - **Whole Page Duplication Warnings:** If 2 screen files are 90–95% identical (e.g., `CreateUser.vue` and `EditUser.vue`), the Agent recommends a single polymorphic Form Spec (`mode: create | edit`) rather than creating a `CMN-*`.
 
-2. **Skill `/common <CMN-ID>` (User Stories Spec & Shared Code Generation)**:
+2. **Skill `/common <CMN-ID>` (User Stories Spec, Shared Code Generation & Registry Promotion)**:
    - **Markdown `.md` Only for Stories & Rules:** Common components reside in base/shared (`shared/`). **NEVER CREATE YAML FILES OR IR ARTIFACTS FOR COMMONS**. Creating YAML for commons is redundant.
    - **Execution Branches:**
      - *Existing Common:* Agent reads existing code and generates only the Markdown User Stories `.md` file; **never regenerates code**.
-     - *Duplicate Candidate:* Member approves Action Plan ➔ Agent generates User Stories `.md` + **generates single canonical implementation into `shared/`** + registers in registry.
+     - *Duplicate Candidate:* Member approves Action Plan ➔ Agent generates User Stories `.md` + **generates single canonical implementation into `shared/`** + promotes DSL registry entry from `status: "planned"` ➔ `status: "implemented"`.
    - **Plan ➔ Fast-track Execution on Approve / Proceed:**
      - Agent drafts a concise Action Plan (target User Stories and code paths).
      - Member reviews and clicks **Approve** or **Proceed**.
      - Agent executes steps without circular confirmations:
        1. Generates User Stories & Behavior at `<LCA>/common/patterns/<CMN-ID>.md`.
        2. Generates code implementation into `shared/` (`shared/components/` for FE or `shared/services/` for BE).
-       3. Registers in Workspace SSOT registry (`.flowgrid/registries/design.registry.json` or `.flowgrid/registries/be-capabilities.registry.json` / `.flowgrid/adapters/<target>/custom/registries/codegen.registry.json`). Never creates `registries/` directories inside code repositories.
+       3. Updates Workspace SSOT registry (`.flowgrid/registries/design.registry.json` or `.flowgrid/registries/be-capabilities.registry.json`), promoting entry status to `"implemented"`. Never creates `registries/` directories inside code repositories.
 
-3. **Absolute Safety Rule: Create For The Future — NEVER Mutate Legacy Code**:
-   - The purpose of Common creation: The code was detected as duplicated across old modules. We establish a single canonical implementation in `shared/` for **future features to consume**, preventing future duplication.
-   - **STRICTLY NEVER modify or refactor code in `source-legacy/`**: The legacy tree is **READ-ONLY**. Do not replace existing working code to avoid regression risks.
+3. **Absolute Safety Rule: Create For The Future — NEVER Mutate Existing Or Legacy Code**:
+   - The purpose of Common creation: The code was detected as duplicated across old modules. We establish a single canonical implementation in `shared/` for **future features and updates to consume**, preventing future duplication.
+   - **STRICTLY NEVER modify or refactor existing code where duplicates were found or in `source-legacy/`**: All existing running code remains **READ-ONLY / UNTOUCHED**. Do not replace existing working code to avoid regression risks. "Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ."
 
 4. **Skill `/spec` & Codegen (Anti-Copy-Paste Guard Enforcement)**:
    - When authoring screens or APIs via `/spec`, bundles must attach `#pattern: <CMN-ID>` or `#reuse-api: <CMN-ID>`.

@@ -115,40 +115,41 @@ FlowGrid thiết lập chuỗi kỹ năng khép kín để triệt tiêu triệt
 
 ```mermaid
 flowchart TD
-  INIT["1. /init quét legacy<br/>Bóc tách CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Cảnh báo Whole Page Duplication"] --> COMMON["2. /common <CMN-ID><br/>Đặc tả Rule dùng chung tại <LCA>/common/patterns/*.md"]
-  COMMON --> IMPL["3. Single Implementation & Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Đăng ký vào Workspace SSOT .flowgrid/registries/"]
+  INIT["1. /init quét legacy<br/>Bóc tách CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>Đăng ký trước vào DSL Registry (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/>Đặc tả Rule dùng chung tại <LCA>/common/patterns/*.md"]
+  COMMON --> IMPL["3. Single Implementation & Thăng cấp Registry<br/>Viết 1 bản cài đặt trong shared/ (FE/BE)<br/>Thăng cấp status: planned ➔ implemented trong .flowgrid/registries/"]
   IMPL --> SPEC["4. /spec cưỡng chế tái sử dụng<br/>Gắn tag #pattern hoặc #reuse-api<br/>Agent & Codegen từ chối copy-paste code legacy"]
   SPEC --> SAFETRACE["5. /trace & /legacy khảo cổ an toàn<br/>Trích xuất logic nghiệp vụ, giữ source-legacy READ-ONLY"]
 ```
 
 ### Chi tiết các kỹ năng ngăn chặn duplicate:
 
-1. **Skill `/init` (Quét, Phân loại Common & Định vị Nơi Gen Code)**:
+1. **Skill `/init` (Quét, Phân loại Common, Định vị Nơi Gen Code & Đăng ký trước vào DSL Registry)**:
    - Khi chạy ở chế độ Common Discovery, Agent quét toàn bộ controllers, services, routers, và views để tìm các đoạn code/giao diện lặp lại từ 2 nơi trở lên, tự động phân thành **2 nhóm xử lý khác biệt**:
-     - **Nhóm 1 — Existing Commons (Đã có code sẵn trong base/shared):** Các component/service đã được viết sẵn trong thư mục dùng chung (như `ConfirmModal.vue`, `BaseServiceImpl.php`). Với nhóm này, **KHÔNG lên plan gen lại code**, chỉ liệt kê danh sách để bổ sung file Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) nhằm hoàn thiện SSOT.
-     - **Nhóm 2 — Duplicate Candidates (Mã nguồn bị copy-paste nhiều nơi):** Các đoạn logic/giao diện bị nhân bản ở 3–4 nơi mà chưa có component dùng chung. Nhóm này **mới cần lên Action Plan** với đầy đủ Target Placement Check (Target Repo, Target Code Path, Target Docs Path) để sinh 1 bản cài đặt chuẩn duy nhất vào `shared/`.
+     - **Nhóm 1 — Existing Commons (Đã có code sẵn trong base/shared):** Các component/service đã được viết sẵn trong thư mục dùng chung (như `ConfirmModal.vue`, `BaseServiceImpl.php`). Với nhóm này, **KHÔNG lên plan gen lại code**, liệt kê danh sách để bổ sung file Markdown User Stories (`<LCA>/common/patterns/<CMN-ID>.md`) nhằm hoàn thiện SSOT, và đăng ký vào DSL Registry (`design.registry.json` hoặc `be-capabilities.registry.json`) với `status: "implemented"`.
+     - **Nhóm 2 — Duplicate Candidates (Mã nguồn bị copy-paste nhiều nơi):** Các đoạn logic/giao diện bị nhân bản ở 2 nơi trở lên mà chưa có component dùng chung. Nhóm này **mới cần lên Action Plan (`common-plan.md`)** với đầy đủ Target Placement Check (Target Repo, Target Code Path, Target Docs Path) để sinh 1 bản cài đặt chuẩn duy nhất vào `shared/` phục vụ cho **tính năng MỚI và các đợt UPDATE sau này**. **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ nơi phát hiện trùng lặp** — ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ.
+   - **Đăng ký trước vào DSL Registry (`status: "planned"`):** `/init` đăng ký trước các duplicate candidates trực tiếp vào Workspace SSOT registries (`design.registry.json` / `be-capabilities.registry.json`) với `status: "planned"` và các tag chuẩn (`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`). Điều này cho phép `/spec` ngay lập tức tham chiếu các component dùng chung mà không phải chờ đợi hay vô tình sinh ra các component tạm (`#needs-component`).
    - **Định vị chính xác nơi gen Common (Target Placement Check):** Trong các hệ thống lớn hoặc multi-repo, Agent không để mơ hồ mà đối chiếu với `projects` trong `.flowgrid/config.json` để chỉ định rõ 3 tọa độ cho từng Duplicate Candidate trong `inition-inventory.md`:
      1. *Owning Surface & Target Repo:* Repo sở hữu đích (ví dụ `admin-fe`, `booking-portal`, hay `core-api`).
      2. *Target Code Path:* Đường dẫn file mã nguồn cụ thể sẽ sinh (ví dụ `source-code/admin-fe/src/components/Common/ConfirmModal.vue` thay vì nói chung chung).
      3. *Target Docs Path (LCA):* Đường dẫn file Markdown User Stories trong Docs Hub (`surfaces/admin/common/patterns/CMN-UI-001.md`).
    - **Cảnh báo nhân bản cả trang (`Whole Page Duplication Warnings`)**: Nếu phát hiện 2 file màn hình giống nhau đến 90–95% (như `CreateUser.vue` và `EditUser.vue`), Agent **không** tạo `CMN-*` mà khuyến nghị gộp thành một Form Spec đa hình duy nhất (`mode: create | edit`).
 
-2. **Skill `/common <CMN-ID>` (Đặc tả User Stories & Sinh code dùng chung)**:
+2. **Skill `/common <CMN-ID>` (Đặc tả User Stories, Sinh code dùng chung & Thăng cấp Registry)**:
    - **Chỉ dùng file Markdown `.md` mô tả User Stories & Rules:** Các thành phần common đều được code sẵn trong base (`shared/`), **TUYỆT ĐỐI KHÔNG TẠO FILE YAML CHO COMMON VÀ KHÔNG PHÂN TÁCH IR**. Tạo file YAML cho common là thừa thãi và sai chuẩn.
    - **Phân biệt 2 trường hợp thực thi:**
      - *Với Existing Common (Đã có code sẵn):* Agent chỉ đọc code và sinh duy nhất file `.md` User Stories, **tuyệt đối không gen lại code**.
-     - *Với Duplicate Candidate (Chưa có code chung):* Member duyệt Action Plan ➔ Agent lần lượt sinh file `.md` User Stories + **gen code 1 bản cài đặt chuẩn vào `shared/`** + đăng ký vào registry.
+     - *Với Duplicate Candidate (Chưa có code chung):* Member duyệt Action Plan ➔ Agent lần lượt sinh file `.md` User Stories + **gen code 1 bản cài đặt chuẩn vào `shared/`** + thăng cấp trạng thái trong DSL registry từ `status: "planned"` ➔ `status: "implemented"`.
    - **Quy trình Plan ➔ Tự động thực thi khi Approve / Proceed:**
      - Agent đề xuất Action Plan ngắn gọn (mô tả User Stories dự kiến và file code cần tạo).
      - Member xem qua, điều chỉnh nếu cần rồi bấm **Approve** hoặc **Proceed**.
      - Agent tự động thực thi lần lượt các phase mà không hỏi vòng vo:
        1. Sinh file `.md` User Stories & Behavior tại `<LCA>/common/patterns/<CMN-ID>.md`.
        2. Sinh mã nguồn cài đặt (Single Implementation) vào thư mục `shared/` (`shared/components/` cho FE hoặc `shared/services/` cho BE).
-       3. Tự động đăng ký vào Workspace SSOT registry (`.flowgrid/registries/design.registry.json` hoặc `.flowgrid/registries/be-capabilities.registry.json` / `.flowgrid/adapters/<target>/custom/registries/codegen.registry.json`). Tuyệt đối không sinh thư mục `registries/` vào repo code.
+       3. Cập nhật Workspace SSOT registry (`.flowgrid/registries/design.registry.json` hoặc `.flowgrid/registries/be-capabilities.registry.json`), thăng cấp trạng thái thành `"implemented"`. Tuyệt đối không sinh thư mục `registries/` vào repo code.
 
-3. **Nguyên tắc an toàn tuyệt đối: Chỉ tạo mới cho tương lai — KHÔNG sửa code legacy**:
-   - Mục đích tạo Common: Đoạn code này được phát hiện đang bị copy-paste duplicate ở 3–4 nơi trong code cũ. Ta tạo sẵn 1 bản chuẩn hoá duy nhất trong `shared/` để **các tính năng phát triển tiếp theo sử dụng**, triệt tiêu nguy cơ copy duplicate lần thứ 3, thứ 4.
-   - **Tuyệt đối KHÔNG tự ý sửa đổi hay refactor code trong `source-legacy/`**: Thư mục legacy luôn là **READ-ONLY**. Không thay thế code cũ đang chạy để tránh 100% nguy cơ regression hoặc làm degrade hệ thống cũ.
+3. **Nguyên tắc an toàn tuyệt đối: Chỉ tạo mới cho tương lai — KHÔNG sửa code cũ hay code legacy**:
+   - Mục đích tạo Common: Đoạn code này được phát hiện đang bị copy-paste duplicate ở nhiều nơi trong code cũ. Ta tạo sẵn 1 bản chuẩn hoá duy nhất trong `shared/` để **các tính năng mới hoặc các đợt cập nhật sau này sử dụng**, triệt tiêu nguy cơ copy duplicate tiếp theo.
+   - **Tuyệt đối KHÔNG tự ý sửa đổi hay refactor code cũ nơi phát hiện trùng lặp hoặc trong `source-legacy/`**: Toàn bộ mã nguồn cũ đang chạy phải giữ nguyên **READ-ONLY / UNTOUCHED**. Không thay thế code cũ đang chạy để tránh 100% nguy cơ regression hoặc làm degrade hệ thống. *"Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ."*
 
 4. **Skill `/spec` & Codegen (Cưỡng chế Anti-Copy-Paste Guard)**:
    - Khi bất kỳ thành viên nào phát triển màn hình hoặc API mới qua `/spec`, bundle bắt buộc gắn tag `#pattern: <CMN-ID>` hoặc `#reuse-api: <CMN-ID>`.

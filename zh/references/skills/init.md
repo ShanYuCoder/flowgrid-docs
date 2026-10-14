@@ -124,11 +124,11 @@ The Agent MUST inspect controllers, router definitions, middleware/guards, servi
 
 The Agent MUST categorize all commons into the following 4 categories:
 
-| Category | Description | Processing Rule | Docs Hub Placement |
+| Category | Description | Processing Rule | Docs Hub & DSL Registry 归档 |
 | :--- | :--- | :--- | :--- |
-| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract (props, slots, events, methods) as the official spec. | `<LCA>/common/patterns/<id>.md` (e.g. `surfaces/common/patterns/breadcrumb.md`) |
-| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document the project's existing implementation as the SSOT standard. | `<LCA>/common/patterns/<id>.md` |
-| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted across 2+ locations without an abstraction (e.g. ad-hoc delete modals or duplicate pagination code). | **Common Action Plan**: Flag in `common-plan.md` for refactoring into a single shared implementation in `shared/`. | `<LCA>/common/patterns/<id>.md` upon approval |
+| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract (props, slots, events, methods) as the official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document the project's existing implementation as the SSOT standard and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 3: Duplicate Candidates** | Logic/UI 在 2 处以上重复复制粘贴且无共用抽象（例如临时删除弹窗或重复分页代码）。 | **Common Action Plan（面向新功能与后续更新）**：在 `common-plan.md` 中规划在 `shared/` 中生成规范共用实现，以供**新功能和后续更新使用**。**严格禁止修改或重构既有旧代码**。从此处开始防止重复产生。**预先登记至 DSL Registry，标记 `status: "planned"`**。 | `<LCA>/common/patterns/<id>.md` 获批后生成<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
 | **Category 4: Common Gaps** | Standard enterprise capabilities absent in the project (e.g. no standard confirmation dialog, unhandled error format). | **Adopt Tool Standard**: The pre-synced tool pattern in `surfaces/common/` is retained and cataloged as the official recommendation for the team to adopt. | Cataloged in `surfaces/common/` & inventory §5.4 |
 
 ### Selective Reconciliation Heuristic
@@ -136,6 +136,58 @@ When an overlap is detected between existing project code (e.g. `src/components/
 - The Agent verifies the native file exists and functions.
 - The Agent **preserves the project's native implementation as the single source of truth**, taking the project's contract rather than forcing the tool's generic pattern.
 - If the project already has its own implementation, any placeholder pattern from the tool is safely superseded by the project's version.
+
+### 4.1. 规则：制定专属共用行动计划 (`common-plan.md`) 与 DSL Registry 注册集成
+
+在深度扫描期间，当分析通用组件或发现重复候选（Duplicate Candidates）时，`/init` 必须在工作区根目录下生成专属且具体的行动计划文件 `common-plan.md`。
+
+> [!CRITICAL] 核心哲学：从此处开始防止重复 — 绝不进行向后重构
+> - **代码优先与安全第一**：`"从此处开始防止重复，绝不修改既有旧代码"`（Prevent duplication moving forward; strictly zero-touch on existing running code）。
+> - **Existing Commons（既有共用代码）**：检查 `shared/` 或 `components/Common/` 中已存在的组件。行动：仅规划编写 Markdown 规范文件（`<LCA>/common/patterns/<id>.md`）并注册到 DSL Registry（`status: "implemented"`）。**严格禁止重新生成或覆盖代码。**
+> - **Duplicate Candidates（多处重复候选代码）**：检查在 2 处以上重复复制且无抽象的逻辑。行动：规划在 `shared/`（`shared/components/` 或 `shared/services/`）中生成 **1 套标准化代码实现** + 生成 `.md` 规范文件。**在 `/init` 阶段以 `status: "planned"` 预先注册至 DSL Registry**。
+> - **共用代码的目的**：预先准备就绪，专供**新功能**及未来**更新**时主动导入引用。
+> - **绝对安全防线**：**严格禁止修改、触碰或重构发现重复的旧代码文件！** 正在运行的旧代码保持 100% 不变，彻底杜绝线上功能回归故障风险。
+
+> [!IMPORTANT] 双向 DSL Registry 注册机制（包含已实现与计划中的 Common）
+> - **所有 Common 必须注册至工作区 SSOT DSL Registry**（FE 对应 `.flowgrid/registries/design.registry.json`，BE 对应 `.flowgrid/registries/be-capabilities.registry.json`）。
+> - **既有 Common (`status: "implemented"`)**：注册活跃代码路径 (`path`)、DSL 标签（`#ui: <Name>`, `#pattern: <ID>`, `#reuse-api: <ID>`）及文档规范路径。
+> - **重复候选 / 计划中 Common (`status: "planned"`)**：**在 `/init` 阶段以 `status: "planned"` 预先注册**，记录计划的目标代码路径（`shared/`）、DSL 标签（`#pattern: <ID>`, `#ui: <Name>`）及目标文档路径。
+> - **DSL 协同效应**：使 `/spec`、`/update-spec` 与 DSL 代码分析引擎能够立即识别并引用计划中的共享组件（`#pattern: <ID>`, `#ui: <Name>`），彻底避免重复创建 ad-hoc `#needs-component` 或复制粘贴重复逻辑。当后续通过 `/common <CMN-ID>` 生成共享代码时，注册项状态自动升级为 `planned` ➔ `implemented`。
+
+#### `common-plan.md` 的标准结构与模式
+
+Agent 必须使用以下精确结构生成 `common-plan.md`：
+
+```markdown
+# Common Action Plan (Duplicate Mitigation & Provisioning SSOT)
+
+> **Generated by**: `/init` | **Scan Date**: YYYY-MM-DD | **Sources Config**: `.flowgrid/config.json`
+> **Core Principle**: **从此处开始防止重复，绝不修改既有旧代码。** (Prevent future duplication; strictly zero-touch on existing running code).
+
+## 1. Safety Boundary & Execution Rules
+- **Rule 1 (Existing Commons)**: 检查 base/shared 中的既有组件 ➔ 仅规划编写 .md 规范，注册至 DSL Registry 并标记 `status: "implemented"`。绝不重新生成或覆盖代码。
+- **Rule 2 (Duplicate Candidates)**: 检查在 2 处以上重复的代码 ➔ 规划在 `shared/` 生成 1 套规范实现 + .md 规范，以 `status: "planned"` 预先注册到 DSL Registry，供**新功能和未来更新使用**。
+- **Rule 3 (Strict Zero Mutation on Old Code)**: **严格禁止修改或重构既有重复旧代码**。所有证据文件保持 100% 原始状态。
+- **Rule 4 (DSL Registry Integration)**: 无论是既有 Common (`status: implemented`) 还是候选 Common (`status: planned`)，均登记到 DSL Registry (`design.registry.json` / `be-capabilities.registry.json`)，以供 `/spec` 立即复用。
+
+## 2. Duplicate Candidates Action Plan Table
+| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`patterns/<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/patterns/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: 获批时在 Target Code Path 生成代码。严格禁止修改 OrdersPage 或 AuditLogsPage。 | `PENDING_APPROVAL` |
+| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/patterns/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: 获批时在 Target Code Path 生成代码。严格禁止修改旧 Controller。 | `PENDING_APPROVAL` |
+
+## 3. Existing Commons Documentation Plan Table
+| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`patterns/<id>.md`) | Target DSL Registry & Status | Action | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/patterns/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: 生成 Markdown 规范并注册。代码保持不变。 | `READY_FOR_SPEC` |
+| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/patterns/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: 生成 Markdown 规范并注册。代码保持不变。 | `READY_FOR_SPEC` |
+
+## 4. Execution Workflow
+1. **Pre-Registration**: `/init` 将既有 Common (`status: "implemented"`) 与重复候选 (`status: "planned"`) 预先登记至 DSL Registry。
+2. **Review & 调整**: 成员在 `common-plan.md` 中审查该计划。
+3. **批准**: 获批时，成员运行 `/common <CMN-ID>`（或在聊天中确认）。
+4. **自动执行**: Agent 在 `shared/` 生成代码而不触碰旧代码，并将 DSL Registry 项升级为 `planned` ➔ `implemented`。
+```
 
 ---
 
@@ -244,15 +296,20 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - **FLOW-ADM-AUTH-RESET-01**: Password Reset with OTP Flow — Surface: `admin-portal` — CMP: `CMP-ADM-AUTH-01` — Tier: **C**
 
 ## 5. Common Catalog & Reconciliation
-### 5.1 Native Project Commons (Code-First Priority)
-> Components and services already built in the project. These are cataloged as official SSOT patterns without modifying codebase.
-- **CMN-UI-001 (Breadcrumb)**: Native breadcrumb navigation component → `admin-fe/src/components/Breadcrumb.vue`
-- **CMN-UI-002 (Delete Confirmation Flow)**: Reusable delete modal with confirmation input → `admin-fe/src/components/Common/DeleteConfirmModal.vue`
-- **CMN-API-001 (Pagination Wrapper)**: Standard paginated response envelope → `backend-api/src/common/dto/pagination.dto.ts`
+### 5.1 Native Project Commons (Code-First Priority — 仅规范)
+> 项目中已经构建的组件与服务。仅作为官方 SSOT 规范编目，不修改现有代码库，并以 `status: "implemented"` 注册至 DSL Registry。
+- **CMN-UI-001 (Breadcrumb)**: 原生面包屑导航组件 → 代码: `admin-fe/src/components/Breadcrumb.vue` → 文档: `surfaces/admin/common/patterns/CMN-UI-001.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-001`, `status: implemented`)
+- **CMN-UI-002 (Delete Confirmation Flow)**: 可复用删除确认弹窗 → 代码: `admin-fe/src/components/Common/DeleteConfirmModal.vue` → 文档: `surfaces/admin/common/patterns/CMN-UI-002.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-002`, `status: implemented`)
+- **CMN-API-001 (Pagination Wrapper)**: 标准分页响应外壳 → 代码: `backend-api/src/common/dto/pagination.dto.ts` → 文档: `surfaces/common/patterns/CMN-API-001.md` → DSL Registry: `be-capabilities.registry.json` (`#reuse-api: CMN-API-001`, `status: implemented`)
 
-### 5.2 Duplicate Candidates (Refactoring Plan Required)
-> Duplicate logic found across 2+ locations. Requires an action plan (`common-plan.md`) to create a single shared implementation in `shared/`.
-- **CMN-UI-003**: Advanced Date Range Filter Toolbar → Duplicated in: `OrdersPage.tsx`, `AuditLogsPage.tsx`
+### 5.2 Duplicate Candidates (在 `shared/` 中为新功能与后续更新准备代码 — 详见 `common-plan.md`)
+> 在 2 处以上发现的重复逻辑。需要行动计划（`common-plan.md`）在 `shared/` 中创建单一共享实现，供**新功能和后续更新使用**。**严格禁止修改或重构存在重复的既有旧代码**。在 DSL Registry 中预先注册标记为 `status: "planned"`，以便 `/spec` 立即识别。
+- **CMN-UI-003 (Advanced Date Range Filter Toolbar)**:
+  - *Evidence*: `OrdersPage.tsx`, `AuditLogsPage.tsx`
+  - *Target Code Path*: `admin-fe/src/components/Common/DateRangeFilter.tsx`
+  - *Target Docs Path*: `surfaces/admin/common/patterns/CMN-UI-003.md`
+  - *DSL Registry Target*: `design.registry.json` (`#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, 获批后由 `status: planned` ➔ `implemented`)
+  - *Safety Boundary*: 仅预先生成新代码。所有旧证据文件保持 100% 原始状态。
 
 ### 5.3 Whole Page Duplication Warnings
 - **W-ADM-USR-01 (Create User)** & **W-ADM-USR-02 (Edit User)**: 90% identical → *Recommendation: Consolidate into single Polymorphic Spec `CMP-ADM-USR-FORM`*
@@ -292,7 +349,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Code-First Principle respected: Existing project components (e.g. Breadcrumbs, Delete flow) documented as SSOT; NEVER overwritten.
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
-- [ ] `common-plan.md` generated ONLY for duplicate candidates requiring shared refactoring.
+- [ ] `common-plan.md` 已生成，包含详细计划；所有 Common（既有 common 标记 `status: implemented`，重复候选标记 `status: planned`）均已注册到 DSL Registry (`design.registry.json` / `be-capabilities.registry.json`)。
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).

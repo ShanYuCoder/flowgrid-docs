@@ -124,18 +124,70 @@ The Agent MUST inspect controllers, router definitions, middleware/guards, servi
 
 The Agent MUST categorize all commons into the following 4 categories:
 
-| Category | Description | Processing Rule | Docs Hub Placement |
+| Category | Description | Processing Rule | Vị trí Docs Hub & DSL Registry |
 | :--- | :--- | :--- | :--- |
-| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract (props, slots, events, methods) as the official spec. | `<LCA>/common/patterns/<id>.md` (e.g. `surfaces/common/patterns/breadcrumb.md`) |
-| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document the project's existing implementation as the SSOT standard. | `<LCA>/common/patterns/<id>.md` |
-| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted across 2+ locations without an abstraction (e.g. ad-hoc delete modals or duplicate pagination code). | **Common Action Plan**: Flag in `common-plan.md` for refactoring into a single shared implementation in `shared/`. | `<LCA>/common/patterns/<id>.md` upon approval |
-| **Category 4: Common Gaps** | Standard enterprise capabilities absent in the project (e.g. no standard confirmation dialog, unhandled error format). | **Adopt Tool Standard**: The pre-synced tool pattern in `surfaces/common/` is retained and cataloged as the official recommendation for the team to adopt. | Cataloged in `surfaces/common/` & inventory §5.4 |
+| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract as official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document project implementation and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted qua 2+ nơi mà chưa có abstraction (ví dụ modal xóa riêng lẻ hoặc code phân trang bị lặp lại). | **Common Action Plan (Cho tính năng MỚI & UPDATE)**: Ghi vào `common-plan.md` để sinh 1 bản cài đặt dùng chung chuẩn trong `shared/` cho **các tính năng MỚI và đợt UPDATE sau này sử dụng**. **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ**. **Đăng ký trước vào DSL Registry với `status: "planned"`**. | `<LCA>/common/patterns/<id>.md` sau khi phê duyệt<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
+| **Category 4: Common Gaps** | Các năng lực chuẩn doanh nghiệp còn thiếu trong dự án (ví dụ chưa có confirm dialog chuẩn, format lỗi không nhất quán). | **Áp dụng Tool Standard**: Pattern chuẩn được sync sẵn trong `surfaces/common/` được giữ lại và đề xuất cho team áp dụng. | Lưu trong `surfaces/common/` & inventory §5.4 |
 
-### Selective Reconciliation Heuristic
-When an overlap is detected between existing project code (e.g. `src/components/Breadcrumb.vue` or custom `DeleteDialog.vue`) and FlowGrid's synced base patterns:
-- The Agent verifies the native file exists and functions.
-- The Agent **preserves the project's native implementation as the single source of truth**, taking the project's contract rather than forcing the tool's generic pattern.
-- If the project already has its own implementation, any placeholder pattern from the tool is safely superseded by the project's version.
+### Heuristic hòa giải có chọn lọc (Selective Reconciliation)
+Khi phát hiện sự trùng lặp giữa code có sẵn của dự án (ví dụ `src/components/Breadcrumb.vue` hoặc `DeleteDialog.vue`) và các pattern base của FlowGrid:
+- Agent kiểm tra file native có tồn tại và hoạt động hay không.
+- Agent **bảo toàn cài đặt native của dự án làm Single Source of Truth**, lấy contract của dự án thay vì ép theo pattern chung chung của tool.
+- Nếu dự án đã có implementation riêng, bất kỳ placeholder pattern nào từ tool sẽ được nhường chỗ cho phiên bản của dự án.
+
+### 4.1. Quy tắc: Lập Kế hoạch Common chi tiết (`common-plan.md`) & Tích hợp DSL Registry
+
+Trong quá trình deep scan, `/init` BẮT BUỘC phải tạo file kế hoạch hành động chi tiết `common-plan.md` tại thư mục gốc workspace khi phân tích các thành phần dùng chung hoặc phát hiện duplicate candidates.
+
+> [!CRITICAL] TRIẾT LÝ CỐT LÕI: NGĂN CHẶN DUPLICATE TƯƠNG LAI — KHÔNG REFACTOR CODE CŨ
+> - **Code-First & Safety First**: `"Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ."`
+> - **Existing Commons (Code đã có sẵn)**: Kiểm tra các component đã có trong `shared/` hoặc `components/Common/`. Hành động: Chỉ lên kế hoạch viết file tài liệu spec Markdown (`<LCA>/common/patterns/<id>.md`) và đăng ký vào DSL Registry với `status: "implemented"`. **TUYỆT ĐỐI KHÔNG sinh lại code, KHÔNG ghi đè code.**
+> - **Duplicate Candidates (Code trùng lặp nhiều nơi)**: Kiểm tra logic bị copy-paste qua 2+ nơi mà chưa có abstraction. Hành động: Lập kế hoạch sinh **1 bản cài đặt mã nguồn chuẩn duy nhất vào `shared/`** (`shared/components/` hoặc `shared/services/`) + sinh file spec Markdown. Đăng ký trước vào DSL Registry với `status: "planned"`.
+> - **Mục đích sử dụng**: Sẵn sàng phục vụ cho các **tính năng MỚI** và các đợt **UPDATE** sau này chủ động import dùng chung.
+> - **BẢO TOÀN TUYỆT ĐỐI**: **TUYỆT ĐỐI KHÔNG sửa, không chạm vào hay refactor code cũ nơi phát hiện trùng lặp!** Mã nguồn cũ đang chạy phải giữ nguyên 100% để loại bỏ rủi ro regression.
+
+> [!IMPORTANT] ĐĂNG KÝ DSL REGISTRY BẮT BUỘC (CẢ CÓ CODE LẪN CHƯA CÓ CODE)
+> - **Toàn bộ Commons BẮT BUỘC phải đăng ký vào DSL Registry tại Workspace SSOT** (`.flowgrid/registries/design.registry.json` cho FE, `.flowgrid/registries/be-capabilities.registry.json` cho BE).
+> - **Existing Commons (`status: "implemented"`)**: Đăng ký với đường dẫn file code đang chạy (`path`), thẻ DSL (`#ui: <Name>`, `#pattern: <ID>`, `#reuse-api: <ID>`), và file docs spec.
+> - **Duplicate Candidates / Planned Commons (`status: "planned"`)**: **Đăng ký trước trong `/init` với `status: "planned"`** kèm Target Code Path dự kiến trong `shared/`, thẻ DSL (`#pattern: <ID>`, `#ui: <Name>`), và Target Docs Path.
+> - **Tác dụng với DSL**: Giúp `/spec`, `/update-spec` và bộ sinh mã DSL nhận diện được ngay component này để gắn thẻ `#pattern: <ID>`, `#ui: <Name>` mà không bị sinh ra các component tạm `#needs-component` hoặc copy-paste lặp lại. Khi chạy `/common <CMN-ID>` sinh code xong, registry entry sẽ tự động được promote từ `planned` ➔ `implemented`.
+
+#### Cấu trúc & Định dạng chuẩn của `common-plan.md`
+
+Agent BẮT BUỘC phải tạo `common-plan.md` theo đúng cấu trúc sau:
+
+```markdown
+# Common Action Plan (Duplicate Mitigation & Provisioning SSOT)
+
+> **Generated by**: `/init` | **Scan Date**: YYYY-MM-DD | **Sources Config**: `.flowgrid/config.json`
+> **Core Principle**: **Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ.** (Prevent future duplication; strictly zero-touch on existing running code).
+
+## 1. Safety Boundary & Execution Rules
+- **Rule 1 (Existing Commons)**: Kiểm tra code có sẵn trong base/shared ➔ Chỉ lên kế hoạch viết file .md spec. Đăng ký vào DSL Registry với `status: "implemented"`. KHÔNG sinh hay ghi đè code.
+- **Rule 2 (Duplicate Candidates)**: Kiểm tra code trùng lặp qua 2+ nơi ➔ Lên kế hoạch sinh 1 bản cài đặt chuẩn trong `shared/` + file .md spec phục vụ cho **tính năng MỚI và các đợt UPDATE sau này**. Đăng ký trước vào DSL Registry với `status: "planned"`.
+- **Rule 3 (Strict Zero Mutation on Old Code)**: **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ nơi phát hiện trùng lặp**. Toàn bộ file evidence được giữ nguyên 100%.
+- **Rule 4 (Tích hợp DSL Registry)**: Cả Existing Commons (`status: implemented`) và Duplicate Candidates (`status: planned`) đều được đưa vào DSL Registry để phục vụ tái sử dụng DSL ngay cho `/spec`.
+
+## 2. Duplicate Candidates Action Plan Table
+| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`patterns/<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/patterns/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa OrdersPage hay AuditLogsPage. | `PENDING_APPROVAL` |
+| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/patterns/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa các legacy controller. | `PENDING_APPROVAL` |
+
+## 3. Existing Commons Documentation Plan Table
+| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`patterns/<id>.md`) | Target DSL Registry & Status | Action | Status |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/patterns/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
+| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/patterns/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
+
+## 4. Execution Workflow
+1. **Đăng ký trước**: `/init` đăng ký Existing Commons (`status: "implemented"`) và Duplicate Candidates (`status: "planned"`) vào DSL Registry.
+2. **Review & Điều chỉnh**: Member xem xét kế hoạch này trong `common-plan.md`.
+3. **Phê duyệt**: Khi đồng ý, member chạy `/common <CMN-ID>` (hoặc xác nhận trong chat).
+4. **Thực thi tự động**: Agent sinh code trong `shared/`, giữ nguyên code cũ và promote trạng thái trong DSL Registry từ `planned` ➔ `implemented`.
+```
 
 ---
 
@@ -250,9 +302,13 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - **CMN-UI-002 (Delete Confirmation Flow)**: Reusable delete modal with confirmation input → `admin-fe/src/components/Common/DeleteConfirmModal.vue`
 - **CMN-API-001 (Pagination Wrapper)**: Standard paginated response envelope → `backend-api/src/common/dto/pagination.dto.ts`
 
-### 5.2 Duplicate Candidates (Refactoring Plan Required)
-> Duplicate logic found across 2+ locations. Requires an action plan (`common-plan.md`) to create a single shared implementation in `shared/`.
-- **CMN-UI-003**: Advanced Date Range Filter Toolbar → Duplicated in: `OrdersPage.tsx`, `AuditLogsPage.tsx`
+### 5.2 Duplicate Candidates (Lên kế hoạch sinh code vào `shared/` cho tính năng MỚI & UPDATE — xem `common-plan.md`)
+> Logic bị trùng lặp qua 2+ nơi. Bắt buộc lập Action Plan (`common-plan.md`) để sinh 1 bản cài đặt chuẩn trong `shared/` cho **các tính năng MỚI và đợt UPDATE sau này sử dụng**. **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ nơi phát hiện trùng lặp** — ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ.
+- **CMN-UI-003 (Advanced Date Range Filter Toolbar)**:
+  - *Evidence*: `OrdersPage.tsx`, `AuditLogsPage.tsx`
+  - *Target Code Path*: `admin-fe/src/components/Common/DateRangeFilter.tsx`
+  - *Target Docs Path*: `surfaces/admin/common/patterns/CMN-UI-003.md`
+  - *Safety Boundary*: Chỉ sinh mã nguồn mới. Toàn bộ file evidence giữ nguyên 100%.
 
 ### 5.3 Whole Page Duplication Warnings
 - **W-ADM-USR-01 (Create User)** & **W-ADM-USR-02 (Edit User)**: 90% identical → *Recommendation: Consolidate into single Polymorphic Spec `CMP-ADM-USR-FORM`*
@@ -292,7 +348,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Code-First Principle respected: Existing project components (e.g. Breadcrumbs, Delete flow) documented as SSOT; NEVER overwritten.
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
-- [ ] `common-plan.md` generated ONLY for duplicate candidates requiring shared refactoring.
+- [ ] `common-plan.md` được sinh với kế hoạch chi tiết cho Duplicate Candidates (chuẩn bị sẵn trong shared/ cho tính năng mới/update, không sửa code cũ) và Existing Commons (chỉ viết spec .md).
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
