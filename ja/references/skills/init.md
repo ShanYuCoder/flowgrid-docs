@@ -184,30 +184,51 @@ Agent は以下の正確な構造に従って `common-plan.md` を生成しな�
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` が既存 Common (`status: "implemented"`) と重複候補 (`status: "planned"`) を DSL Registry に事前登録。
-2. **インタラクティブな起動 (Interactive Kick-off)**: `/init` は GUI 質問モーダル (`AskQuestion`) を自動起動し、メンバーに今すぐ共通プランを実行するかどうかを確認する。
-3. **実行パス**:
-   - **パス A (即時実行 - 推奨)**: メンバーが「はい」を選択した場合、Agent は直ちに `shared/` に重複候補用コードを生成し、全 Common の `.md` 仕様書を作成し、DSL Registry のステータスを即座に `planned` ➔ `implemented` に昇格する。
-   - **パス B (後で確認)**: メンバーが「いいえ」を選択した場合、メンバーはまず `common-plan.md` を確認し、後で `/common` または `/common <CMN-ID>` で実行する。
+2. **対話型オンボーディングチェーン (Interactive Onboarding Chain)**:
+   - `/init` は GUI 質問モーダル 1 を起動し、`build-env` を実行してコンテナ開発環境を構築するかどうかを確認する。同意した場合、まず `build-env` を実行する。
+   - `build-env` の完了後（またはスキップ後）、GUI 質問モーダル 2 を起動し、`common-plan.md` の実行を開始するかどうかを確認する。
+3. **Common プラン実行パス**:
+   - **パス A (即時実行 - 推奨)**: モーダル 2 で「はい」を選択した場合、Agent は直ちに `shared/` に重複候補用コードを生成し、全 Common の `.md` 仕様書を作成し、DSL Registry のステータスを即座に `planned` ➔ `implemented` に昇格する。
+   - **パス B (後で確認)**: モーダル 2 で「いいえ」を選択した場合、メンバーはまず `common-plan.md` を確認し、後で `/common` または `/common <CMN-ID>` で実行する。
 4. **安全境界の徹底**: いずれのパスにおいても、重複が見つかった既存の旧コードは一切変更またはリファクタリングしない。
 ```
 
 ---
 
-### 4.2. ルール: 初期化後の対話型共通プラン起動（GUI 質問モーダル）
+### 4.2. ルール: 初期化後の連続対話型オンボーディングチェーン (`build-env` ➔ `common`)
 
 アーキテクチャディープスキャンが完了し、`inition-inventory.md` と `common-plan.md` が生成され、すべての Common が DSL Registries に登録された直後：
-`common-plan.md` に何らかの Common 項目（`READY_FOR_SPEC` 状態の既存 Common または `PENDING_APPROVAL` 状態の重複候補）が含まれている場合、Agent は単に処理を終了したり手動コマンドの入力を受動的に待ったりしては**ならない**。
-Agent は `AskQuestion` ツールを使用して対話型 GUI モーダルを能動的に起動し、メンバーに共通プランを今すぐ実行するかどうかを尋ねなければ**ならない**：
+Agent は単に処理を終了したり手動コマンドの入力を受動的に待ったりしては**ならない**。
+Agent は `AskQuestion` モーダルを使用してメンバーを 2 ステップの連続対話型オンボーディングチェーンへ案内しなければ**ならない**：
 
-#### GUI 質問モーダルの仕様（`AskQuestion`）
+#### ステップ 1：対話型質問モーダル 1 — 開発環境構築 (`build-env`)
+Agent は、ローカル Docker コンテナ実行環境 (`build-env`) を設定・生成するかどうかを尋ねる：
 - **質問タイトル (Question)**:
-  `"アーキテクチャスキャンと共通コンポーネント計画（common-plan.md）が正常に生成されました！今すぐ共通コンポーネント計画を実行しますか？"`
+  `"アーキテクチャスキャンと共通コンポーネント計画（common-plan.md）が正常に生成されました！今すぐコンテナ開発環境 (build-env) を構築しますか？"`
+- **選択肢 1 (推奨 - Recommended)**:
+  `"(推奨) はい、今すぐ build-env を実行します — 全サービス向けの Docker Compose、コンテナ設定、実行スクリプトを自動生成します"`
+- **選択肢 2**:
+  `"いいえ、今は build-env をスキップします — 次のステップへ進みます"`
+
+**ステップ 1 の選択処理：**
+- **選択肢 1（「はい、今すぐ build-env を実行します」）を選択した場合：**
+  1. Agent は直ちに `/build-env` パイプラインを実行する：既存 Dockerfile の調査、2 段階ポート解決（優先度 1: 既存コード設定、優先度 2: フレームワーク規約）、`docker-compose.yml`、`docker/.env`、実行スクリプト（`frontend-dev.sh`、`backend-dev.sh`）を生成する。
+  2. `/build-env` の完了後、Agent は**直ちにステップ 2 へ進む**。
+- **選択肢 2（「いいえ、今は build-env をスキップします」）を選択した場合、またはスキップした場合：**
+  Agent は `build-env` をスキップし、**直接ステップ 2 へ進む**。
+
+---
+
+#### ステップ 2：対話型質問モーダル 2 — 共通コンポーネント計画の起動 (`common`)
+`common-plan.md` に何らかの Common 項目（`READY_FOR_SPEC` 状態の既存 Common または `PENDING_APPROVAL` 状態の重複候補）が含まれている場合、Agent は 2 つ目の対話型 GUI モーダル (`AskQuestion`) を起動しなければ**ならない**：
+- **質問タイトル (Question)**:
+  `"今すぐ共通コンポーネント計画 (common-plan.md) を実行しますか？"`
 - **選択肢 1 (推奨 - Recommended)**:
   `"(推奨) はい、今すぐ共通プランを実行します — 既存の共通コンポーネントの Markdown 仕様を自動生成し、重複候補用に shared/ 配下に共通コードを生成します"`
 - **選択肢 2**:
   `"いいえ、まずは common-plan.md を確認します — 後で /common を呼び出します"`
 
-#### 自動実行パス：
+**ステップ 2 の選択処理：**
 
 1. **パス A — メンバーが選択肢 1（「はい、今すぐ共通プランを実行します」）を選択した場合：**
    - Agent は、追加のプロンプトを求めることなく、`common-plan.md` に記載された全項目に対して `/common` 実行パイプラインにスムーズに切り替える：
@@ -223,11 +244,11 @@ Agent は `AskQuestion` ツールを使用して対話型 GUI モーダルを能
        - **絶対的な安全境界：** 重複が検出された旧コードファイルは一切変更・リファクタリングしない。エビデンスコードは 100% 保持される。
        - `common-plan.md` 内のステータスを `COMPLETED` に更新する。
    - `common-plan.md` の実行サマリー表と完了タイムスタンプを更新する。
-   - 生成された Markdown 仕様書、共通コンポーネントコード、DSL Registries へのクリック可能なリンクを含む完了報告をメンバーに提示する。
+   - 生成された環境設定、Markdown 仕様書、共通コンポーネントコード、DSL Registries へのクリック可能なリンクを含む完了報告をメンバーに提示する。
 
 2. **パス B — メンバーが選択肢 2（「いいえ、まずは common-plan.md を確認します」）を選択した場合、またはスキップした場合：**
-   - `/init` の実行を正常に完了する。
-   - 生成された init 成果物（`inition-inventory.md`、`common-plan.md`、Arc42 アーキテクチャ文書、DSL Registries）のサマリーを提示する。
+   - オンボーディングセッションを正常に完了する。
+   - 生成された成果物（`inition-inventory.md`、`common-plan.md`、Arc42 アーキテクチャ文書、実行された場合の Docker 環境設定、DSL Registries）のサマリーを提示する。
    - メンバーに案内する：*「いつでも `common-plan.md` を確認でき、準備ができ次第 `/common` または `/common <CMN-ID>` を実行できます。」*
 
 ---
@@ -391,7 +412,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` が生成され詳細計画が含まれていること；すべての Common（既存は `status: implemented`、重複候補は `status: planned`）が DSL Registry (`design.registry.json` / `be-capabilities.registry.json`) に登録されていること。
-- [ ] init 完了時に対話型 GUI モーダル (`AskQuestion`) が表示され、メンバーに共通プランの即時実行を促すこと。
+- [ ] init 完了時に連続対話型 GUI モーダルチェーン（`AskQuestion` で `build-env` を確認後、`AskQuestion` で `common-plan` を確認）が実行されること。
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).

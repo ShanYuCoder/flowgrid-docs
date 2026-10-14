@@ -184,8 +184,10 @@ The Agent MUST generate `common-plan.md` using the following exact structure:
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` registers Existing Commons (`status: "implemented"`) and Duplicate Candidates (`status: "planned"`) into DSL Registry.
-2. **Interactive Kick-off**: `/init` triggers a GUI Question modal asking if the member wants to execute the Common Plan immediately.
-3. **Execution Paths**:
+2. **Sequential Onboarding Chain**:
+   - `/init` triggers GUI Question Modal 1 asking whether to run `build-env` to set up container dev environments.
+   - Upon completion (or skip) of `build-env`, triggers GUI Question Modal 2 asking whether to execute `common-plan.md`.
+3. **Execution Paths for Common Plan**:
    - **Path A (Immediate)**: If member selects "Yes", Agent provisions code in `shared/` (for duplicate candidates) and writes `.md` specs (for all commons), promoting DSL registry from `planned` ➔ `implemented` right away.
    - **Path B (Deferred)**: If member selects "No", member reviews `common-plan.md` and later triggers `/common` or `/common <CMN-ID>`.
 4. **Safety Enforcement**: Regardless of execution path, existing code where duplicates were found is NEVER modified or refactored.
@@ -193,25 +195,45 @@ The Agent MUST generate `common-plan.md` using the following exact structure:
 
 ---
 
-### 4.2. Rule: Interactive Post-Init Common Kick-off (GUI Question Modal)
+### 4.2. Rule: Interactive Post-Init Sequential Onboarding Chain (`build-env` ➔ `common`)
 
 Immediately upon completing the architecture scan, generating `inition-inventory.md` and `common-plan.md`, and registering commons into DSL registries:
-If `common-plan.md` contains ANY common items (Existing Commons with `READY_FOR_SPEC` or Duplicate Candidates with `PENDING_APPROVAL`), the Agent **MUST NOT** simply terminate or wait passively for manual follow-up commands.
-The Agent **MUST** proactively trigger an interactive GUI modal (`AskQuestion` tool) asking if the member wishes to kick off the Common Plan immediately:
+The Agent **MUST NOT** simply terminate or wait passively for manual follow-up commands.
+The Agent **MUST** guide the member through a deterministic, 2-step interactive onboarding chain using `AskQuestion` modals:
 
-#### GUI Question Modal Specification
+#### Step 1: Interactive Question 1 — Build Environment Kick-off (`build-env`)
+The Agent prompts the member to determine if they want to configure and generate the local runtime container environment (`build-env`):
 - **Question**:
-  `"Architecture discovery and Common Plan (common-plan.md) generated successfully! Would you like to start executing the Common Plan now?"`
+  `"Architecture discovery and Common Plan (common-plan.md) generated successfully! Would you like to set up the containerized development environment (build-env) now?"`
+  *(In localized workspaces, formulate this question in the active conversation / `docsProseLocale` language).*
+- **Option 1 (Recommended)**:
+  `"(Recommended) Yes, execute build-env now — Auto-generate Docker Compose, container configs, and runner scripts for all services"`
+- **Option 2**:
+  `"No, skip build-env for now — Proceed to the next step"`
+
+**Handling Step 1 Selection:**
+- **If User Chooses Option 1 ("Yes, execute build-env now"):**
+  1. The Agent executes `/build-env` immediately: performs Docker archaeology, respects 2-tier port resolution (Priority 1: existing code port configs; Priority 2: framework conventions), generates `docker-compose.yml`, `docker/.env`, and runner scripts (`frontend-dev.sh`, `backend-dev.sh`).
+  2. Once `/build-env` completes, the Agent **immediately transitions to Step 2** below.
+- **If User Chooses Option 2 ("No, skip build-env for now") or skips:**
+  The Agent skips `build-env` and **proceeds directly to Step 2**.
+
+---
+
+#### Step 2: Interactive Question 2 — Common Plan Kick-off (`common`)
+If `common-plan.md` contains ANY common items (Existing Commons with `READY_FOR_SPEC` or Duplicate Candidates with `PENDING_APPROVAL`), the Agent **MUST** trigger the second interactive GUI modal (`AskQuestion`):
+- **Question**:
+  `"Would you like to start executing the Common Plan (common-plan.md) now?"`
   *(In localized workspaces, formulate this question in the active conversation / `docsProseLocale` language).*
 - **Option 1 (Recommended)**:
   `"(Recommended) Yes, execute Common Plan now — Auto-generate Markdown Specs for existing commons and provision shared code into shared/ for duplicate candidates"`
 - **Option 2**:
   `"No, let me review common-plan.md first — I will trigger /common later"`
 
-#### Autonomous Action Paths
+**Handling Step 2 Selection:**
 
 1. **Path A — When User Chooses Option 1 ("Yes, execute Common Plan now"):**
-   - The Agent transitions seamlessly into the `/common` execution flow for all items cataloged in `common-plan.md` without requiring repeated manual prompts:
+   - The Agent transitions into the `/common` execution flow for all items cataloged in `common-plan.md` without requiring repeated manual prompts:
      - **For Existing Commons (`status: "implemented"`):**
        - Auto-generate the Markdown User Stories spec file at `<LCA>/common/patterns/<CMN-ID>.md` (with 4-layer standard: contract, 4 canonical states, IoC, golden test seam).
        - Ensure entry in DSL Registry (`design.registry.json` or `be-capabilities.registry.json`) is confirmed with `status: "implemented"`.
@@ -224,11 +246,11 @@ The Agent **MUST** proactively trigger an interactive GUI modal (`AskQuestion` t
        - **STRICT SAFETY INVARIANT:** Strictly NEVER modify, touch, or refactor legacy code files where duplicates were discovered. Evidence files remain 100% untouched.
        - Update item status in `common-plan.md` to `COMPLETED`.
    - Update `common-plan.md` execution table with execution timestamps and summary.
-   - Present a celebratory final report to the user with clickable links to the generated Markdown specs, shared component files, and updated DSL registries.
+   - Present a celebratory final report to the user with clickable links to the generated environment files, Markdown specs, shared component files, and updated DSL registries.
 
 2. **Path B — When User Chooses Option 2 ("No, let me review common-plan.md first") or skips:**
-   - Gracefully conclude the `/init` execution.
-   - Present a structured summary of all generated init artifacts (`inition-inventory.md`, `common-plan.md`, Arc42 docs, and registered DSL registries).
+   - Gracefully conclude the onboarding session.
+   - Present a structured summary of all generated artifacts (`inition-inventory.md`, `common-plan.md`, Arc42 docs, Docker environment if run, and registered DSL registries).
    - Inform the member: *"You can review `common-plan.md` at your convenience and trigger `/common` or `/common <CMN-ID>` whenever you are ready."*
 
 ---
@@ -392,7 +414,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` generated with detailed plan; ALL commons (both existing with `status: implemented` and planned duplicate candidates with `status: planned`) registered into DSL registries (`design.registry.json` / `be-capabilities.registry.json`).
-- [ ] Interactive GUI Question modal (`AskQuestion`) presented upon completing init to prompt member for immediate Common Plan execution.
+- [ ] Interactive GUI Question onboarding chain (`AskQuestion` for `build-env`, followed by `AskQuestion` for `common-plan`) executed upon completing init.
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).

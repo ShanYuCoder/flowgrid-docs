@@ -184,30 +184,51 @@ Agent BẮT BUỘC phải tạo `common-plan.md` theo đúng cấu trúc sau:
 
 ## 4. Execution Workflow
 1. **Đăng ký trước**: `/init` đăng ký Existing Commons (`status: "implemented"`) và Duplicate Candidates (`status: "planned"`) vào DSL Registry.
-2. **Khởi chạy tương tác (Interactive Kick-off)**: `/init` tự động kích hoạt GUI modal `AskQuestion` hỏi member có muốn thực thi Kế hoạch Common ngay lập tức hay không.
-3. **Các luồng thực thi**:
-   - **Luồng 1 (Thực thi ngay - Khuyến nghị)**: Nếu member chọn "Yes", Agent sinh code trong `shared/` (cho duplicate candidates) và viết file spec `.md` (cho toàn bộ commons), đồng thời promote trạng thái trong DSL registry từ `planned` ➔ `implemented` ngay lập tức.
-   - **Luồng 2 (Xem lại trước)**: Nếu member chọn "No", member xem lại `common-plan.md` và sau đó kích hoạt bằng `/common` hoặc `/common <CMN-ID>`.
-4. **Bảo toàn an toàn tuyệt đối**: Dù theo luồng nào, code cũ nơi phát hiện trùng lặp tuyệt đối KHÔNG bao giờ bị sửa đổi hay refactor.
+2. **Chuỗi khởi chạy tương tác (Interactive Onboarding Chain)**:
+   - `/init` hiển thị GUI Modal 1 hỏi member có muốn chạy `build-env` để thiết lập môi trường container phát triển hay không. Nếu có, Agent chạy `build-env` trước.
+   - Khi `build-env` hoàn thành (hoặc nếu member chọn bỏ qua), Agent hiển thị GUI Modal 2 hỏi member có muốn bắt đầu thực thi Kế hoạch Common ngay bây giờ không.
+3. **Các luồng thực thi Kế hoạch Common**:
+   - **Luồng 1 (Thực thi ngay - Khuyến nghị)**: Nếu chọn Yes ở Modal 2, Agent chuyển sang thực thi Kế hoạch Common ngay: tự động sinh Markdown Specs cho Existing Commons (không sửa code cũ), sinh 1 bản cài đặt chuẩn vào `shared/` + Markdown Spec cho Duplicate Candidates, và promote trạng thái trong DSL Registry từ `planned` ➔ `implemented`.
+   - **Luồng 2 (Xem lại trước)**: Nếu chọn No ở Modal 2, member xem xét lại `common-plan.md` và có thể kích hoạt bằng lệnh `/common` hoặc `/common <CMN-ID>` bất kỳ lúc nào.
+4. **Bảo toàn an toàn tuyệt đối**: Trong mọi trường hợp, code cũ nơi phát hiện trùng lặp tuyệt đối KHÔNG bao giờ bị sửa đổi hay refactor.
 ```
 
 ---
 
-### 4.2. Quy tắc: Khởi chạy Kế hoạch Common qua Giao diện Hỏi Tương tác (GUI Question Modal)
+### 4.2. Quy tắc: Chuỗi Khởi Chạy Tương Tác Sau Init (`build-env` ➔ `common`)
 
 Ngay sau khi hoàn thành deep scan kiến trúc, sinh file `inition-inventory.md` và `common-plan.md`, đồng thời đăng ký các common vào DSL registries:
-Nếu `common-plan.md` có chứa BẤT KỲ mục common nào (Existing Commons với `READY_FOR_SPEC` hoặc Duplicate Candidates với `PENDING_APPROVAL`), Agent **TUYỆT ĐỐI KHÔNG** chỉ dừng lại và chờ lệnh thủ công một cách thụ động.
-Agent **BẮT BUỘC** phải chủ động bật modal GUI tương tác (`AskQuestion`) hỏi member có muốn bắt đầu thực thi Kế hoạch Common ngay bây giờ không:
+Agent **TUYỆT ĐỐI KHÔNG** chỉ dừng lại và chờ lệnh thủ công một cách thụ động.
+Agent **BẮT BUỘC** phải dẫn dắt member qua chuỗi 2 bước hỏi tương tác bằng modal `AskQuestion`:
 
-#### Cấu hình Modal GUI Hỏi Tương tác (`AskQuestion`)
+#### Bước 1: Modal GUI Hỏi Bước 1 — Thiết lập Môi trường Phát triển (`build-env`)
+Agent chủ động hỏi member có muốn cấu hình và khởi tạo môi trường chạy container Docker cục bộ (`build-env`) hay không:
 - **Tiêu đề câu hỏi (Question)**:
-  `"Đã hoàn thành phân tích kiến trúc và tạo Kế hoạch Common (common-plan.md). Bạn có muốn bắt đầu thực thi Kế hoạch Common ngay bây giờ không?"`
+  `"Đã hoàn thành phân tích kiến trúc và tạo Kế hoạch Common (common-plan.md). Bạn có muốn thiết lập môi trường container phát triển (build-env) ngay bây giờ không?"`
+- **Lựa chọn 1 (Khuyến nghị - Recommended)**:
+  `"(Khuyến nghị) Có, chạy build-env ngay — Tự động tạo Docker Compose, cấu hình container và scripts khởi chạy cho các service"`
+- **Lựa chọn 2**:
+  `"Không, bỏ qua build-env — Chuyển sang bước tiếp theo"`
+
+**Xử lý lựa chọn ở Bước 1:**
+- **Nếu chọn Lựa chọn 1 ("Có, chạy build-env ngay"):**
+  1. Agent thực thi ngay quy trình `/build-env`: khảo sát Dockerfile hiện có, giải quyết cổng theo 2 tầng ưu tiên (Ưu tiên 1: port trong code cũ; Ưu tiên 2: quy ước framework), sinh `docker-compose.yml`, `docker/.env`, các scripts (`frontend-dev.sh`, `backend-dev.sh`).
+  2. Ngay sau khi `/build-env` hoàn thành, Agent **lập tức chuyển sang Bước 2** bên dưới.
+- **Nếu chọn Lựa chọn 2 ("Không, bỏ qua build-env") hoặc bỏ qua:**
+  Agent bỏ qua `build-env` và **chuyển thẳng sang Bước 2**.
+
+---
+
+#### Bước 2: Modal GUI Hỏi Bước 2 — Khởi chạy Kế hoạch Common (`common`)
+Nếu `common-plan.md` có chứa BẤT KỲ mục common nào (Existing Commons với `READY_FOR_SPEC` hoặc Duplicate Candidates với `PENDING_APPROVAL`), Agent **BẮT BUỘC** bật tiếp modal GUI thứ 2:
+- **Tiêu đề câu hỏi (Question)**:
+  `"Bạn có muốn bắt đầu thực thi Kế hoạch Common (common-plan.md) ngay bây giờ không?"`
 - **Lựa chọn 1 (Khuyến nghị - Recommended)**:
   `"(Khuyến nghị) Có, thực thi Kế hoạch Common ngay — Tự động sinh Markdown Specs cho Common có sẵn và khởi tạo code dùng chung trong shared/ cho các ứng viên trùng lặp"`
 - **Lựa chọn 2**:
   `"Không, để tôi xem lại common-plan.md trước — Tôi sẽ gọi /common sau"`
 
-#### Các Luồng Hành Động Tự Động:
+**Xử lý lựa chọn ở Bước 2:**
 
 1. **Luồng A — Khi Member chọn Lựa chọn 1 ("Có, thực thi Kế hoạch Common ngay"):**
    - Agent chuyển tiếp mượt mà sang quy trình thực thi `/common` cho toàn bộ danh mục trong `common-plan.md` mà không cần người dùng phải gõ thêm câu lệnh:
@@ -223,11 +244,11 @@ Agent **BẮT BUỘC** phải chủ động bật modal GUI tương tác (`AskQu
        - **BẢO TOÀN AN TOÀN TUYỆT ĐỐI:** Tuyệt đối KHÔNG chỉnh sửa, chạm vào hoặc refactor các file code cũ nơi phát hiện trùng lặp. Các file evidence giữ nguyên 100%.
        - Cập nhật trạng thái mục trong `common-plan.md` thành `COMPLETED`.
    - Cập nhật bảng tổng kết thực thi trong `common-plan.md` kèm thời gian hoàn thành.
-   - Báo cáo kết quả chúc mừng tới người dùng kèm các liên kết nhấp được (clickable links) tới các file Markdown specs vừa tạo, các component code dùng chung và DSL registries.
+   - Báo cáo kết quả chúc mừng tới người dùng kèm các liên kết nhấp được (clickable links) tới file cấu hình môi trường, các file Markdown specs vừa tạo, các component code dùng chung và DSL registries.
 
 2. **Luồng B — Khi Member chọn Lựa chọn 2 ("Không, để tôi xem lại common-plan.md trước") hoặc bỏ qua:**
-   - Kết thúc lượt chạy `/init` một cách gọn gàng.
-   - Trình bày tóm tắt các sản phẩm đã khởi tạo (`inition-inventory.md`, `common-plan.md`, tài liệu Arc42, và DSL registries).
+   - Kết thúc phiên làm việc một cách gọn gàng.
+   - Trình bày tóm tắt các sản phẩm đã khởi tạo (`inition-inventory.md`, `common-plan.md`, tài liệu Arc42, cấu hình Docker nếu đã chạy, và DSL registries).
    - Nhắc nhở member: *"Bạn có thể xem lại `common-plan.md` bất cứ lúc nào và kích hoạt `/common` hoặc `/common <CMN-ID>` khi sẵn sàng."*
 
 ---
@@ -390,7 +411,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` được sinh với kế hoạch chi tiết cho Duplicate Candidates (chuẩn bị sẵn trong shared/ cho tính năng mới/update, không sửa code cũ) và Existing Commons (chỉ viết spec .md).
-- [ ] Giao diện hỏi tương tác GUI modal (`AskQuestion`) được kích hoạt ngay khi hoàn tất init để đề xuất member thực thi Kế hoạch Common ngay lập tức.
+- [ ] Chuỗi hỏi tương tác GUI modal (`AskQuestion` cho `build-env`, sau đó đến `AskQuestion` cho `common-plan`) được kích hoạt ngay khi hoàn tất init.
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).

@@ -184,30 +184,51 @@ Agent 必须使用以下精确结构生成 `common-plan.md`：
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` 将既有 Common (`status: "implemented"`) 与重复候选 (`status: "planned"`) 预先登记至 DSL Registry。
-2. **交互式启动 (Interactive Kick-off)**: `/init` 自动触发 GUI 提问弹窗 (`AskQuestion`)，询问成员是否立即执行 Common 计划。
-3. **执行路径**:
-   - **路径 A (立即执行 - 推荐)**: 若成员选择“是”，Agent 立即在 `shared/` 为重复候选生成代码，并为所有 Common 编写 `.md` 规范，同时在 DSL Registry 中将状态立即升级为 `planned` ➔ `implemented`。
-   - **路径 B (稍后审查)**: 若成员选择“否”，成员先在 `common-plan.md` 中进行审查，稍后再通过 `/common` 或 `/common <CMN-ID>` 触发。
+2. **交互式引导链路 (Interactive Onboarding Chain)**:
+   - `/init` 弹出 GUI 模态窗口 1，询问是否运行 `build-env` 配置容器开发环境。若同意，优先运行 `build-env`。
+   - `build-env` 执行完毕（或成员选择跳过）后，弹出 GUI 模态窗口 2，询问是否开始执行 `common-plan.md`。
+3. **Common 计划执行路径**:
+   - **路径 A (立即执行 - 推荐)**: 若在模态 2 选择“是”，Agent 立即在 `shared/` 为重复候选生成代码，并为所有 Common 编写 `.md` 规范，同时在 DSL Registry 中将状态立即升级为 `planned` ➔ `implemented`。
+   - **路径 B (稍后审查)**: 若在模态 2 选择“否”，成员先在 `common-plan.md` 中进行审查，稍后再通过 `/common` 或 `/common <CMN-ID>` 触发。
 4. **安全底线强制执行**: 无论选择哪条路径，发现重复的既有旧代码绝对严禁修改或重构。
 ```
 
 ---
 
-### 4.2. 规则：初始化后交互式通用计划启动（GUI 提问弹窗）
+### 4.2. 规则：初始化后连续交互式引导链路 (`build-env` ➔ `common`)
 
 在完成深度架构扫描、生成 `inition-inventory.md` 和 `common-plan.md`，并将所有 Common 登记到 DSL Registries 之后：
-若 `common-plan.md` 中包含任何 Common 项（处于 `READY_FOR_SPEC` 的既有 Common 或处于 `PENDING_APPROVAL` 的重复候选），Agent **严禁**仅仅结束流程或被动等待手动命令。
-Agent **必须**主动通过 `AskQuestion` 弹出交互式 GUI 模态窗口，询问成员是否希望立即启动 Common 计划：
+Agent **严禁**仅仅结束流程或被动等待手动命令。
+Agent **必须**通过 `AskQuestion` 模态窗口引导成员完成 2 步连续交互式配置链路：
 
-#### GUI 提问模态规格（`AskQuestion`）
+#### 步骤 1：交互式提问模态 1 — 容器环境构建 (`build-env`)
+Agent 主动询问成员是否希望配置并生成本地 Docker 容器运行环境 (`build-env`)：
 - **问题标题 (Question)**:
-  `"架构扫描与通用组件计划（common-plan.md）已生成完毕！您是否要立即开始执行通用组件计划？"`
+  `"架构扫描与通用组件计划（common-plan.md）已生成完毕！您是否要立即配置容器化开发环境 (build-env)？"`
+- **选项 1 (推荐 - Recommended)**:
+  `"(推荐) 是，立即执行 build-env — 自动为所有服务生成 Docker Compose、容器配置与运行脚本"`
+- **选项 2**:
+  `"否，暂时跳过 build-env — 进入下一步"`
+
+**步骤 1 选择处理：**
+- **若选择选项 1（“是，立即执行 build-env”）：**
+  1. Agent 立即执行 `/build-env` 管线：扫描既有 Dockerfile，按双层优先级解析端口（优先级 1：既有代码配置；优先级 2：框架约定），生成 `docker-compose.yml`、`docker/.env` 以及运行脚本（`frontend-dev.sh`、`backend-dev.sh`）。
+  2. `/build-env` 完成后，Agent **立即进入步骤 2**。
+- **若选择选项 2（“否，暂时跳过 build-env”）或跳过：**
+  Agent 跳过 `build-env` 并**直接进入步骤 2**。
+
+---
+
+#### 步骤 2：交互式提问模态 2 — 通用组件计划启动 (`common`)
+若 `common-plan.md` 中包含任何 Common 项（处于 `READY_FOR_SPEC` 的既有 Common 或处于 `PENDING_APPROVAL` 的重复候选），Agent **必须**弹出第 2 个交互式 GUI 模态窗口 (`AskQuestion`)：
+- **问题标题 (Question)**:
+  `"您是否要立即开始执行通用组件计划 (common-plan.md)？"`
 - **选项 1 (推荐 - Recommended)**:
   `"(推荐) 是，立即执行 Common 计划 — 为既有 Common 自动生成 Markdown Specs，并在 shared/ 中为重复候选生成共用代码"`
 - **选项 2**:
   `"否，让我先审查 common-plan.md — 稍后我再调用 /common"`
 
-#### 自动化操作路径：
+**步骤 2 选择处理：**
 
 1. **路径 A — 成员选择选项 1（“是，立即执行 Common 计划”）：**
    - Agent 无缝切换至 `/common` 执行管线，按顺序处理 `common-plan.md` 中的所有条目，无需重复询问：
@@ -223,11 +244,11 @@ Agent **必须**主动通过 `AskQuestion` 弹出交互式 GUI 模态窗口，�
        - **绝对安全底线：** 严禁修改、触碰或重构发现重复的旧代码文件。证据代码保持 100% 原始状态。
        - 将 `common-plan.md` 中的条目状态更新为 `COMPLETED`。
    - 更新 `common-plan.md` 中的执行汇总表与完成时间戳。
-   - 向用户呈现完成祝贺报告，并附带指向新生成的 Markdown 规范、共享组件代码与 DSL Registries 的可点击链接。
+   - 向用户呈现完成祝贺报告，并附带指向环境配置、新生成的 Markdown 规范、共享组件代码与 DSL Registries 的可点击链接。
 
 2. **路径 B — 成员选择选项 2（“否，让我先审查 common-plan.md”）或跳过：**
-   - 优雅结束 `/init` 执行流程。
-   - 呈现已生成的 init 产物汇总（`inition-inventory.md`、`common-plan.md`、Arc42 架构文档及 DSL Registries）。
+   - 优雅结束当前初始化会话。
+   - 呈现已生成的产物汇总（`inition-inventory.md`、`common-plan.md`、Arc42 架构文档、若已运行的 Docker 环境配置及 DSL Registries）。
    - 提示成员：*“您可以随时审查 `common-plan.md`，并在准备就绪后运行 `/common` 或 `/common <CMN-ID>`。”*
 
 ---
@@ -391,7 +412,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` 已生成，包含详细计划；所有 Common（既有 common 标记 `status: implemented`，重复候选标记 `status: planned`）均已注册到 DSL Registry (`design.registry.json` / `be-capabilities.registry.json`)。
-- [ ] 在 init 完成时弹出交互式 GUI 模态窗口 (`AskQuestion`)，提示成员立即执行 Common 计划。
+- [ ] init 完成时依次执行连续交互式 GUI 模态链路（先通过 `AskQuestion` 询问 `build-env`，完成后再通过 `AskQuestion` 询问 `common-plan`）。
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
