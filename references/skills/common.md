@@ -5,7 +5,9 @@
 
 ## Usage (Command/Trigger)
 - Call via slash command: `/common <CMN-ID>`
+- Can be triggered directly in batch immediately after `/init` via the post-init GUI Question modal (`AskQuestion`).
 - Used to document common rules or generate single shared implementations in Phase 0 / Phase 1.
+
 
 ## Input
 - Common ID (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`).

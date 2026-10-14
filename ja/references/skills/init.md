@@ -184,10 +184,51 @@ Agent は以下の正確な構造に従って `common-plan.md` を生成しな�
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` が既存 Common (`status: "implemented"`) と重複候補 (`status: "planned"`) を DSL Registry に事前登録。
-2. **Review & 調整**: メンバーは `common-plan.md` でこの計画を確認する。
-3. **承認**: 承認された場合、メンバーは `/common <CMN-ID>` を実行する（またはチャットで確認する）。
-4. **自動実行**: Agent は旧コードに触れることなく `shared/` にコードを生成し、DSL Registry のステータスを `planned` ➔ `implemented` に自動昇格する。
+2. **インタラクティブな起動 (Interactive Kick-off)**: `/init` は GUI 質問モーダル (`AskQuestion`) を自動起動し、メンバーに今すぐ共通プランを実行するかどうかを確認する。
+3. **実行パス**:
+   - **パス A (即時実行 - 推奨)**: メンバーが「はい」を選択した場合、Agent は直ちに `shared/` に重複候補用コードを生成し、全 Common の `.md` 仕様書を作成し、DSL Registry のステータスを即座に `planned` ➔ `implemented` に昇格する。
+   - **パス B (後で確認)**: メンバーが「いいえ」を選択した場合、メンバーはまず `common-plan.md` を確認し、後で `/common` または `/common <CMN-ID>` で実行する。
+4. **安全境界の徹底**: いずれのパスにおいても、重複が見つかった既存の旧コードは一切変更またはリファクタリングしない。
 ```
+
+---
+
+### 4.2. ルール: 初期化後の対話型共通プラン起動（GUI 質問モーダル）
+
+アーキテクチャディープスキャンが完了し、`inition-inventory.md` と `common-plan.md` が生成され、すべての Common が DSL Registries に登録された直後：
+`common-plan.md` に何らかの Common 項目（`READY_FOR_SPEC` 状態の既存 Common または `PENDING_APPROVAL` 状態の重複候補）が含まれている場合、Agent は単に処理を終了したり手動コマンドの入力を受動的に待ったりしては**ならない**。
+Agent は `AskQuestion` ツールを使用して対話型 GUI モーダルを能動的に起動し、メンバーに共通プランを今すぐ実行するかどうかを尋ねなければ**ならない**：
+
+#### GUI 質問モーダルの仕様（`AskQuestion`）
+- **質問タイトル (Question)**:
+  `"アーキテクチャスキャンと共通コンポーネント計画（common-plan.md）が正常に生成されました！今すぐ共通コンポーネント計画を実行しますか？"`
+- **選択肢 1 (推奨 - Recommended)**:
+  `"(推奨) はい、今すぐ共通プランを実行します — 既存の共通コンポーネントの Markdown 仕様を自動生成し、重複候補用に shared/ 配下に共通コードを生成します"`
+- **選択肢 2**:
+  `"いいえ、まずは common-plan.md を確認します — 後で /common を呼び出します"`
+
+#### 自動実行パス：
+
+1. **パス A — メンバーが選択肢 1（「はい、今すぐ共通プランを実行します」）を選択した場合：**
+   - Agent は、追加のプロンプトを求めることなく、`common-plan.md` に記載された全項目に対して `/common` 実行パイプラインにスムーズに切り替える：
+     - **既存 Common (`status: "implemented"`):**
+       - `<LCA>/common/patterns/<CMN-ID>.md` に Markdown ユーザーストーリー仕様書を自動生成する（契約、4つの標準状態、IoC、ゴールデンテストシームの4層標準に準拠）。
+       - DSL Registry (`design.registry.json` または `be-capabilities.registry.json`) のエントリが `status: "implemented"` であることを確認する。
+       - **絶対的な安全境界：** 既存の稼働中コードは一切変更・再生成しない。
+       - `common-plan.md` 内のステータスを `COMPLETED` に更新する。
+     - **重複候補 (`status: "planned"`):**
+       - 完全な公開契約（props、状態マトリクス、エラーハンドリング）を備えた 1 つの正規かつクリーンな共通実装を `shared/` (`<Target Code Path>`) に生成する。
+       - `<Target Docs Path>` に Markdown ユーザーストーリー仕様書を自動生成する。
+       - DSL Registry エントリのステータスを `status: "planned"` ➔ `status: "implemented"` に昇格する（`shared/` 配下の新規コードパスを指し、`/spec` から即時再利用可能）。
+       - **絶対的な安全境界：** 重複が検出された旧コードファイルは一切変更・リファクタリングしない。エビデンスコードは 100% 保持される。
+       - `common-plan.md` 内のステータスを `COMPLETED` に更新する。
+   - `common-plan.md` の実行サマリー表と完了タイムスタンプを更新する。
+   - 生成された Markdown 仕様書、共通コンポーネントコード、DSL Registries へのクリック可能なリンクを含む完了報告をメンバーに提示する。
+
+2. **パス B — メンバーが選択肢 2（「いいえ、まずは common-plan.md を確認します」）を選択した場合、またはスキップした場合：**
+   - `/init` の実行を正常に完了する。
+   - 生成された init 成果物（`inition-inventory.md`、`common-plan.md`、Arc42 アーキテクチャ文書、DSL Registries）のサマリーを提示する。
+   - メンバーに案内する：*「いつでも `common-plan.md` を確認でき、準備ができ次第 `/common` または `/common <CMN-ID>` を実行できます。」*
 
 ---
 
@@ -350,6 +391,8 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` が生成され詳細計画が含まれていること；すべての Common（既存は `status: implemented`、重複候補は `status: planned`）が DSL Registry (`design.registry.json` / `be-capabilities.registry.json`) に登録されていること。
+- [ ] init 完了時に対話型 GUI モーダル (`AskQuestion`) が表示され、メンバーに共通プランの即時実行を促すこと。
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
+

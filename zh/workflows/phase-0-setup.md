@@ -90,6 +90,7 @@ flowchart TD
      - **类别 1 — 既有 Common（已在 base/shared 中实现）：** 共享库中已存在的组件/服务（如 `ConfirmModal.vue`、`BaseServiceImpl.php`）。**绝不规划重新生成代码**；仅生成 Markdown User Stories（`<LCA>/common/patterns/<CMN-ID>.md`）以完善 SSOT 文档，并以 `status: "implemented"` 注册至 DSL Registry（`design.registry.json` 或 `be-capabilities.registry.json`）。
      - **类别 2 — 重复候选（在多处重复复制）：** 缺少共享组件而在 2 处以上重复的逻辑/UI。这类组件**必须制定行动计划（`common-plan.md`）**，具备完整放置检查（目标 Repo、目标代码路径、目标文档路径），在 `shared/` 中生成 1 套规范实现，供**新功能与后续更新使用**。**严格禁止修改或重构存在重复的既有旧代码** — 从此处开始防止重复，避免运行中代码出现回归故障。
    - **DSL Registry 预先注册 (`status: "planned"`)：** `/init` 将重复候选直接以 `status: "planned"` 及标准标签（`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`）预先注册至工作区 SSOT 注册表（`design.registry.json` / `be-capabilities.registry.json`）。这使得 `/spec` 在后续开发新功能时能够立即引用共享组件，避免重复创建临时组件（`#needs-component`）。
+   - **通过交互式 GUI 弹窗立即启动 Common 计划 (`AskQuestion`)：** 在生成 `common-plan.md` 和完成架构扫描后，`/init` 主动弹出 GUI 提问弹窗询问是否立即开始执行 Common 计划。若选择“是”，Agent 会自动为既有 Common 生成 Markdown Specs，并在 `shared/` 中为重复候选生成共用代码，无需用户手动逐一触发 `/common`。
    - **放置定位检查（Target Placement Check）：** 在大型或多仓库项目中，Agent 对照 `.flowgrid/config.json` 中的 `projects` 为每个候选指定 3 维坐标：
      1. *归属端与目标 Repo：* 目标代码仓（如 `admin-fe`、`booking-portal` 或 `core-api`）。
      2. *目标代码路径：* 具体源代码文件路径（如 `source-code/admin-fe/src/components/Common/ConfirmModal.vue`）。

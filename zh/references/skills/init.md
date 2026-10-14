@@ -184,10 +184,51 @@ Agent 必须使用以下精确结构生成 `common-plan.md`：
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` 将既有 Common (`status: "implemented"`) 与重复候选 (`status: "planned"`) 预先登记至 DSL Registry。
-2. **Review & 调整**: 成员在 `common-plan.md` 中审查该计划。
-3. **批准**: 获批时，成员运行 `/common <CMN-ID>`（或在聊天中确认）。
-4. **自动执行**: Agent 在 `shared/` 生成代码而不触碰旧代码，并将 DSL Registry 项升级为 `planned` ➔ `implemented`。
+2. **交互式启动 (Interactive Kick-off)**: `/init` 自动触发 GUI 提问弹窗 (`AskQuestion`)，询问成员是否立即执行 Common 计划。
+3. **执行路径**:
+   - **路径 A (立即执行 - 推荐)**: 若成员选择“是”，Agent 立即在 `shared/` 为重复候选生成代码，并为所有 Common 编写 `.md` 规范，同时在 DSL Registry 中将状态立即升级为 `planned` ➔ `implemented`。
+   - **路径 B (稍后审查)**: 若成员选择“否”，成员先在 `common-plan.md` 中进行审查，稍后再通过 `/common` 或 `/common <CMN-ID>` 触发。
+4. **安全底线强制执行**: 无论选择哪条路径，发现重复的既有旧代码绝对严禁修改或重构。
 ```
+
+---
+
+### 4.2. 规则：初始化后交互式通用计划启动（GUI 提问弹窗）
+
+在完成深度架构扫描、生成 `inition-inventory.md` 和 `common-plan.md`，并将所有 Common 登记到 DSL Registries 之后：
+若 `common-plan.md` 中包含任何 Common 项（处于 `READY_FOR_SPEC` 的既有 Common 或处于 `PENDING_APPROVAL` 的重复候选），Agent **严禁**仅仅结束流程或被动等待手动命令。
+Agent **必须**主动通过 `AskQuestion` 弹出交互式 GUI 模态窗口，询问成员是否希望立即启动 Common 计划：
+
+#### GUI 提问模态规格（`AskQuestion`）
+- **问题标题 (Question)**:
+  `"架构扫描与通用组件计划（common-plan.md）已生成完毕！您是否要立即开始执行通用组件计划？"`
+- **选项 1 (推荐 - Recommended)**:
+  `"(推荐) 是，立即执行 Common 计划 — 为既有 Common 自动生成 Markdown Specs，并在 shared/ 中为重复候选生成共用代码"`
+- **选项 2**:
+  `"否，让我先审查 common-plan.md — 稍后我再调用 /common"`
+
+#### 自动化操作路径：
+
+1. **路径 A — 成员选择选项 1（“是，立即执行 Common 计划”）：**
+   - Agent 无缝切换至 `/common` 执行管线，按顺序处理 `common-plan.md` 中的所有条目，无需重复询问：
+     - **针对既有 Common (`status: "implemented"`):**
+       - 自动在 `<LCA>/common/patterns/<CMN-ID>.md` 生成 Markdown User Stories 规范文件（包含契约、4 种标准状态、IoC 与黄金测试缝 4 层标准）。
+       - 确认 DSL Registry (`design.registry.json` 或 `be-capabilities.registry.json`) 中的记录状态为 `status: "implemented"`。
+       - **绝对安全底线：** 严禁修改或重新生成既有工作代码。
+       - 将 `common-plan.md` 中的条目状态更新为 `COMPLETED`。
+     - **针对重复候选 (`status: "planned"`):**
+       - 在 `shared/` (`<Target Code Path>`) 生成 1 套规范且干净的共享实现，具备完整的公共契约（props、状态矩阵、错误处理）。
+       - 自动在 `<Target Docs Path>` 生成 Markdown User Stories 规范文件。
+       - 将 DSL Registry 条目状态升级为 `status: "planned"` ➔ `status: "implemented"`（指向新生成的 `shared/` 代码路径，供 `/spec` 立即复用）。
+       - **绝对安全底线：** 严禁修改、触碰或重构发现重复的旧代码文件。证据代码保持 100% 原始状态。
+       - 将 `common-plan.md` 中的条目状态更新为 `COMPLETED`。
+   - 更新 `common-plan.md` 中的执行汇总表与完成时间戳。
+   - 向用户呈现完成祝贺报告，并附带指向新生成的 Markdown 规范、共享组件代码与 DSL Registries 的可点击链接。
+
+2. **路径 B — 成员选择选项 2（“否，让我先审查 common-plan.md”）或跳过：**
+   - 优雅结束 `/init` 执行流程。
+   - 呈现已生成的 init 产物汇总（`inition-inventory.md`、`common-plan.md`、Arc42 架构文档及 DSL Registries）。
+   - 提示成员：*“您可以随时审查 `common-plan.md`，并在准备就绪后运行 `/common` 或 `/common <CMN-ID>`。”*
 
 ---
 
@@ -350,6 +391,8 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` 已生成，包含详细计划；所有 Common（既有 common 标记 `status: implemented`，重复候选标记 `status: planned`）均已注册到 DSL Registry (`design.registry.json` / `be-capabilities.registry.json`)。
+- [ ] 在 init 完成时弹出交互式 GUI 模态窗口 (`AskQuestion`)，提示成员立即执行 Common 计划。
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
+

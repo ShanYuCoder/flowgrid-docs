@@ -4,8 +4,10 @@
 `common`
 
 ## 使用方法 (Command/Trigger)
-- スラッシュコマンド実行：`/common`
+- スラッシュコマンド実行：`/common <CMN-ID>`
+- `/init` 完了後に対話型 GUI 質問モーダル (`AskQuestion`) を通じて一括直接実行が可能。
 - Used to document common rules or generate single shared implementations in Phase 0 / Phase 1.
+
 
 ## 入力 (Input)
 - Common ID (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`).

@@ -4,8 +4,10 @@
 `common`
 
 ## 使用方式 (Command/Trigger)
-- 调用 Slash 命令：`/common`
+- 调用 Slash 命令：`/common <CMN-ID>`
+- 可在 `/init` 结束后通过交互式 GUI 提问弹窗 (`AskQuestion`) 直接批量触发执行。
 - Used to document common rules or generate single shared implementations in Phase 0 / Phase 1.
+
 
 ## 输入 (Input)
 - Common ID (`CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`).

@@ -4,8 +4,10 @@
 `common`
 
 ## Cách dùng (Command/Trigger)
-- Gọi qua slash command: `/common`
+- Gọi qua slash command: `/common <CMN-ID>`
+- Có thể được kích hoạt tự động hàng loạt ngay sau `/init` qua giao diện hỏi tương tác GUI modal (`AskQuestion`).
 - Yêu cầu người dùng (Member) bắt buộc phải chỉ định rõ **Nhóm sử dụng (Consumers)** là ai. VD: Dùng chung cho toàn hệ thống (`surfaces/common`), dùng chung cho 1 Surface (`surfaces/<Surface>/common`), dùng chung cho 1 Module (`surfaces/<Surface>/<CMP-ID>/common`), hoặc dùng chung cho 1 cụm màn hình nhỏ (`surfaces/<Surface>/<CMP-ID>/<NN>/common`).
+
 
 ## Input (Dữ liệu đầu vào)
 - Phạm vi dùng chung (Scope) do Member khai báo.

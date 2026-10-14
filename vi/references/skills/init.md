@@ -184,10 +184,51 @@ Agent BẮT BUỘC phải tạo `common-plan.md` theo đúng cấu trúc sau:
 
 ## 4. Execution Workflow
 1. **Đăng ký trước**: `/init` đăng ký Existing Commons (`status: "implemented"`) và Duplicate Candidates (`status: "planned"`) vào DSL Registry.
-2. **Review & Điều chỉnh**: Member xem xét kế hoạch này trong `common-plan.md`.
-3. **Phê duyệt**: Khi đồng ý, member chạy `/common <CMN-ID>` (hoặc xác nhận trong chat).
-4. **Thực thi tự động**: Agent sinh code trong `shared/`, giữ nguyên code cũ và promote trạng thái trong DSL Registry từ `planned` ➔ `implemented`.
+2. **Khởi chạy tương tác (Interactive Kick-off)**: `/init` tự động kích hoạt GUI modal `AskQuestion` hỏi member có muốn thực thi Kế hoạch Common ngay lập tức hay không.
+3. **Các luồng thực thi**:
+   - **Luồng 1 (Thực thi ngay - Khuyến nghị)**: Nếu member chọn "Yes", Agent sinh code trong `shared/` (cho duplicate candidates) và viết file spec `.md` (cho toàn bộ commons), đồng thời promote trạng thái trong DSL registry từ `planned` ➔ `implemented` ngay lập tức.
+   - **Luồng 2 (Xem lại trước)**: Nếu member chọn "No", member xem lại `common-plan.md` và sau đó kích hoạt bằng `/common` hoặc `/common <CMN-ID>`.
+4. **Bảo toàn an toàn tuyệt đối**: Dù theo luồng nào, code cũ nơi phát hiện trùng lặp tuyệt đối KHÔNG bao giờ bị sửa đổi hay refactor.
 ```
+
+---
+
+### 4.2. Quy tắc: Khởi chạy Kế hoạch Common qua Giao diện Hỏi Tương tác (GUI Question Modal)
+
+Ngay sau khi hoàn thành deep scan kiến trúc, sinh file `inition-inventory.md` và `common-plan.md`, đồng thời đăng ký các common vào DSL registries:
+Nếu `common-plan.md` có chứa BẤT KỲ mục common nào (Existing Commons với `READY_FOR_SPEC` hoặc Duplicate Candidates với `PENDING_APPROVAL`), Agent **TUYỆT ĐỐI KHÔNG** chỉ dừng lại và chờ lệnh thủ công một cách thụ động.
+Agent **BẮT BUỘC** phải chủ động bật modal GUI tương tác (`AskQuestion`) hỏi member có muốn bắt đầu thực thi Kế hoạch Common ngay bây giờ không:
+
+#### Cấu hình Modal GUI Hỏi Tương tác (`AskQuestion`)
+- **Tiêu đề câu hỏi (Question)**:
+  `"Đã hoàn thành phân tích kiến trúc và tạo Kế hoạch Common (common-plan.md). Bạn có muốn bắt đầu thực thi Kế hoạch Common ngay bây giờ không?"`
+- **Lựa chọn 1 (Khuyến nghị - Recommended)**:
+  `"(Khuyến nghị) Có, thực thi Kế hoạch Common ngay — Tự động sinh Markdown Specs cho Common có sẵn và khởi tạo code dùng chung trong shared/ cho các ứng viên trùng lặp"`
+- **Lựa chọn 2**:
+  `"Không, để tôi xem lại common-plan.md trước — Tôi sẽ gọi /common sau"`
+
+#### Các Luồng Hành Động Tự Động:
+
+1. **Luồng A — Khi Member chọn Lựa chọn 1 ("Có, thực thi Kế hoạch Common ngay"):**
+   - Agent chuyển tiếp mượt mà sang quy trình thực thi `/common` cho toàn bộ danh mục trong `common-plan.md` mà không cần người dùng phải gõ thêm câu lệnh:
+     - **Đối với Existing Commons (`status: "implemented"`):**
+       - Tự động sinh file tài liệu Markdown User Stories tại `<LCA>/common/patterns/<CMN-ID>.md` (tuân thủ chuẩn 4 lớp: contract, 4 canonical states, IoC, golden test seam).
+       - Xác nhận thông tin trong DSL Registry (`design.registry.json` hoặc `be-capabilities.registry.json`) với `status: "implemented"`.
+       - **BẢO TOÀN AN TOÀN TUYỆT ĐỐI:** Tuyệt đối KHÔNG sửa, KHÔNG ghi đè mã nguồn hiện có.
+       - Cập nhật trạng thái mục trong `common-plan.md` thành `COMPLETED`.
+     - **Đối với Duplicate Candidates (`status: "planned"`):**
+       - Khởi tạo 1 bản cài đặt mã nguồn chuẩn duy nhất vào `shared/` (`<Target Code Path>`) với đầy đủ public contract (props, state matrix, xử lý lỗi).
+       - Tự động sinh file Markdown User Stories tại `<Target Docs Path>`.
+       - Thăng cấp trạng thái trong DSL Registry từ `status: "planned"` ➔ `status: "implemented"` (trỏ đến đường dẫn code mới trong `shared/`, sẵn sàng cho `/spec` tái sử dụng ngay).
+       - **BẢO TOÀN AN TOÀN TUYỆT ĐỐI:** Tuyệt đối KHÔNG chỉnh sửa, chạm vào hoặc refactor các file code cũ nơi phát hiện trùng lặp. Các file evidence giữ nguyên 100%.
+       - Cập nhật trạng thái mục trong `common-plan.md` thành `COMPLETED`.
+   - Cập nhật bảng tổng kết thực thi trong `common-plan.md` kèm thời gian hoàn thành.
+   - Báo cáo kết quả chúc mừng tới người dùng kèm các liên kết nhấp được (clickable links) tới các file Markdown specs vừa tạo, các component code dùng chung và DSL registries.
+
+2. **Luồng B — Khi Member chọn Lựa chọn 2 ("Không, để tôi xem lại common-plan.md trước") hoặc bỏ qua:**
+   - Kết thúc lượt chạy `/init` một cách gọn gàng.
+   - Trình bày tóm tắt các sản phẩm đã khởi tạo (`inition-inventory.md`, `common-plan.md`, tài liệu Arc42, và DSL registries).
+   - Nhắc nhở member: *"Bạn có thể xem lại `common-plan.md` bất cứ lúc nào và kích hoạt `/common` hoặc `/common <CMN-ID>` khi sẵn sàng."*
 
 ---
 
@@ -349,6 +390,8 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - [ ] Arc42 architectural documents updated in `<docs-hub>/architecture/` (Mermaid diagrams included).
 - [ ] User flows classified across tiers **A / B / C** in Section 4.
 - [ ] `common-plan.md` được sinh với kế hoạch chi tiết cho Duplicate Candidates (chuẩn bị sẵn trong shared/ cho tính năng mới/update, không sửa code cũ) và Existing Commons (chỉ viết spec .md).
+- [ ] Giao diện hỏi tương tác GUI modal (`AskQuestion`) được kích hoạt ngay khi hoàn tất init để đề xuất member thực thi Kế hoạch Common ngay lập tức.
 - [ ] Missing common capabilities flagged with recommendation to use `flowgrid add base-common`.
 - [ ] All IDs follow standard format: `CMP-*`, `W-*`, `API-*`, `FLOW-*`, `CMN-UI-*`, `CMN-API-*`, `CMN-DTO-*`.
 - [ ] Output prose written in `docsProseLocale` and headings in `structureLocale` (per `config.json`).
+

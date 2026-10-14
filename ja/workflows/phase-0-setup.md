@@ -90,6 +90,7 @@ flowchart TD
      - **カテゴリ 1 — 既存の Common（base/shared に実装済み）：** 共有ライブラリ内に既に存在するコンポーネント/サービス（例: `ConfirmModal.vue`, `BaseServiceImpl.php`）。これらに対して**コード再生成は計画しません**。SSOT 仕様書（`<LCA>/common/patterns/<CMN-ID>.md`）のみを作成し、DSL Registry（`design.registry.json` または `be-capabilities.registry.json`）に `status: "implemented"` で登録します。
      - **カテゴリ 2 — 重複候補（複数箇所でコピー＆ペースト）：** 共通コンポーネントが存在せず 2 箇所以上で重複しているロジック/UI。これらは**アクションプラン（`common-plan.md`）の策定が必須**であり、完全な配置チェック（対象 Repo、対象コードパス、対象 Docs パス）を行って `shared/` 配下に 1 つの正規実装を生成し、**新規機能および今後の更新で利用**します。**重複が見つかった既存の旧コードの修正・リファクタリングは厳禁** — ここからの重複発生を防止し、稼働中コードのリグレッションを回避します。
    - **DSL Registry への事前登録 (`status: "planned"`)：** `/init` は重複候補をワークスペース SSOT レジストリ（`design.registry.json` / `be-capabilities.registry.json`）に `status: "planned"` および標準タグ（`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`）で直接事前登録します。これにより、`/spec` で新規画面を開発する際に即座に共通コンポーネントを参照可能となり、アドホックな臨時コンポーネント（`#needs-component`）の重複作成を防止します。
+   - **対話型 GUI 質問モーダル (`AskQuestion`) による共通プランの即時起動：** `common-plan.md` の作成およびアーキテクチャスキャンの完了後、`/init` は共通プランを今すぐ実行するかを尋ねる GUI 質問モーダルを自動起動します。「はい」を選択した場合、Agent は手動で `/common` を実行することなく、既存 Common の Markdown 仕様書を自動生成し、重複候補用に `shared/` 配下に共通コードを即時生成します。
    - **配置位置の特定（Target Placement Check）：** 大規模またはマルチリポジトリ構成の場合、Agent は `.flowgrid/config.json` の `projects` と照合し、各候補に対して 3 つの座標を割り当てます：
      1. *所属 Surface と対象 Repo:* 保存先リポジトリ（例: `admin-fe`, `booking-portal`, `core-api`）。
      2. *対象コードパス:* 生成予定の具体的なソースコードパス（例: `source-code/admin-fe/src/components/Common/ConfirmModal.vue`）。
