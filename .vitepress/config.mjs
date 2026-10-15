@@ -102,6 +102,15 @@ const skillGroups = [
       { text: '/business-impact-review', link: '/references/skills/business-impact-review' },
     ],
   },
+  {
+    text: 'AI Skills (Agile Operations & PM)',
+    items: [
+      { text: '/pm-setup', link: '/references/skills/pm-setup' },
+      { text: '/breakdown', link: '/references/skills/breakdown' },
+      { text: '/task', link: '/references/skills/task' },
+      { text: '/ship', link: '/references/skills/ship' },
+    ],
+  },
 ];
 
 /** Nested sidebar groups need `collapsed` set or VitePress renders them always open (no caret). */
