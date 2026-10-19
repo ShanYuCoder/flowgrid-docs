@@ -32,7 +32,7 @@
 | Post-wire e2e + fe-be + scenario | `/grill-wire` |
 | Unit FE/BE | `/grill-unit`, `/grill-api-unit` |
 | Architecture boundary | `/architecture-grill` |
-| Shared rules (`common/patterns`) | `/common` |
+| Shared rules (`common`) | `/common` |
 
 Tech debt: `qa/*.yaml` + `/qa-resolve` — team: `/qa-review` · [qa-team.md](../../workflows/qa-team.md).
 

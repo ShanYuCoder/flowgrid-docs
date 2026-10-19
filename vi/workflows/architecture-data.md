@@ -18,7 +18,7 @@
 
 Tầng 1 = **Phase 0**. Tầng 2 = **Phase 1 Design**. Tầng 3 = **2c** (có thể draft sớm trong grill-dev).
 
-Prose bổ trợ (không thay ERD): `common/data-model/` — vd. [`derived-data`](../../templates/project-skeleton/surfaces/common/data-model/derived-data.md).
+Prose bổ trợ (không thay ERD): [`model-derived-data.md`](../../templates/project-skeleton/surfaces/common/model-derived-data.md).
 
 ---
 
@@ -33,7 +33,7 @@ Prose bổ trợ (không thay ERD): `common/data-model/` — vd. [`derived-data`
     → (optional) /cross-service khi gọi service/aggregate khác module
 ```
 
-**LCA** cho `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — cùng quy tắc với `common/patterns/`.
+**LCA** cho `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — cùng quy tắc với `common/`.
 
 ---
 
@@ -64,7 +64,7 @@ Trên leaf bundle:
 
 1. **`spec.entities` / `spec.relationships`** — subset entity của màn (tóm tắt, không thay ERD).
 2. **`design.sections[].db`** — `schema` (table hoặc tên entity ER), `field` (column), `enumMapping` nếu có.
-3. **`spec.ui.list.columns[].key`** — khớp `field` hoặc tag `#derived-data` trong `data-model/derived-data.md`.
+3. **`spec.ui.list.columns[].key`** — khớp `field` hoặc tag `#derived-data` trong `common/model-derived-data.md`.
 4. **`bind.field`** — tên payload/API; grill-dev + `01` phải cùng hướng.
 
 Chi tiết authoring: [bundle-authoring.md § Data model](../../templates/shared/bundle-authoring.md#data-model--phase-0-erd-vs-screen-detail).

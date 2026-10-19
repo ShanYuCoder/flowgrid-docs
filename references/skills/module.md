@@ -11,9 +11,10 @@
 - Surface directory and functional domain breakdown.
 
 ## Output
-- Module-level specification: `CMP-*.module.yaml` and directory structure under `surfaces/<surface>/CMP-*/`.
-- Pre-allocation of shared Module APIs under `common/yaml/<slug>/`.
-- Screen catalog listing projected leaf screens (`W-*`).
+- Module-level specification: `index.md` (or `spec.md`) and `.module.yaml` under `surfaces/<surface>/<module>/`.
+- 1-tier flat feature screen directories directly under module: `surfaces/<surface>/<module>/<feature-slug>/` (no multi-tier numbers).
+- Child/secondary screens (Create, Edit, Detail, Drawer) declare access flow in §1 Overview.
+- Reserved module directories: `common/` (optional) and `user-flows/` (Step 1 ownership rule) — both auto-hidden from sidebar if empty.
 
 ## Description
 - Establishes modular architectural boundaries, grouping related user screens and domain features.

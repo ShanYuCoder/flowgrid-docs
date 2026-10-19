@@ -126,9 +126,9 @@ The Agent MUST categorize all commons into the following 4 categories:
 
 | Category | Description | Processing Rule | Vị trí Docs Hub & DSL Registry |
 | :--- | :--- | :--- | :--- |
-| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract as official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
-| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document project implementation and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
-| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted qua 2+ nơi mà chưa có abstraction (ví dụ modal xóa riêng lẻ hoặc code phân trang bị lặp lại). | **Common Action Plan (Cho tính năng MỚI & UPDATE)**: Ghi vào `common-plan.md` để sinh 1 bản cài đặt dùng chung chuẩn trong `shared/` cho **các tính năng MỚI và đợt UPDATE sau này sử dụng**. **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ**. **Đăng ký trước vào DSL Registry với `status: "planned"`**. | `<LCA>/common/patterns/<id>.md` sau khi phê duyệt<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
+| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract as official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document project implementation and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted qua 2+ nơi mà chưa có abstraction (ví dụ modal xóa riêng lẻ hoặc code phân trang bị lặp lại). | **Common Action Plan (Cho tính năng MỚI & UPDATE)**: Ghi vào `common-plan.md` để sinh 1 bản cài đặt dùng chung chuẩn trong `shared/` cho **các tính năng MỚI và đợt UPDATE sau này sử dụng**. **TUYỆT ĐỐI KHÔNG sửa hay refactor code cũ**. **Đăng ký trước vào DSL Registry với `status: "planned"`**. | `<LCA>/common/<id>.md` sau khi phê duyệt<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
 | **Category 4: Common Gaps** | Các năng lực chuẩn doanh nghiệp còn thiếu trong dự án (ví dụ chưa có confirm dialog chuẩn, format lỗi không nhất quán). | **Áp dụng Tool Standard**: Pattern chuẩn được sync sẵn trong `surfaces/common/` được giữ lại và đề xuất cho team áp dụng. | Lưu trong `surfaces/common/` & inventory §5.4 |
 
 ### Heuristic hòa giải có chọn lọc (Selective Reconciliation)
@@ -143,7 +143,7 @@ Trong quá trình deep scan, `/init` BẮT BUỘC phải tạo file kế hoạch
 
 > [!CRITICAL] TRIẾT LÝ CỐT LÕI: NGĂN CHẶN DUPLICATE TƯƠNG LAI — KHÔNG REFACTOR CODE CŨ
 > - **Code-First & Safety First**: `"Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ."`
-> - **Existing Commons (Code đã có sẵn)**: Kiểm tra các component đã có trong `shared/` hoặc `components/Common/`. Hành động: Chỉ lên kế hoạch viết file tài liệu spec Markdown (`<LCA>/common/patterns/<id>.md`) và đăng ký vào DSL Registry với `status: "implemented"`. **TUYỆT ĐỐI KHÔNG sinh lại code, KHÔNG ghi đè code.**
+> - **Existing Commons (Code đã có sẵn)**: Kiểm tra các component đã có trong `shared/` hoặc `components/Common/`. Hành động: Chỉ lên kế hoạch viết file tài liệu spec Markdown (`<LCA>/common/<id>.md`) và đăng ký vào DSL Registry với `status: "implemented"`. **TUYỆT ĐỐI KHÔNG sinh lại code, KHÔNG ghi đè code.**
 > - **Duplicate Candidates (Code trùng lặp nhiều nơi)**: Kiểm tra logic bị copy-paste qua 2+ nơi mà chưa có abstraction. Hành động: Lập kế hoạch sinh **1 bản cài đặt mã nguồn chuẩn duy nhất vào `shared/`** (`shared/components/` hoặc `shared/services/`) + sinh file spec Markdown. Đăng ký trước vào DSL Registry với `status: "planned"`.
 > - **Mục đích sử dụng**: Sẵn sàng phục vụ cho các **tính năng MỚI** và các đợt **UPDATE** sau này chủ động import dùng chung.
 > - **BẢO TOÀN TUYỆT ĐỐI**: **TUYỆT ĐỐI KHÔNG sửa, không chạm vào hay refactor code cũ nơi phát hiện trùng lặp!** Mã nguồn cũ đang chạy phải giữ nguyên 100% để loại bỏ rủi ro regression.
@@ -171,16 +171,16 @@ Agent BẮT BUỘC phải tạo `common-plan.md` theo đúng cấu trúc sau:
 - **Rule 4 (Tích hợp DSL Registry)**: Cả Existing Commons (`status: implemented`) và Duplicate Candidates (`status: planned`) đều được đưa vào DSL Registry để phục vụ tái sử dụng DSL ngay cho `/spec`.
 
 ## 2. Duplicate Candidates Action Plan Table
-| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`patterns/<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
+| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/patterns/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa OrdersPage hay AuditLogsPage. | `PENDING_APPROVAL` |
-| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/patterns/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa các legacy controller. | `PENDING_APPROVAL` |
+| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa OrdersPage hay AuditLogsPage. | `PENDING_APPROVAL` |
+| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: Sinh code tại Target Code Path khi Approve. TUYỆT ĐỐI KHÔNG sửa các legacy controller. | `PENDING_APPROVAL` |
 
 ## 3. Existing Commons Documentation Plan Table
-| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`patterns/<id>.md`) | Target DSL Registry & Status | Action | Status |
+| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`<id>.md`) | Target DSL Registry & Status | Action | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/patterns/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
-| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/patterns/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
+| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
+| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: Viết file .md User Stories & đăng ký registry. Giữ nguyên code. | `READY_FOR_SPEC` |
 
 ## 4. Execution Workflow
 1. **Đăng ký trước**: `/init` đăng ký Existing Commons (`status: "implemented"`) và Duplicate Candidates (`status: "planned"`) vào DSL Registry.
@@ -233,7 +233,7 @@ Nếu `common-plan.md` có chứa BẤT KỲ mục common nào (Existing Commons
 1. **Luồng A — Khi Member chọn Lựa chọn 1 ("Có, thực thi Kế hoạch Common ngay"):**
    - Agent chuyển tiếp mượt mà sang quy trình thực thi `/common` cho toàn bộ danh mục trong `common-plan.md` mà không cần người dùng phải gõ thêm câu lệnh:
      - **Đối với Existing Commons (`status: "implemented"`):**
-       - Tự động sinh file tài liệu Markdown User Stories tại `<LCA>/common/patterns/<CMN-ID>.md` (tuân thủ chuẩn 4 lớp: contract, 4 canonical states, IoC, golden test seam).
+       - Tự động sinh file tài liệu Markdown User Stories tại `<LCA>/common/<CMN-ID>.md` (tuân thủ chuẩn 4 lớp: contract, 4 canonical states, IoC, golden test seam).
        - Xác nhận thông tin trong DSL Registry (`design.registry.json` hoặc `be-capabilities.registry.json`) với `status: "implemented"`.
        - **BẢO TOÀN AN TOÀN TUYỆT ĐỐI:** Tuyệt đối KHÔNG sửa, KHÔNG ghi đè mã nguồn hiện có.
        - Cập nhật trạng thái mục trong `common-plan.md` thành `COMPLETED`.
@@ -301,8 +301,7 @@ The Agent MUST systematically trace user flows across routers, state stores, for
 | Tier | Label | Subsection in Inventory | Target Docs Hub Path |
 | :--- | :--- | :--- | :--- |
 | **A** | Cross-surface / Org Catalog | `### A — Cross-surface (org catalog)` | `architecture/03-user-flows/FLOW-*.md` |
-| **B** | Surface-shared | `### B — Shared on one surface` | `surfaces/<surface>/user-flows/FLOW-*.md` |
-| **C** | Module / Cluster scope | `### C — Module or cluster scope` | `surfaces/.../CMP-*/user-flows/` |
+| **B** | Module User Flows (Step 1 Ownership) | `### B — Module User Flows (Step 1 Ownership)` | `surfaces/<surface>/<module>/user-flows/FLOW-*.md` |
 
 Each flow entry MUST include:
 - **ID & Title:** `FLOW-{SURF}-{DOMAIN}-{NN}` (Standardized ID + Descriptive Title)
@@ -369,7 +368,7 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 - **CMN-UI-003 (Advanced Date Range Filter Toolbar)**:
   - *Evidence*: `OrdersPage.tsx`, `AuditLogsPage.tsx`
   - *Target Code Path*: `admin-fe/src/components/Common/DateRangeFilter.tsx`
-  - *Target Docs Path*: `surfaces/admin/common/patterns/CMN-UI-003.md`
+  - *Target Docs Path*: `surfaces/admin/common/CMN-UI-003.md`
   - *Safety Boundary*: Chỉ sinh mã nguồn mới. Toàn bộ file evidence giữ nguyên 100%.
 
 ### 5.3 Whole Page Duplication Warnings

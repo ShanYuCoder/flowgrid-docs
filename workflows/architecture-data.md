@@ -18,7 +18,7 @@
 
 Tier 1 = **Phase 0**. Tier 2 = **Phase 1 Design**. Tier 3 = **Phase 2c** (can be drafted early in grill-dev).
 
-Supplementary prose (does not replace the ERD): `common/data-model/` — e.g. [`derived-data`](../../templates/project-skeleton/surfaces/common/data-model/derived-data.md).
+Supplementary prose (does not replace the ERD): [`model-derived-data.md`](../../templates/project-skeleton/surfaces/common/model-derived-data.md).
 
 ---
 
@@ -33,7 +33,7 @@ Supplementary prose (does not replace the ERD): `common/data-model/` — e.g. [`
     → (optional) /cross-service when invoking external services/aggregates
 ```
 
-**LCA Scope** for `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — follows identical scoping rules as `common/patterns/`.
+**LCA Scope** for `db-erd.md`: [common-scope.md](../../harness/docs/extracts/common-scope.md) — follows identical scoping rules as `common/`.
 
 ---
 
@@ -64,7 +64,7 @@ On the leaf bundle:
 
 1. **`spec.entities` / `spec.relationships`** — subset of entities relevant to the screen (summary; never replaces the ERD).
 2. **`design.sections[].db`** — `schema` (table or ER entity name), `field` (column name), `enumMapping` if applicable.
-3. **`spec.ui.list.columns[].key`** — corresponds to `field` or `#derived-data` declared in `data-model/derived-data.md`.
+3. **`spec.ui.list.columns[].key`** — corresponds to `field` or `#derived-data` declared in `common/model-derived-data.md`.
 4. **`bind.field`** — payload/API field name; aligned across grill-dev and `01`.
 
 Authoring specifications: [bundle-authoring.md § Data model](../../templates/shared/bundle-authoring.md#data-model--phase-0-erd-vs-screen-detail).

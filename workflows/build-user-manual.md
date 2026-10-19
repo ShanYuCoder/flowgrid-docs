@@ -9,7 +9,7 @@ This guide details the complete workflow from AI-assisted draft generation to sy
 ## 1. Prerequisites
 
 Before building a User Manual, verify the following:
-1. **Spec & Flow Finalized:** User Flow documentation exists (e.g., `surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`).
+1. **Spec & Flow Finalized:** User Flow documentation exists (e.g., `surfaces/admin/tenant/user-flows/FLOW-ADM-TENANT-SETUP.md`).
 2. **Automated Testing (Phase 4):** Automation tests (Playwright/Cypress) have executed cleanly, saving actual visual screenshot evidence under `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
 3. **Google Docs API Configured:** System has access to the organization's Google Workspace via a Service Account.
    - Download the Service Account JSON Key from Google Cloud Console.

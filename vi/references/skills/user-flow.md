@@ -4,7 +4,7 @@
 
 Kỹ năng dùng để thiết kế luồng người dùng chi tiết, đóng vai trò bản đồ chỉ đường xuyên suốt cho các màn hình (W-*) và API (API-*).
 
-- Author `FLOW-*.md` under `architecture/03-user-flows/` or `**/common/user-flows/`.
+- Author `FLOW-*.md` under `architecture/03-user-flows/` hoặc `surfaces/<surface>/<module>/user-flows/`.
 - Convention ID: `FLOW-{SURF}-{DOMAIN}-{NN}` (Ví dụ: `FLOW-ADM-AUTH-01`). Tuyệt đối không dùng `FLOW-{slug}` hay các định dạng khác.
 - Audit: `flowgrid audit flow <path>`.
 
@@ -34,10 +34,9 @@ Kỹ năng dùng để thiết kế luồng người dùng chi tiết, đóng va
 
 ---
 
-## Giao thức Phân tích Sâu Cross-Flow (3 Cấp độ)
-- **Tier A (Cross-Surface):** Hành trình chuyển giao trách nhiệm giữa $\ge 2$ bề mặt hoặc tác nhân độc lập (Customer Web ➔ Admin Portal ➔ Worker nền). Bắt buộc kiểm tra tương thích dữ liệu đầu ra/vào (Data Handoff Audit), khoá chống lặp (Idempotency Key), và cơ chế đền bù/hoàn tác (Rollback / Saga).
-- **Tier B (Surface-Shared):** Các luồng dùng chung giữa nhiều module trong cùng 1 surface (Xóa an toàn có kiểm tra phụ thuộc, xuất file Excel dung lượng lớn).
-- **Tier C (Module-Scope):** Luồng cục bộ trong 1 cụm component (Wizard tạo mới 3 bước, đổi mật khẩu OTP).
+## Hai Phạm vi User Flow Chuẩn hóa
+- **Luồng Kiến trúc Toàn Hệ thống / Cross-Surface (`architecture/03-user-flows/`):** Hành trình chuyển giao trách nhiệm giữa $\ge 2$ bề mặt hoặc tác nhân độc lập (Customer Web ➔ Admin Portal ➔ Worker nền). Biểu diễn bằng Technical `sequenceDiagram`, có kiểm tra tương thích dữ liệu (Data Handoff), khoá chống lặp (Idempotency Key), và cơ chế đền bù/hoàn tác (Rollback / Saga).
+- **Luồng Người dùng Module (`surfaces/<surface>/<module>/user-flows/`):** Luồng người dùng gắn với màn hình do Module sở hữu dựa theo **Quy tắc Step 1 Ownership** (Bước 1 bắt đầu ở module nào thì toàn bộ flow nằm tại `user-flows/` của module đó). Tự động ẩn khỏi sidebar nếu rỗng.
 
 ---
 

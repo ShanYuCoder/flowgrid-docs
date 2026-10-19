@@ -1,0 +1,10 @@
+openapi: 3.0.3
+info:
+  title: Backend API Specifications
+  version: 1.0.0
+  description: "Feature fragments merged by `flowgrid openapi_render`:"
+paths: {}
+components:
+  schemas: {}
+  securitySchemes: {}
+tags: []

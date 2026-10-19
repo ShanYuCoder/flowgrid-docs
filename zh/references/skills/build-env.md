@@ -16,7 +16,7 @@ FlowGrid 是一款面向全球开发者的开源公共工具，全面支持 **Li
 - FlowGrid 不做任何假设（例如假设所有人都安装了 gateway，或者放在某个固定目录下）。
 
 ### B. 预置 Gateway 拓扑认知 (Pre-Synthesized Knowledge)
-FlowGrid 无需动态探测，而是内置了**企业级标准 Central Gateway 架构知识**（提炼自 `docker-external` 与 `docker-webbeds` 等成熟范式）：
+FlowGrid 无需动态探测，而是内置了**企业级标准 Central Gateway 架构知识**（提炼自 `docker-external` 与 `docker-gateway` 等成熟范式）：
 - **HTTP/HTTPS 路由与泛域名 TLS：** Nginx 反向代理（`gateway-nginx` 监听 80/443 端口，配备 `*.local.com` 泛域名证书）。
 - **关系型数据库：** MySQL 8.4 (`mysql:3306`)、MySQL 8.0 (`mysql-80:3306`)、PostgreSQL 17 (`postgres:5432` / 别名 `saas-postgres`)。
 - **缓存与键值存储：** Redis 7 (`redis:6379`)。
@@ -206,7 +206,7 @@ x-dev-ca-env: &dev-ca-env
   SSL_CERT_FILE: /opt/gateway-certs/dev-rootCA.crt
   COMPOSER_HOME: /tmp/composer
 ```
-- 容器名称必须符合规范：`${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>`（例如 `dev_hktv_php_83`、`dev_hktv_node`、`dev_hktv_octane`、`dev_hktv_reverb`）。
+- 容器名称必须符合规范：`${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>`（例如 `dev_portal_php_83`、`dev_portal_node`、`dev_portal_octane`、`dev_portal_reverb`）。
 
 ### B. 共享网关网络
 所有服务通过环境变量连接至网关外部网络：
@@ -316,7 +316,7 @@ Central Gateway (`routes.json`) 仅需配置**开发者浏览器能够直接访�
 
 ### 规范的 `docker/router.txt` 格式（包含 Workspace Key）
 
-导出的片段必须以工作区的 slug（如 `"hktv"`）为顶层 key，以便开发者直接将其完整复制粘贴进网关 `routes.json` 的根对象中：
+导出的片段必须以工作区的 slug（如 `"portal"`）为顶层 key，以便开发者直接将其完整复制粘贴进网关 `routes.json` 的根对象中：
 
 ```json
 "${PROJECT_SLUG}": {

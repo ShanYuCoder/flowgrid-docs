@@ -57,9 +57,8 @@ graph TD
 
 FlowGrid nâng tầm User Flows thành **tài liệu kiến trúc cốt lõi hạng nhất (First-Class SSOT)** với cấu trúc 3 cấp độ:
 
-* **Tier A — Luồng Xuyên Bề mặt (`architecture/03-user-flows/FLOW-*.md`):** Hành trình chuyển giao trách nhiệm giữa $\ge 2$ bề mặt hoặc tác nhân độc lập (Khách đặt hàng trên Web ➔ Admin duyệt trên Portal ➔ Webhook Cổng thanh toán ➔ Worker kho xuất hàng).
-* **Tier B — Luồng Dùng chung Bề mặt (`surfaces/<surface>/user-flows/FLOW-*.md`):** Hành trình dùng chung cho nhiều module trong cùng 1 surface (Xóa an toàn có kiểm tra ràng buộc phụ thuộc, Xuất file Excel dung lượng lớn, Cảnh báo hết hạn phiên).
-* **Tier C — Luồng Cục bộ Module (`surfaces/.../CMP-*/user-flows/`):** Wizard đa bước nằm trong 1 cụm component.
+* **Luồng Xuyên Bề mặt (`architecture/03-user-flows/FLOW-*.md`):** Hành trình chuyển giao trách nhiệm giữa $\ge 2$ bề mặt hoặc tác nhân độc lập (Khách đặt hàng trên Web ➔ Admin duyệt trên Portal ➔ Webhook Cổng thanh toán ➔ Worker kho xuất hàng).
+* **Luồng Người dùng Thuộc Module (`surfaces/<surface>/<module>/user-flows/FLOW-*.md`):** Hành trình thao tác UI do module sở hữu theo Quy tắc Step 1 Ownership (Bước 1 bắt đầu ở module nào thì toàn bộ flow nằm tại `user-flows/` của module đó).
 
 ### Tiêu chuẩn 6 Phần Đặc tả Chuyên sâu
 Mọi tài liệu User Flow của FlowGrid bắt buộc phải thỏa mãn 6 phần theo chuẩn Enterprise:

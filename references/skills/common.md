@@ -14,7 +14,7 @@
 - Existing code in `shared/` or duplicate candidate code references.
 
 ## Output
-- Markdown User Stories & Rules: `<LCA>/common/patterns/<CMN-ID>.md`.
+- Markdown User Stories & Rules: `<LCA>/common/<CMN-ID>.md`.
 - Canonical single implementation in `shared/` (for Duplicate Candidates).
 - Registration in Workspace SSOT registry (`.flowgrid/registries/`).
 

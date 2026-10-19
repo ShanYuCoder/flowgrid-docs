@@ -16,7 +16,7 @@
 
 ## 输出 (Output)
 1. **Implementation Plan File (`implementation-plan-[task-slug].md`)**: A structured markdown plan with concrete checkboxes `[ ]`, file coordinates, reality checks, and decision gates.
-2. **Exhaustive User Flow Trace Proposal**: Mines `inition-inventory.md` to identify and schedule tracing for **as many related user flows as possible — ideally ALL of them** (Tier A Cross-surface, Tier B Surface-shared, Tier C Module-scope) across the 5-link flow chain (Upstream, Primary, Downstream side-effects, Failure/Rollback, System/Security).
+2. **Exhaustive User Flow Trace Proposal**: Mines `inition-inventory.md` to identify and schedule tracing for **as many related user flows as possible — ideally ALL of them** (Cross-surface or Module user-flows) across the 5-link flow chain (Upstream, Primary, Downstream side-effects, Failure/Rollback, System/Security).
 3. **Reality vs Requirement Discrepancy Matrix**: Unveils contradictions between what the requirement assumes and what the active codebase actually does.
 4. **Human Decision Checkpoint**: Stops to request member approval (`Proceed / Approve` vs `Pause / Research`) before code generation.
 

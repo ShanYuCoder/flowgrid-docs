@@ -4,7 +4,7 @@
 
 画面 (`W-*`) と API (`API-*`) を結びつける包括的な業務ロードマップとして、エンドツーエンドのユーザー業務フロー (User Flows) を設計する中核スキル。
 
-- 成果物仕様書：`architecture/03-user-flows/` または `**/common/user-flows/` 配下の `FLOW-*.md`。
+- 成果物仕様書：`architecture/03-user-flows/` または `surfaces/<surface>/<module>/user-flows/` 配下の `FLOW-*.md`。
 - 命名規則：`FLOW-{SURF}-{DOMAIN}-{NN}`（例：`FLOW-ADM-AUTH-01`）。独自ルールによる無秩序な命名は厳禁。
 - 自動監査：`flowgrid audit flow <path>`。
 

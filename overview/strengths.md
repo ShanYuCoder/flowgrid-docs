@@ -57,9 +57,8 @@ graph TD
 
 FlowGrid treats User Flows as **first-class architectural artifacts** rather than casual bullet points. User journeys are categorized into 3 rigorous tiers:
 
-* **Tier A — Cross-Surface Flows (`architecture/03-user-flows/FLOW-*.md`):** Journeys transferring ownership between distinct actors and runtimes (e.g., Customer Checkout on Web ➔ Admin Approval on Portal ➔ Payment Gateway Webhook ➔ Logistics Warehouse Worker).
-* **Tier B — Surface-Shared Flows (`surfaces/<surface>/user-flows/FLOW-*.md`):** Common journeys shared across modules within one surface (e.g., Safe Delete with cascade dependency checks, Bulk Async Excel Export, Session Expiry Warning).
-* **Tier C — Module-Scope Flows (`surfaces/.../CMP-*/user-flows/`):** Multi-step local wizards contained within one feature cluster.
+* **Cross-Surface Flows (`architecture/03-user-flows/FLOW-*.md`):** Journeys transferring ownership between distinct actors and runtimes across surfaces (e.g., Customer Checkout on Web ➔ Admin Approval on Portal ➔ Payment Gateway Webhook ➔ Logistics Warehouse Worker).
+* **Module User Flows (`surfaces/<surface>/<module>/user-flows/FLOW-*.md`):** UI user journeys owned by the module where Step 1 occurs (Step 1 Ownership Rule: Step 1 determines module ownership, whether traversing single or multiple screens within the surface).
 
 ### The 6-Section Deep-Dive Standard
 Every FlowGrid User Flow document must satisfy the 6-Section Enterprise Specification:

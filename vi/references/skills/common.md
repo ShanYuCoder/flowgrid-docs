@@ -6,15 +6,14 @@
 ## Cách dùng (Command/Trigger)
 - Gọi qua slash command: `/common <CMN-ID>`
 - Có thể được kích hoạt tự động hàng loạt ngay sau `/init` qua giao diện hỏi tương tác GUI modal (`AskQuestion`).
-- Yêu cầu người dùng (Member) bắt buộc phải chỉ định rõ **Nhóm sử dụng (Consumers)** là ai. VD: Dùng chung cho toàn hệ thống (`surfaces/common`), dùng chung cho 1 Surface (`surfaces/<Surface>/common`), dùng chung cho 1 Module (`surfaces/<Surface>/<CMP-ID>/common`), hoặc dùng chung cho 1 cụm màn hình nhỏ (`surfaces/<Surface>/<CMP-ID>/<NN>/common`).
-
+- Yêu cầu người dùng (Member) bắt buộc phải chỉ định rõ **Nhóm sử dụng (Consumers)** là ai. VD: Dùng chung cho toàn hệ thống (`surfaces/common`), dùng chung cho 1 Surface (`surfaces/<Surface>/common`), hoặc dùng chung cho 1 Module (`surfaces/<Surface>/<module>/common`).
 
 ## Input (Dữ liệu đầu vào)
 - Phạm vi dùng chung (Scope) do Member khai báo.
 - Các quy tắc về trải nghiệm người dùng (UX/UI rules) hoặc quy tắc nghiệp vụ (Business rules) lặp đi lặp lại.
 
 ## Output (Kết quả mong đợi)
-- Sinh ra file tài liệu định dạng Markdown (`.md`) lưu tại thư mục `common/patterns/` của cấp độ bao trùm thấp nhất (Lowest Common Ancestor - LCA).
+- Sinh ra file tài liệu định dạng Markdown (`.md`) lưu tại thư mục `common/*.md` của cấp độ bao trùm thấp nhất (Lowest Common Ancestor - LCA). Thư mục `common/` phẳng 1 cấp, không chứa thư mục con `patterns/`, `yaml/`, `code/`.
 
 ## Description / Ý nghĩa
 - Dùng để thiết kế các **Quy tắc dùng chung bằng Markdown** dành cho Con người (Business, QA, Dev) đọc và tham chiếu.
@@ -27,7 +26,7 @@
   4. **Golden Test Seam:** Định nghĩa kịch bản kiểm thử component/service mẫu để xác minh các giá trị biên của props và 4 trạng thái chuẩn.
 
 ## Chú ý quan trọng
-- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`patterns/` User Stories & Rules). **TUYỆT ĐỐI KHÔNG VIẾT FILE YAML CHO COMMON**, không phân tách IR. Do các thành phần common đã được code sẵn trong base (`shared/`), việc tạo YAML là hoàn toàn thừa thãi và sai chuẩn.
+- **Tuyệt đối cấm:** `/common` chỉ viết Markdown (`common/*.md` User Stories & Rules) trực tiếp dưới thư mục `common/` phẳng 1 cấp (không tạo thư mục con `patterns/`, `yaml/`, `code/`). **TUYỆT ĐỐI KHÔNG VIẾT FILE YAML CHO COMMON**, không phân tách IR. Do các thành phần common đã được code sẵn trong base (`shared/`), việc tạo YAML là hoàn toàn thừa thãi và sai chuẩn.
 - **Phân biệt rõ 2 trường hợp thực thi:**
   - *Với Existing Common (Đã có sẵn code trong base/shared):* Chỉ sinh duy nhất file `.md` User Stories để chuẩn hóa tài liệu SSOT, **tuyệt đối không gen lại code**.
   - *Với Duplicate Candidate (Mã trùng lặp, chưa có component chung):* Lên plan ➔ Member bấm Approve/Proceed ➔ Tự động sinh file `.md` User Stories + **gen code 1 bản chuẩn hoá vào `shared/`** + đăng ký registry.

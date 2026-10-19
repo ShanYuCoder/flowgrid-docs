@@ -4,8 +4,8 @@
 
 | Requirement | Modern Replacement |
 |-------------|--------------------|
-| Markdown UX / Domain Rules | [`/common`](./common.md) → `<LCA>/common/patterns/` |
-| Cross-Screen Flows | `common/user-flows/FLOW-*.md` |
+| Markdown UX / Domain Rules | [`/common`](./common.md) → `<LCA>/common/*.md` |
+| Cross-Screen Flows | `architecture/03-user-flows/FLOW-*.md` or `surfaces/.../<module>/user-flows/FLOW-*.md` |
 | UI Patterns (delete flow, badges, flat design) | FE **base** repository + `flowgrid-ux-common.mdc` during `/spec` / grilling |
 | New Templates / Registries / Reusable Components | [Phase 0 Setup Workflow](../../workflows/phase-0-setup.md#5-template-training-from-golden-sample-build-template-code) → `build-template-code` |
 

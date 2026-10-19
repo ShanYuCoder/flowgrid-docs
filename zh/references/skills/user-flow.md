@@ -4,7 +4,7 @@
 
 用于设计端到端用户业务旅程 (User Flows) 的核心技能，作为连接前端屏幕界面 (`W-*`) 与后端服务接口 (`API-*`) 的顶层全局导航路线图。
 
-- 产出规范文件：`architecture/03-user-flows/` 或 `**/common/user-flows/` 下的 `FLOW-*.md`。
+- 产出规范文件：`architecture/03-user-flows/` 或 `surfaces/<surface>/<module>/user-flows/` 下的 `FLOW-*.md`。
 - 命名规范：`FLOW-{SURF}-{DOMAIN}-{NN}`（例如 `FLOW-ADM-AUTH-01`）。严格杜绝使用随意无序的命名。
 - 自动化审计：`flowgrid audit flow <path>`。
 

@@ -14,12 +14,12 @@
 - Existing code in `shared/` or duplicate candidate code references.
 
 ## 输出 (Output)
-- Markdown User Stories & Rules: `<LCA>/common/patterns/<CMN-ID>.md`.
+- Markdown User Stories & Rules: `<LCA>/common/<CMN-ID>.md`.
 - Canonical single implementation in `shared/` (for Duplicate Candidates).
 - Registration in Workspace SSOT registry (`.flowgrid/registries/`).
 
 ## 描述说明 (Description)
-- 强化防复制粘贴红线 (Anti-Copy-Paste Guard)。为共享 UI 模式、DTO、业务规则在 `<LCA>/common/patterns/` 生成 Markdown 规范并录入 SSOT 注册表。
+- 强化防复制粘贴红线 (Anti-Copy-Paste Guard)。为共享 UI 模式、DTO、业务规则在 `<LCA>/common/` 生成扁平 Markdown 规范并录入 SSOT 注册表。
 - **严禁**为通用组件创建 YAML/Bundle，严格仅使用 `.md` 规范说明。
 - **4 层质量标准：** 契约不变性、4 种标准状态、控制反转、测试接缝。
 ---

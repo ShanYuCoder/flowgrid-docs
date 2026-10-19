@@ -12,10 +12,14 @@ Giao diện web VitePress sẽ đọc trực tiếp các thư mục và file Mar
 my-workspace/
 ├── overview/               # Tầm nhìn, mục tiêu sản phẩm và phạm vi phát hành
 ├── architecture/           # Tài liệu kiến trúc hệ thống chuẩn Arc42 & ERD
-├── surfaces/               # Phân vùng bề mặt ứng dụng, màn hình + common & user-flows
-│   ├── common/             # [Dynamic] Quy tắc UX, patterns, DTO dùng chung xuyên suốt
-│   ├── user-flows/         # [Dynamic] Kịch bản luồng nghiệp vụ liên màn hình & liên surface
+├── surfaces/               # Phân vùng bề mặt ứng dụng, màn hình & common
+│   ├── common/             # UI Patterns, model-data, rules dùng chung hệ thống (1 cấp phẳng .md)
 │   └── <surface-name>/     # Từng bề mặt nghiệp vụ cụ thể (admin, portal, mobile,...)
+│       ├── common/         # (Tùy chọn) Dùng chung trong surface (tự động ẩn nếu rỗng)
+│       └── <module-name>/  # Module nghiệp vụ (CMP-*)
+│           ├── common/     # (Tùy chọn, tự động ẩn nếu rỗng)
+│           ├── user-flows/ # Các User Flows có Step 1 bắt đầu tại module này (tự động ẩn nếu rỗng)
+│           └── <feature>/  # Màn hình/tính năng (phẳng 1 cấp, chứa bundle.yaml & spec.md)
 ├── .flowgrid/registries/   # Danh mục Design Tokens, UI Components và Capabilities trong Workspace SSOT
 ├── qa/                     # Hòm thư giải quyết thắc mắc nghiệp vụ giữa các thành viên
 ├── source-code/            # Mã nguồn chính đang hoạt động & phát triển (Submodules)
@@ -39,9 +43,9 @@ my-workspace/
   - **`01-introduction/` (Giới thiệu, Mục tiêu & Hotspots):** Tổng quan bối cảnh hệ thống, mục tiêu kinh doanh cốt lõi, phạm vi kỹ thuật và phân tích các vùng rủi ro cao (*Technical Hotspots* / điểm nghẽn chịu tải, các module nghiệp vụ phức tạp nhất).
   - **`02-constraints/` (Ràng buộc kiến trúc):** Các ràng buộc kỹ thuật bất biến: công nghệ bắt buộc, giới hạn phần cứng, hạ tầng mạng, ngân sách, quy chuẩn tuân thủ pháp lý (GDPR, ISO, PCI-DSS) và tiêu chuẩn văn hóa tổ chức.
   - **`03-user-flows/` (Bối cảnh hệ thống & Luồng nghiệp vụ vĩ mô):**
-    > **Phân biệt rạch ròi với `surfaces/user-flows/`:**
+    > **Phân biệt rạch ròi với `surfaces/<surface>/<module>/user-flows/`:**
     > - **`architecture/03-user-flows/`** là **Luồng nghiệp vụ tổng thể cấp hệ thống (Macro System Flows / System Context)**. Mô tả quy trình vận hành dữ liệu giữa các dịch vụ, các bounded context, hệ thống phụ hoặc đối tác bên thứ ba (ví dụ: chu trình đối soát thanh toán ngân hàng, luồng đồng bộ đơn hàng sang ERP, luồng xử lý async event-driven qua Message Queue). Tập trung vào giao thức kỹ thuật, logic dữ liệu và sự tương tác giữa các hệ thống — **hoàn toàn độc lập và không phụ thuộc vào giao diện hay màn hình người dùng**.
-    > - Trong khi đó, **`surfaces/user-flows/`** là **Hành trình thao tác trực tiếp của người dùng (UI User Journeys)**. Gắn liền với các màn hình, tương tác giao diện (click button, submit form, navigation, hiển thị modal/thông báo) xuyên qua các bề mặt ứng dụng (`portal`, `admin`, `mobile`).
+    > - Trong khi đó, **`surfaces/<surface>/<module>/user-flows/`** là **Hành trình thao tác trực tiếp của người dùng (UI User Journeys)**. Gắn liền với các màn hình, tương tác giao diện (click button, submit form, navigation, hiển thị modal/thông báo) xuyên qua các bề mặt ứng dụng (`portal`, `admin`, `mobile`).
   - **`04-solution-strategy/` (Chiến lược giải pháp):** Các quyết định chiến lược định hình cấu trúc toàn hệ thống: lựa chọn mô hình kiến trúc (Clean Architecture, DDD, Event-Driven, Microservices vs Monolith), chiến lược phân vùng dữ liệu (SQL vs NoSQL), chiến lược cache đa tầng và sơ đồ luồng dữ liệu (*Data Flow Mermaid*).
   - **`05-building-blocks/` (Khối cấu trúc tĩnh / Building Block View):** Phân rã cấu trúc tĩnh của hệ thống theo cấp độ (C4 Model Containers & Components): danh sách các service, module, thư viện nội bộ, trách nhiệm của từng khối và quan hệ phụ thuộc tĩnh giữa chúng.
   - **`06-runtime/` (Khung cảnh thời gian thực / Runtime View):** Mô tả hành vi động và tương tác runtime giữa các khối kiến trúc trong các kịch bản quan trọng: sơ đồ tuần tự (*Sequence Diagram*), luồng khởi động hệ thống, cơ chế đồng bộ/bất đồng bộ, xử lý tranh chấp dữ liệu khi concurrency cao.
@@ -62,22 +66,20 @@ my-workspace/
 - **Vai trò:** Bản đồ kỹ thuật số toàn diện chuẩn quốc tế giúp định hình toàn bộ chuẩn mực kỹ thuật của hệ thống, bảo đảm mọi lập trình viên và Agent AI phát triển mã nguồn đồng nhất, tránh việc mỗi người code một kiểu.
 - **Người phụ trách chính:** Solution Architect, Technical Lead.
 
-### 3. `surfaces/` — Phân vùng Bề mặt, Tính năng & Hai Thư mục Dynamic Xuyên suốt
-- **Nội dung:** Quản lý toàn bộ cấu trúc giao diện người dùng và nghiệp vụ tương tác, chia thành các bề mặt cụ thể (`admin`, `portal`, `mobile`,...) cùng các module nghiệp vụ (`CMP-*`) và màn hình con (`W-*` leaf).
-- **Cơ chế Dynamic đa tầng của `common/` và `user-flows/`:**
-  Hai thư mục này **không cố định ở một nơi** mà là các thư mục động (*dynamic*), **xuất hiện linh hoạt ở bất kỳ cấp độ nào** trong cây thư mục (từ ngoài `surfaces/` đi sâu vào từng `surface`, vào `module`, hay đến từng `sub-module / cluster`) — miễn là ở cấp độ đó phát sinh nhu cầu dùng chung hoặc có luồng người dùng liên kết:
-  - **`common/` (Tài nguyên dùng chung theo phạm vi):**
-    - Xuất hiện ở cấp nào thì phục vụ tái sử dụng cho cấp đó:
-      - Tại `surfaces/common/`: Dùng chung cho **toàn bộ hệ thống** (Global patterns, chuẩn form chung, dialog xác nhận dùng chung).
-      - Tại `surfaces/<surface>/common/`: Dùng chung trong **nội bộ surface đó** (ví dụ: các pattern riêng của trang `admin`).
-      - Tại `<module>/common/`: Dùng chung cho **cụm tính năng / cluster đó** (ví dụ: bộ lọc đặc thù của riêng module Đơn hàng).
-    - Lưu trữ UI Patterns, validation rules, DTO và layout dùng chung — triệt tiêu 100% thói quen copy-paste code bừa bãi.
-  - **`user-flows/` (Luồng trải nghiệm người dùng theo phạm vi):**
-    - Chứa các kịch bản hành trình nghiệp vụ (`FLOW-*.md`) kết nối chuỗi thao tác giữa nhiều màn hình:
-      - Tại `surfaces/user-flows/`: Mô tả các **luồng xuyên suốt qua nhiều surfaces** (ví dụ: Khách đặt mua trên `portal` ➔ Quản trị viên nhận thông báo và phê duyệt trên `admin`).
-      - Tại `surfaces/<surface>/user-flows/`: Mô tả luồng chạy xuyên suốt **nhiều module trong cùng 1 surface**.
-      - Tại `<module>/user-flows/`: Mô tả luồng thao tác nhiều bước **nội bộ trong một module** (ví dụ: luồng tạo đơn hàng 3 bước: Nhập thông tin ➔ Chọn thanh toán ➔ Xác nhận).
-    - Giúp BA, Dev và QA luôn nắm bắt được bức tranh tương tác End-to-End tổng thể thay vì chỉ nhìn vào từng màn hình lẻ loi.
+### 3. `surfaces/` — Phân vùng Bề mặt, Tính năng & Cấu trúc Phẳng
+- **Nội dung:** Quản lý toàn bộ cấu trúc giao diện người dùng và nghiệp vụ tương tác, chia thành các bề mặt cụ thể (`admin`, `portal`, `mobile`,...) cùng các module nghiệp vụ (`CMP-*`) và tính năng/màn hình phẳng 1 cấp (`<feature-slug>/`).
+- **Cấu trúc `common/` tinh gọn (1 cấp phẳng .md):**
+  - Tại `surfaces/common/`: Chứa các quy tắc dùng chung cho **toàn bộ hệ thống** dưới dạng các file `.md` phẳng (không lồng thư mục con `patterns/`, `yaml/`, `code/`, `data-model/`). Bao gồm: UI Patterns, `model-data.md`, `model-derived-data.md`, `api-health.md`, `ui-empty-state.md`.
+  - Tại `surfaces/<surface>/common/` hoặc `<module>/common/`: (Tùy chọn) Chứa quy tắc dùng chung cho riêng surface hoặc module đó. **Tự động ẩn khỏi sidebar VitePress nếu thư mục rỗng**.
+- **Cấu trúc `user-flows/` và Quy tắc Phân định Sở hữu (Step 1 Ownership):**
+  - **Không để `user-flows/` ở cấp root `surfaces/` hay `<surface>/`**:
+    - **Luồng toàn hệ thống / Cross-surface**: Được lưu trữ tập trung tại [`architecture/03-user-flows/FLOW-*.md`](../../architecture/03-user-flows/) dưới dạng Technical `sequenceDiagram`.
+    - **Luồng người dùng thuộc Module**: Lưu trữ tại `surfaces/<surface>/<module>/user-flows/FLOW-*.md`.
+    - **Quy tắc Step 1 Ownership**: Bước đầu tiên (màn hình bắt đầu trigger luồng) thuộc module nào thì toàn bộ file flow và scenario của luồng đó nằm trong thư mục `user-flows/` của module đó.
+    - Thư mục `user-flows/` của module sẽ **tự động ẩn khỏi sidebar VitePress nếu rỗng**.
+- **Cấu trúc Màn hình trong Module (Phẳng 1 Cấp — 1-Tier Flat):**
+  - Tất cả các màn hình/tính năng trong module đều nằm trực tiếp ở tầng 1: `surfaces/<surface>/<module>/<feature-slug>/` (không chia nhỏ 3 cấp số như `01/01/02`).
+  - Màn hình phụ/con (Create, Edit, Detail, Drawer) khai báo rõ luồng truy cập trong §1 Overview của spec (VD: "Vào từ màn hình danh sách ➔ Bấm nút [Tạo mới]").
 - **Người phụ trách chính:** BA, Frontend Dev, Backend Dev, QA.
 
 ### 4. `.flowgrid/registries/` — Danh mục Linh kiện & Capabilities dùng chung (Workspace SSOT)

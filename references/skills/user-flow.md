@@ -4,7 +4,7 @@
 
 Skill for designing detailed end-to-end user flows, acting as an overarching roadmap connecting screens (`W-*`) and APIs (`API-*`).
 
-- Author `FLOW-*.md` under `architecture/03-user-flows/` or `**/common/user-flows/`.
+- Author `FLOW-*.md` under `architecture/03-user-flows/` or `surfaces/<surface>/<module>/user-flows/`.
 - Convention ID: `FLOW-{SURF}-{DOMAIN}-{NN}` (e.g., `FLOW-ADM-AUTH-01`). Strictly do not use `FLOW-{slug}` or other naming conventions.
 - Audit: `flowgrid audit flow <path>`.
 
@@ -34,17 +34,30 @@ Skill for designing detailed end-to-end user flows, acting as an overarching roa
 
 ---
 
-## Cross-Flow Deep Analysis Protocol
-- **Tier A (Cross-Surface):** Handoff between $\ge 2$ distinct runtimes or actors (Customer Web ➔ Admin Portal ➔ Worker). Audits field-by-field payload compatibility, idempotency keys, and saga/compensation rollback.
-- **Tier B (Surface-Shared):** Journeys shared across multiple modules in the same surface (Safe entity deletion, bulk export).
-- **Tier C (Module-Scope):** Local journeys within a single component cluster (3-step creation wizard).
+## Two Scopes of User Flows Protocol
+- **Cross-Surface Architecture Flows (`architecture/03-user-flows/`):** Flows that span multiple surfaces or external systems (Customer Web ➔ Admin Portal ➔ Worker). Documented as technical `sequenceDiagram` with explicit payload compatibility and saga compensation rollback.
+- **Module User Flows (`surfaces/<surface>/<module>/user-flows/`):** UI journeys owned by the module where Step 1 occurs (Step 1 Ownership rule: Step 1 determines module ownership). Auto-hidden from sidebar if empty.
 
 ---
 
-## Diagram Decision Matrix: When to Use What
+---
 
-| Diagram Type | Notation | When to Use | Mandatory Elements |
-| :--- | :--- | :--- | :--- |
-| **Sequence Diagram** | `sequenceDiagram` | Temporal interactions across $\ge 2$ lifelines (Actors, FE, Gateway, BE, DB, Workers, 3rd-party). | `autonumber`, `alt/else` (error paths), `rect` (async worker blocks), `-->>` returns. |
-| **Block Diagram / Flowchart** | `flowchart TD/LR` | Complex decision trees (`IF/ELSE` branching), screen navigation graphs, data pipelines. | `([Start/End])`, `{Condition?}` diamonds, labeled edges (`-->|Yes|`). |
-| **State Machine** | `stateDiagram-v2` | Entity lifecycle status transitions (e.g. Order: `DRAFT ➔ PENDING ➔ PAID / CANCELLED`). | `[*] --> State`, transition labels (`Event [Guard]`), terminal states. |
+## Rule: Mandatory "Sequence" Priority Lock
+
+> [!CRITICAL]
+> **AUTOMATIC ROUTING TO ARCHITECTURE ON "SEQUENCE" PROMPT:**
+> Whenever a team member asks for or mentions `"sequence"`, `"sequence diagram"`, `"luồng sequence"`, or `"message flow"`:
+> The Agent **MUST AUTOMATICALLY BUILD IT INTO `<docs-hub>/architecture/`**:
+> - **Target Path:** **`architecture/03-user-flows/FLOW-*.md`** (or `architecture/04-solution-strategy/index.md` for technical subsystem sequences).
+> - **[STRICTLY FORBIDDEN]** The Agent **MUST NOT** wait for member reminders, and **STRICTLY MUST NOT** bury technical sequence diagrams in UI surface leaves (`surfaces/`).
+
+---
+
+## Diagram & Flow Triage Matrix (Surface Use-Case vs Sequence vs Block Diagram)
+
+| Category | Diagram Type | Core Content | Target Placement | What is FORBIDDEN |
+| :--- | :--- | :--- | :--- | :--- |
+| **Surface Use-Case / User Journey** | UI Flow / Wire steps (`flowchart TD/LR`) | User interactions, button triggers, form inputs, visual states (Loading, Empty, Error, Success) across screens (`W-*`). | `surfaces/<surface>/<module>/user-flows/` | NO raw HTTP verbs, NO SQL queries, NO backend worker queues. |
+| **Technical Sequence Diagram** | Mermaid `sequenceDiagram` | Time-ordered message passing across Actor, Frontend, API Gateway, Backend Services, DB transactions, async Queues, external APIs. | **`architecture/03-user-flows/FLOW-*.md`** or `architecture/04-solution-strategy/` | NO UI layout details; focus on protocol timing, DTOs, retries, and rollback branches. |
+| **Architecture Block Diagram** | Mermaid `graph TB` / `block-beta` / C4 | Static structural topology: Layers, services, datastores, caches, reverse proxies, and integration boundaries. | **`architecture/04-solution-strategy/index.md`** or `architecture/05-building-blocks/` | NO time-ordered execution steps; focus on static structural wiring. |
+

@@ -9,7 +9,7 @@
 ## 1. 准入前提
 
 在构建用户手册前，请确认以下前提已就绪：
-1. **规格与业务流已定稿：** 存在业务流规范文档（例如 `surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`）。
+1. **规格与业务流已定稿：** 存在业务流规范文档（例如 `surfaces/admin/tenant/user-flows/FLOW-ADM-TENANT-SETUP.md`）。
 2. **自动化测试已执行 (Phase 4)：** Playwright/Cypress 自动化测试已绿灯运行完毕，并在 `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png` 下保存了真实界面的截图实证。
 3. **Google Docs API 凭证配置：** 通过服务账号 (Service Account) 获取访问组织 Google Workspace 的权限。
    - 从 Google Cloud 控制台下载服务账号 JSON 私钥文件。

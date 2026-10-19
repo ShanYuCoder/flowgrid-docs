@@ -13,7 +13,7 @@
 - Local common components registry (`.flowgrid/registries/design.registry.json`).
 
 ## Output
-- Leaf Bundle YAML file: `<slug>.bundle.yaml` located at `surfaces/<surface>/CMP-*/<NN...>/<slug>.bundle.yaml`.
+- Leaf Bundle YAML file: `<slug>.bundle.yaml` located at `surfaces/<surface>/<module>/<feature-slug>/<slug>.bundle.yaml` (1-tier flat under module).
 - IR artifacts generated via `flowgrid split`: `ir/design.yaml` and `ir/spec.yaml`.
 - Rendered business Markdown specification: `ir/generated/spec.md` (and `data-model.md` if persisted entities exist).
 - Unresolved questions routed directly to `qa/<SHORT>_NNNN.yaml` (tagged `#tech-debt:QA-*`).

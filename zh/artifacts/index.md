@@ -12,10 +12,14 @@ VitePress 文档中心直接读取本地磁盘上的这些目录与 Markdown 文
 my-workspace/
 ├── overview/               # 产品愿景、业务核心目标与发布里程碑
 ├── architecture/           # 系统技术架构设计文档（遵循 Arc42 标准与 ERD 模型）
-├── surfaces/               # 应用端 (Surfaces)、功能模块、通用模式与业务流 (User Flows)
-│   ├── common/             # [动态作用域] 可复用的 UX 规范、通用模式及共享 DTO
-│   ├── user-flows/         # [动态作用域] 跨页面及跨端的端到端用户业务旅程
+├── surfaces/               # 应用端 (Surfaces)、功能模块与通用模式
+│   ├── common/             # 全局 UI 模式、model-data 与通用规范（扁平单层 .md）
 │   └── <surface-name>/     # 具体业务端（admin 后台、portal 门户、mobile 移动端等）
+│       ├── common/         # （可选）该端作用域通用资产（空时自动隐藏）
+│       └── <module-name>/  # 业务功能模块 (CMP-*)
+│           ├── common/     # （可选，空时自动隐藏）
+│           ├── user-flows/ # Step 1 在该模块发起的用户旅程流（空时自动隐藏）
+│           └── <feature>/  # 页面/功能（扁平单层，包含 bundle.yaml 与 spec.md）
 ├── .flowgrid/registries/   # 设计系统组件、业务能力与代码生成注册表
 ├── qa/                     # 业务待决问题 (Open Questions) 与风险协作收件箱
 ├── source-code/            # 活跃生产代码仓库（Git Submodules 模式）
@@ -39,9 +43,9 @@ my-workspace/
   - **`01-introduction/` (架构简介、目标与技术热点):** 系统全局上下文、业务核心目标、技术边界及高风险热点分析（高并发瓶颈、核心复杂业务集群）。
   - **`02-constraints/` (架构约束条件):** 既定不可变约束：必须采用的技术栈、硬件/网络拓扑、预算上限、法律合规（GDPR, ISO, 等保）与工程规范。
   - **`03-user-flows/` (系统宏观数据流与系统上下文):**
-    > **与 `surfaces/user-flows/` 的明确界限：**
+    > **与 `surfaces/<surface>/<module>/user-flows/` 的明确界限：**
     > - **`architecture/03-user-flows/`** 代表**系统宏观流（System Context）**。描述服务间、子系统间或三方系统间的数据流转与处理生命周期（如银企对账、ERP 异步同步、MQ 事件驱动）。关注数据协议与交互逻辑——**完全独立于具体的 UI 界面**。
-    > - **`surfaces/user-flows/`** 代表**交互式 UI 用户旅程**。紧密结合屏幕界面与前端交互（点击、校验、跳转、弹窗、通知），跨越具体的客户端（`portal`, `admin`, `mobile`）。
+    > - **`surfaces/<surface>/<module>/user-flows/`** 代表**交互式 UI 用户旅程**。紧密结合屏幕界面与前端交互（点击、校验、跳转、弹窗、通知），跨越具体的客户端（`portal`, `admin`, `mobile`）。
   - **`04-solution-strategy/` (解决方案策略):** 宏观架构策略：架构模式选型（Clean Architecture, DDD, 事件驱动, 微服务 vs 单体）、数据分片（SQL vs NoSQL）、多级缓存策略与 Mermaid 数据流图。
   - **`05-building-blocks/` (构建块视图 / C4 容器与组件):** 静态系统分解（C4 模型）：微服务划分、核心模块职责、内部依赖拓扑。
   - **`06-runtime/` (运行时视图):** 核心场景的动态运行时交互：时序图 (*Sequence Diagram*)、系统启动时序、同步/异步调用、并发分布式锁机制。
@@ -62,20 +66,20 @@ my-workspace/
 - **职责范围：** 全局技术灯塔，保障所有团队成员与 AI Agent 产出高度一致的代码规范。
 - **主要协作角色：** 架构师、技术主管 (Tech Lead)。
 
-### 3. `surfaces/` — 应用端、功能特性与动态作用域
-- **内容构成：** 管理所有用户交互规范，细分为不同的端（`admin`, `portal`, `mobile`）、业务功能模块（`CMP-*`）以及原子页面叶子节点（`W-*`）。
-- **`common/` 与 `user-flows/` 的多级动态作用域：**
-  这两个目录**不是固定在单一根目录下**，而是具有动态作用域，可以在从 `surfaces/` 到具体 `surface` 或 `module` 的任意层级根据复用需求动态建立：
-  - **`common/` (作用域共享资产):**
-    - 在 `surfaces/common/`: **全系统共享**（全局 UI 规范、统一表单校验规则、通用确认对话框）。
-    - 在 `surfaces/<surface>/common/`: **该端内共享**（例如仅管理端后台专用的通用布局与过滤工具栏）。
-    - 在 `<module>/common/`: **该业务模块内共享**（例如仅订单模块专用的状态胶囊标签与高级检索器）。
-    - 存放 UI Patterns、校验规则、DTO 与布局，彻底杜绝无序复制代码。
-  - **`user-flows/` (作用域业务旅程):**
-    - 包含端到端多步业务流规范（`FLOW-*.md`）：
-      - 在 `surfaces/user-flows/`: 记录**跨端的端到端流**（如用户在 `portal` 购物 ➔ 管理员在 `admin` 审核出库）。
-      - 在 `surfaces/<surface>/user-flows/`: 记录**单端内跨模块**的业务旅程。
-      - 在 `<module>/user-flows/`: 记录**单模块内的多步业务向导**（如 3 步下单流程）。
+### 3. `surfaces/` — 应用端、功能特性与扁平架构
+- **内容构成：** 管理所有用户交互规范，细分为不同的端（`admin`, `portal`, `mobile`）、业务功能模块（`CMP-*`）以及扁平单层页面/功能（`<feature-slug>/`）。
+- **精简 `common/` 架构（扁平单层 .md）：**
+  - 在 `surfaces/common/`: 存放**全系统共享**规范，以扁平 `.md` 文件管理（无 `patterns/`, `yaml/`, `code/`, `data-model/` 子目录）。包含：UI Patterns, `model-data.md`, `model-derived-data.md`, `api-health.md`, `ui-empty-state.md`。
+  - 在 `surfaces/<surface>/common/` 或 `<module>/common/`: （可选）存放该端或模块专属规范。**为空时在 VitePress 侧边栏自动隐藏**。
+- **`user-flows/` 架构与归属规则（Step 1 归属法则）：**
+  - **`surfaces/` 根层及 `<surface>/` 根层不再放置 `user-flows/`**：
+    - **系统全域 / 跨端流**：集中存放于 [`architecture/03-user-flows/FLOW-*.md`](../../architecture/03-user-flows/)，以技术时序图 (*sequenceDiagram*) 呈现。
+    - **模块业务流**：存放于 `surfaces/<surface>/<module>/user-flows/FLOW-*.md`。
+    - **Step 1 归属法则**：流程第 1 步所在的模块拥有该流程及其 scenarios 的归属权。
+    - 模块 `user-flows/` 目录**在为空时自动在 VitePress 侧边栏隐藏**。
+- **模块页面结构（扁平单层 1-Tier Flat）：**
+  - 模块内所有屏幕/功能直接平铺在第 1 层：`surfaces/<surface>/<module>/<feature-slug>/`（不采用 `01/01/02` 等多级数字）。
+  - 子屏幕/弹窗（创建、编辑、详情、抽屉）在 spec §1 Overview 中明确说明访问流转路径（例：“从列表页 ➔ 点击 [新增] 按钮”）。
 - **主要协作角色：** BA、前端工程师、后端工程师、QA。
 
 ### 4. `.flowgrid/registries/` — 共享能力与组件注册表 (Workspace SSOT)

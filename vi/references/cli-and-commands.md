@@ -315,8 +315,8 @@ GitHub: README → `CATALOG.md` (platform / product / QA) → click mở trang M
 
 | Việc | SSOT |
 |------|------|
-| Cross-flow | `surfaces/…/common/user-flows/FLOW-*.md` |
-| Quy tắc dùng chung | `/common` → `…/common/patterns/*.md` |
+| Cross-flow / User flow | `architecture/03-user-flows/FLOW-*.md` hoặc `surfaces/…/<module>/user-flows/FLOW-*.md` |
+| Quy tắc dùng chung | `/common` → `…/common/*.md` |
 | UI pattern (delete flow, badge, …) | FE **base** + rule `flowgrid-ux-common.mdc` — **không** `common/yaml` |
 
 **Legacy (không dùng hub mới):** `flowgrid gen-common`, `render --yaml-root surfaces/common/yaml` — chỉ repo cũ còn skeleton CMN. Template/registry mới → [phase-0-setup](../workflows/phase-0-setup.md#5-huan-luyen-template-tu-golden-sample-build-template-code).

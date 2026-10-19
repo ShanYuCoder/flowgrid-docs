@@ -77,7 +77,7 @@ FlowGrid は Phase 0 の段階から、コード重複を根絶するための�
 
 ```mermaid
 flowchart TD
-  INIT["1. /init でレガシーをスキャン<br/>CMN-UI-*, CMN-API-*, CMN-DTO-* を抽出<br/>DSL Registry に事前登録 (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/><LCA>/common/patterns/*.md で共通ルールを策定"]
+  INIT["1. /init でレガシーをスキャン<br/>CMN-UI-*, CMN-API-*, CMN-DTO-* を抽出<br/>DSL Registry に事前登録 (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/><LCA>/common/*.md で共通ルールを策定"]
   COMMON --> IMPL["3. 単一正規実装と Registry 昇格<br/>shared/ (FE/BE) に 1 つの正規実装を作成<br/>.flowgrid/registries/ で status: planned を implemented に昇格"]
   IMPL --> SPEC["4. /spec で再利用を強制<br/>#pattern または #reuse-api タグを付与<br/>Agent と Codegen が旧コードのコピペを拒否"]
   SPEC --> SAFETRACE["5. /trace と /legacy で安全な考古学調査<br/>業務ルールを抽出し、source-legacy は厳格に読取専用"]
@@ -87,14 +87,14 @@ flowchart TD
 
 1. **スキル `/init`（スキャン、共通分類、配置検出 ＆ DSL Registry 事前登録）**：
    - Common Discovery モードでは、Agent はコントローラー、サービス、ルーター、ビューを精査して 2 箇所以上に現れる重複ロジックをスキャンし、**2 つの異なるカテゴリ**に分類します：
-     - **カテゴリ 1 — 既存の Common（base/shared に実装済み）：** 共有ライブラリ内に既に存在するコンポーネント/サービス（例: `ConfirmModal.vue`, `BaseServiceImpl.php`）。これらに対して**コード再生成は計画しません**。SSOT 仕様書（`<LCA>/common/patterns/<CMN-ID>.md`）のみを作成し、DSL Registry（`design.registry.json` または `be-capabilities.registry.json`）に `status: "implemented"` で登録します。
+     - **カテゴリ 1 — 既存の Common（base/shared に実装済み）：** 共有ライブラリ内に既に存在するコンポーネント/サービス（例: `ConfirmModal.vue`, `BaseServiceImpl.php`）。これらに対して**コード再生成は計画しません**。SSOT 仕様書（`<LCA>/common/<CMN-ID>.md`）のみを作成し、DSL Registry（`design.registry.json` または `be-capabilities.registry.json`）に `status: "implemented"` で登録します。
      - **カテゴリ 2 — 重複候補（複数箇所でコピー＆ペースト）：** 共通コンポーネントが存在せず 2 箇所以上で重複しているロジック/UI。これらは**アクションプラン（`common-plan.md`）の策定が必須**であり、完全な配置チェック（対象 Repo、対象コードパス、対象 Docs パス）を行って `shared/` 配下に 1 つの正規実装を生成し、**新規機能および今後の更新で利用**します。**重複が見つかった既存の旧コードの修正・リファクタリングは厳禁** — ここからの重複発生を防止し、稼働中コードのリグレッションを回避します。
    - **DSL Registry への事前登録 (`status: "planned"`)：** `/init` は重複候補をワークスペース SSOT レジストリ（`design.registry.json` / `be-capabilities.registry.json`）に `status: "planned"` および標準タグ（`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`）で直接事前登録します。これにより、`/spec` で新規画面を開発する際に即座に共通コンポーネントを参照可能となり、アドホックな臨時コンポーネント（`#needs-component`）の重複作成を防止します。
    - **Init 完了後の連続対話型 GUI オンボーディングチェーン (`AskQuestion`)：** `common-plan.md` の作成およびアーキテクチャスキャンの完了後、`/init` は GUI モーダル 1 を起動し、`build-env` を実行してコンテナ開発環境を構築するかどうかを確認します。`build-env` の完了後（またはスキップ後）、`/init` は続けて GUI モーダル 2 を起動し、`common-plan.md` の実行を開始するかどうかを確認します。「はい」を選択した場合、Agent は手動で `/common` を実行することなく、既存 Common の Markdown 仕様書を自動生成し、重複候補用に `shared/` 配下に共通コードを即時生成します。
    - **配置位置の特定（Target Placement Check）：** 大規模またはマルチリポジトリ構成の場合、Agent は `.flowgrid/config.json` の `projects` と照合し、各候補に対して 3 つの座標を割り当てます：
      1. *所属 Surface と対象 Repo:* 保存先リポジトリ（例: `admin-fe`, `booking-portal`, `core-api`）。
      2. *対象コードパス:* 生成予定の具体的なソースコードパス（例: `source-code/admin-fe/src/components/Common/ConfirmModal.vue`）。
-     3. *対象 Docs パス (LCA):* Docs Hub 内の Markdown 仕様書パス（`surfaces/admin/common/patterns/CMN-UI-001.md`）。
+     3. *対象 Docs パス (LCA):* Docs Hub 内の Markdown 仕様書パス（`surfaces/admin/common/CMN-UI-001.md`）。
    - **全画面重複警告（Whole Page Duplication Warnings）：** 2 つの画面ファイルが 90〜95% 同一である場合（例: `CreateUser.vue` と `EditUser.vue`）、Agent は `CMN-*` ではなく単一のポリモーフィックフォーム仕様（`mode: create | edit`）への統合を推奨します。
 
 2. **スキル `/common <CMN-ID>`（ユーザーストーリー仕様、共有コード生成 ＆ Registry 昇格）**：
@@ -106,7 +106,7 @@ flowchart TD
      - Agent が簡潔なアクションプランを提示。
      - メンバーが確認し、**Approve** または **Proceed** をクリック。
      - Agent は堂々巡りの確認を行わず、以下のステップを自律実行：
-       1. `<LCA>/common/patterns/<CMN-ID>.md` にユーザーストーリーと挙動仕様を生成。
+       1. `<LCA>/common/<CMN-ID>.md` にユーザーストーリーと挙動仕様を生成。
        2. `shared/` 配下にコード実装を生成（FE は `shared/components/`、BE は `shared/services/`）。
        3. ワークスペース SSOT レジストリ（`.flowgrid/registries/design.registry.json` または `.flowgrid/registries/be-capabilities.registry.json`）を更新し、ステータスを `"implemented"` に昇格。リポジトリ内部に `registries/` ディレクトリを作成することは厳禁。
 

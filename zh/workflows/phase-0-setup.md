@@ -77,7 +77,7 @@ FlowGrid 在 Phase 0 即建立了闭环技能体系，从源头消灭代码重�
 
 ```mermaid
 flowchart TD
-  INIT["1. /init 扫描遗留代码<br/>提取 CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>在 DSL Registry 中预先注册 (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/>在 <LCA>/common/patterns/*.md 中制定规范规则"]
+  INIT["1. /init 扫描遗留代码<br/>提取 CMN-UI-*, CMN-API-*, CMN-DTO-*<br/>在 DSL Registry 中预先注册 (status: planned / implemented)"] --> COMMON["2. /common <CMN-ID><br/>在 <LCA>/common/*.md 中制定规范规则"]
   COMMON --> IMPL["3. 单一规范实现与 Registry 状态升级<br/>在 shared/ (FE/BE) 中编写 1 套规范实现<br/>在 .flowgrid/registries/ 中将 status: planned 升级为 implemented"]
   IMPL --> SPEC["4. /spec 强制复用<br/>关联 #pattern 或 #reuse-api 标签<br/>Agent 与 Codegen 拒绝复制旧代码"]
   SPEC --> SAFETRACE["5. /trace 与 /legacy 安全考古<br/>提取业务规则，保持 source-legacy 严格只读"]
@@ -87,14 +87,14 @@ flowchart TD
 
 1. **技能 `/init`（扫描、通用分类、放置发现与 DSL Registry 预先注册）**：
    - 在 Common Discovery 模式下，Agent 深度扫描控制器、服务、路由与视图中出现在 2 处以上的重复逻辑，自动归为**两大类别**：
-     - **类别 1 — 既有 Common（已在 base/shared 中实现）：** 共享库中已存在的组件/服务（如 `ConfirmModal.vue`、`BaseServiceImpl.php`）。**绝不规划重新生成代码**；仅生成 Markdown User Stories（`<LCA>/common/patterns/<CMN-ID>.md`）以完善 SSOT 文档，并以 `status: "implemented"` 注册至 DSL Registry（`design.registry.json` 或 `be-capabilities.registry.json`）。
+     - **类别 1 — 既有 Common（已在 base/shared 中实现）：** 共享库中已存在的组件/服务（如 `ConfirmModal.vue`、`BaseServiceImpl.php`）。**绝不规划重新生成代码**；仅生成 Markdown User Stories（`<LCA>/common/<CMN-ID>.md`）以完善 SSOT 文档，并以 `status: "implemented"` 注册至 DSL Registry（`design.registry.json` 或 `be-capabilities.registry.json`）。
      - **类别 2 — 重复候选（在多处重复复制）：** 缺少共享组件而在 2 处以上重复的逻辑/UI。这类组件**必须制定行动计划（`common-plan.md`）**，具备完整放置检查（目标 Repo、目标代码路径、目标文档路径），在 `shared/` 中生成 1 套规范实现，供**新功能与后续更新使用**。**严格禁止修改或重构存在重复的既有旧代码** — 从此处开始防止重复，避免运行中代码出现回归故障。
    - **DSL Registry 预先注册 (`status: "planned"`)：** `/init` 将重复候选直接以 `status: "planned"` 及标准标签（`#pattern: <CMN-ID>`, `#reuse-api: <CMN-ID>`）预先注册至工作区 SSOT 注册表（`design.registry.json` / `be-capabilities.registry.json`）。这使得 `/spec` 在后续开发新功能时能够立即引用共享组件，避免重复创建临时组件（`#needs-component`）。
    - **Init 完成后的连续交互式 GUI 引导链路 (`AskQuestion`)：** 在生成 `common-plan.md` 和完成架构扫描后，`/init` 主动弹出 GUI 模态 1 询问是否运行 `build-env` 配置容器开发环境。在 `build-env` 完成（或跳过）后，`/init` 继续弹出 GUI 模态 2 询问是否开始执行 `common-plan.md`。若选择“是”，Agent 会自动为既有 Common 生成 Markdown Specs，并在 `shared/` 中为重复候选生成共用代码，无需用户手动逐一触发 `/common`。
    - **放置定位检查（Target Placement Check）：** 在大型或多仓库项目中，Agent 对照 `.flowgrid/config.json` 中的 `projects` 为每个候选指定 3 维坐标：
      1. *归属端与目标 Repo：* 目标代码仓（如 `admin-fe`、`booking-portal` 或 `core-api`）。
      2. *目标代码路径：* 具体源代码文件路径（如 `source-code/admin-fe/src/components/Common/ConfirmModal.vue`）。
-     3. *目标文档路径 (LCA)：* Docs Hub 中的 Markdown 规范路径（`surfaces/admin/common/patterns/CMN-UI-001.md`）。
+     3. *目标文档路径 (LCA)：* Docs Hub 中的 Markdown 规范路径（`surfaces/admin/common/CMN-UI-001.md`）。
    - **整页重复警告（Whole Page Duplication Warnings）：** 若两个界面文件相似度高达 90–95%（如 `CreateUser.vue` 和 `EditUser.vue`），Agent 推荐合并为单一多态表单规范（`mode: create | edit`），而非拆分为 `CMN-*`。
 
 2. **技能 `/common <CMN-ID>`（用户故事规范、共享代码生成与 Registry 升级）**：
@@ -106,7 +106,7 @@ flowchart TD
      - Agent 起草精简行动计划（目标规范与代码路径）。
      - 成员审查并点击 **Approve** 或 **Proceed**。
      - Agent 依序执行无死循环确认：
-       1. 在 `<LCA>/common/patterns/<CMN-ID>.md` 生成 User Stories 与行为规范。
+       1. 在 `<LCA>/common/<CMN-ID>.md` 生成 User Stories 与行为规范。
        2. 在 `shared/` 生成代码实现（FE 对应 `shared/components/`，BE 对应 `shared/services/`）。
        3. 更新工作区 SSOT 注册表（`.flowgrid/registries/design.registry.json` 或 `.flowgrid/registries/be-capabilities.registry.json`），将条目状态升级为 `"implemented"`。绝不在代码仓内创建 `registries/` 目录。
 

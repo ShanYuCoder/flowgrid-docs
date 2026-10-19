@@ -16,7 +16,7 @@ FlowGrid là công cụ mã nguồn mở công khai, được thiết kế cho c
 - FlowGrid cũng không mặc định rằng mọi người dùng đều đã cài đặt gateway hoặc đặt gateway ở một đường dẫn cố định.
 
 ### B. Tri thức tổng hợp sẵn về cấu trúc Gateway (Pre-Synthesized Knowledge)
-Thay vì quét động môi trường của máy host, FlowGrid tổng hợp sẵn **mô hình kiến trúc Gateway chuẩn doanh nghiệp** (đúc kết từ các mẫu thực chiến như `docker-external` và `docker-webbeds`):
+Thay vì quét động môi trường của máy host, FlowGrid tổng hợp sẵn **mô hình kiến trúc Gateway chuẩn doanh nghiệp** (đúc kết từ các mẫu thực chiến như `docker-external` và `docker-gateway`):
 - **Định tuyến HTTP/HTTPS & Chứng chỉ SSL Wildcard:** Reverse proxy Nginx (`gateway-nginx` cổng 80/443 với TLS wildcard `*.local.com`).
 - **Cơ sở dữ liệu quan hệ:** MySQL 8.4 (`mysql:3306`), MySQL 8.0 (`mysql-80:3306`), PostgreSQL 17 (`postgres:5432` / bí danh `saas-postgres`).
 - **Cache & Key-Value:** Redis 7 (`redis:6379`).
@@ -207,7 +207,7 @@ x-dev-ca-env: &dev-ca-env
   SSL_CERT_FILE: /opt/gateway-certs/dev-rootCA.crt
   COMPOSER_HOME: /tmp/composer
 ```
-- Tên Container PHẢI theo format: `${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>` (ví dụ: `dev_hktv_php_83`, `dev_hktv_node`, `dev_hktv_octane`, `dev_hktv_reverb`).
+- Tên Container PHẢI theo format: `${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>` (ví dụ: `dev_portal_php_83`, `dev_portal_node`, `dev_portal_octane`, `dev_portal_reverb`).
 
 ### B. Mạng dùng chung với Gateway
 Mọi dịch vụ kết nối vào mạng external của gateway được cấu hình linh hoạt qua biến môi trường:
@@ -317,7 +317,7 @@ Central Gateway (`routes.json`) CHỈ cần định tuyến cho **các cổng tr
 
 ### Định dạng chuẩn của `docker/router.txt` (Kèm Workspace Key)
 
-Đoạn snippet BẮT BUỘC phải bọc dưới key là slug của workspace (ví dụ `"hktv"`), giúp member chỉ cần copy-paste trực tiếp vào object gốc trong file `routes.json` của Gateway:
+Đoạn snippet BẮT BUỘC phải bọc dưới key là slug của workspace (ví dụ `"portal"`), giúp member chỉ cần copy-paste trực tiếp vào object gốc trong file `routes.json` của Gateway:
 
 ```json
 "${PROJECT_SLUG}": {

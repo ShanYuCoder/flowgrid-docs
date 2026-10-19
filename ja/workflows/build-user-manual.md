@@ -9,7 +9,7 @@
 ## 1. 前提条件
 
 マニュアル構築に着手する前に以下を確認してください：
-1. **仕様とフローの確定：** 業務フロー文書（例：`surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`）が存在すること。
+1. **仕様とフローの確定：** 業務フロー文書（例：`surfaces/admin/tenant/user-flows/FLOW-ADM-TENANT-SETUP.md`）が存在すること。
 2. **自動テストの実行 (Phase 4)：** Playwright/Cypress による自動テストが成功し、実際の画面キャプチャが `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png` に保存されていること。
 3. **Google Docs API の認証設定：** サービスアカウント経由で Google Workspace へのアクセス権が付与されていること。
    - Google Cloud Console からサービスアカウントの JSON 秘密鍵をダウンロード。

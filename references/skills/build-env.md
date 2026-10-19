@@ -16,7 +16,7 @@ FlowGrid is an open-source, public tool designed for developers worldwide across
 - FlowGrid does NOT assume the developer has a gateway installed or that it is located at any specific file path.
 
 ### B. Pre-Synthesized Gateway Topology
-Instead of dynamic host inspection, FlowGrid embeds **pre-compiled, synthesized enterprise knowledge** of the standard Central Gateway architecture (derived from enterprise golden patterns like `docker-external` and `docker-webbeds`):
+Instead of dynamic host inspection, FlowGrid embeds **pre-compiled, synthesized enterprise knowledge** of the standard Central Gateway architecture (derived from enterprise golden patterns like `docker-external` and `docker-gateway`):
 - **HTTP/HTTPS & Wildcard TLS Routing:** Nginx reverse proxy (`gateway-nginx` on port 80/443 with wildcard TLS `*.local.com`).
 - **Relational Databases:** MySQL 8.4 (`mysql:3306`), MySQL 8.0 (`mysql-80:3306`), PostgreSQL 17 (`postgres:5432` / alias `saas-postgres`).
 - **Cache & Key-Value:** Redis 7 (`redis:6379`).
@@ -207,7 +207,7 @@ x-dev-ca-env: &dev-ca-env
   SSL_CERT_FILE: /opt/gateway-certs/dev-rootCA.crt
   COMPOSER_HOME: /tmp/composer
 ```
-- Containers MUST follow the naming pattern: `${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>` (e.g., `dev_hktv_php_83`, `dev_hktv_node`, `dev_hktv_octane`, `dev_hktv_reverb`).
+- Containers MUST follow the naming pattern: `${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>` (e.g., `dev_portal_php_83`, `dev_portal_node`, `dev_portal_octane`, `dev_portal_reverb`).
 
 ### B. Shared Gateway Network
 All services MUST connect to the gateway's external shared network configured via variable:
@@ -319,7 +319,7 @@ The Central Gateway (`routes.json`) ONLY needs routing for **public entry points
 
 ### Canonical `docker/router.txt` Format (Scoped by Workspace Key)
 
-The snippet MUST be keyed by the workspace slug (e.g., `"hktv"`), allowing direct copy-paste into the root object of the Central Gateway's `routes.json`:
+The snippet MUST be keyed by the workspace slug (e.g., `"portal"`), allowing direct copy-paste into the root object of the Central Gateway's `routes.json`:
 
 ```json
 "${PROJECT_SLUG}": {

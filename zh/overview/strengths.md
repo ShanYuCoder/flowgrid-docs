@@ -57,9 +57,8 @@ graph TD
 
 FlowGrid 将业务流提升为**第一等核心 SSOT 架构资产**，并严格划分为 3 个层级：
 
-* **Tier A — 跨端全局流（`architecture/03-user-flows/FLOW-*.md`）：** 跨越 $\ge 2$ 个不同端或角色的全局旅程（例如：客户端用户下单 ➔ 管理后台审批 ➔ 支付网关 Webhook ➔ 仓库后台出库 Worker）。
-* **Tier B — 端内共享流（`surfaces/<surface>/user-flows/FLOW-*.md`）：** 单端内跨模块复用的公共流程（级联依赖安全删除、大数据异步 Excel 导出、会话超时提醒）。
-* **Tier C — 模块局部流（`surfaces/.../CMP-*/user-flows/`）：** 局限在单一组件集群内的多步向导。
+* **跨端全局流（`architecture/03-user-flows/FLOW-*.md`）：** 跨越 $\ge 2$ 个不同端或角色的全局旅程（例如：客户端用户下单 ➔ 管理后台审批 ➔ 支付网关 Webhook ➔ 仓库后台出库 Worker）。
+* **模块用户业务流（`surfaces/<surface>/<module>/user-flows/FLOW-*.md`）：** 由步骤 1 发生所在模块拥有的 UI 旅程（Step 1 归属原则：Step 1 决定模块所有权，无论是单屏还是跨屏交互）。
 
 ### 6 大核心板块深度规范
 每一个 FlowGrid User Flow 文件必须满足企业级 6 大规范板块：

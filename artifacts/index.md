@@ -12,10 +12,14 @@ The VitePress web interface directly reads these directories and Markdown files 
 my-workspace/
 ├── overview/               # Product vision, business objectives, and release milestones
 ├── architecture/           # System architecture documentation (Arc42 standard & ERD models)
-├── surfaces/               # Application surfaces, screen modules, common patterns & user flows
-│   ├── common/             # [Dynamic] Reusable UX rules, patterns, and shared DTOs
-│   ├── user-flows/         # [Dynamic] Multi-screen and cross-surface user journey flows
+├── surfaces/               # Application surfaces, screen modules & common
+│   ├── common/             # UI Patterns, model-data, rules across system (1-tier flat .md)
 │   └── <surface-name>/     # Specific business surface (admin, portal, mobile, etc.)
+│       ├── common/         # (Optional) Surface-scoped common (auto-hidden if empty)
+│       └── <module-name>/  # Feature module (CMP-*)
+│           ├── common/     # (Optional, auto-hidden if empty)
+│           ├── user-flows/ # User flows with Step 1 starting in this module (auto-hidden if empty)
+│           └── <feature>/  # Screen/feature (1-tier flat, holds bundle.yaml & spec.md)
 ├── .flowgrid/registries/   # Design Tokens, UI Components, and Backend Capabilities registries
 ├── qa/                     # Collaboration inbox for clarifying business open questions & risks
 ├── source-code/            # Active production codebases (Git Submodules)
@@ -39,9 +43,9 @@ my-workspace/
   - **`01-introduction/` (Introduction, Goals & Hotspots):** System context overview, core business goals, technical boundaries, and high-risk hotspot analysis (*Technical Hotspots* / high-load bottlenecks, highly complex business modules).
   - **`02-constraints/` (Architecture Constraints):** Invariant technical constraints: mandatory technology stacks, hardware limits, network topology, budget limits, legal compliance standards (GDPR, ISO, PCI-DSS), and organizational governance conventions.
   - **`03-user-flows/` (System Context & Macro Business Workflows):**
-    > **Clear Distinction from `surfaces/user-flows/`:**
+    > **Clear Distinction from `surfaces/<surface>/<module>/user-flows/`:**
     > - **`architecture/03-user-flows/`** represents **Macro System Flows / System Context**. Describes data operational lifecycles between services, bounded contexts, subsystems, or third-party integrations (e.g., banking reconciliation cycles, order sync to ERP, async event-driven processing via Message Queues). Focuses on protocols, data logic, and inter-system interactions — **completely independent of any user interface or screens**.
-    > - Conversely, **`surfaces/user-flows/`** represents **Interactive UI User Journeys**. Tightly coupled with screens and frontend interactions (button clicks, form validations, navigation transitions, modals, notifications) traversing across application surfaces (`portal`, `admin`, `mobile`).
+    > - Conversely, **`surfaces/<surface>/<module>/user-flows/`** represents **Interactive UI User Journeys**. Tightly coupled with screens and frontend interactions (button clicks, form validations, navigation transitions, modals, notifications) traversing across application surfaces (`portal`, `admin`, `mobile`).
   - **`04-solution-strategy/` (Solution Strategy):** Strategic decisions shaping the macro architecture: architectural pattern selection (Clean Architecture, DDD, Event-Driven, Microservices vs Monolith), data partitioning strategy (SQL vs NoSQL), multi-layer caching, and data flow diagrams (*Data Flow Mermaid*).
   - **`05-building-blocks/` (Building Block View / C4 Containers & Components):** Static structural decomposition of the system (C4 Model): services, modules, internal libraries, individual block responsibilities, and static dependency relationships.
   - **`06-runtime/` (Runtime View):** Dynamic runtime behaviors and component interactions during critical scenarios: sequence diagrams (*Sequence Diagram*), system bootstrap workflows, sync/async communication models, and concurrency lock handling.
@@ -62,22 +66,20 @@ my-workspace/
 - **Responsibilities:** Comprehensive technical roadmap guiding system standards, guaranteeing developers and AI Agents build homogenous code without conflicting conventions.
 - **Primary Stakeholders:** Solution Architect, Technical Lead.
 
-### 3. `surfaces/` — Application Surfaces, Features & Dynamic Scopes
-- **Contents:** Manages all user interface specifications and interactive workflows, partitioned into specific surfaces (`admin`, `portal`, `mobile`, etc.), feature modules (`CMP-*`), and leaf screens (`W-*` leaf).
-- **Multi-Tier Dynamic Scope for `common/` and `user-flows/`:**
-  These two folders are **not fixed to a single root**, but are dynamic containers that **can exist at any hierarchical level** (from top-level `surfaces/` down to individual `surface`, `module`, or feature cluster) whenever shared reuse or linked flows arise:
-  - **`common/` (Scoped Shared Resources):**
-    - Provides reusable components matching the scope where it resides:
-      - At `surfaces/common/`: Shared across the **entire system** (Global patterns, shared form validation standards, global confirmation dialogs).
-      - At `surfaces/<surface>/common/`: Shared **within that specific surface** (e.g., admin-only layouts and filters).
-      - At `<module>/common/`: Shared **within that feature cluster** (e.g., orders-only specialized filters and status badges).
-    - Stores UI Patterns, validation rules, DTOs, and layouts — completely eliminating arbitrary copy-pasting.
-  - **`user-flows/` (Scoped User Journeys):**
-    - Contains user journey specifications (`FLOW-*.md`) connecting multi-step interactions:
-      - At `surfaces/user-flows/`: Documents **cross-surface end-to-end flows** (e.g., Customer purchases on `portal` ➔ Admin receives notification and approves on `admin`).
-      - At `surfaces/<surface>/user-flows/`: Documents journeys spanning **multiple modules within the same surface**.
-      - At `<module>/user-flows/`: Documents multi-step workflows **confined within a single module** (e.g., 3-step order creation: Info ➔ Payment ➔ Confirmation).
-    - Empowers BAs, Devs, and QAs to see the holistic End-to-End picture rather than isolated single screens.
+### 3. `surfaces/` — Application Surfaces, Features & Flat Structure
+- **Contents:** Manages all user interface specifications and interactive workflows, partitioned into specific surfaces (`admin`, `portal`, `mobile`, etc.), feature modules (`CMP-*`), and flat 1-tier screens/features (`<feature-slug>/`).
+- **Streamlined `common/` Structure (Flat 1-Tier .md):**
+  - At `surfaces/common/`: Holds shared rules for the **entire system** as flat `.md` files (no subdirectories `patterns/`, `yaml/`, `code/`, `data-model/`). Includes: UI Patterns, `model-data.md`, `model-derived-data.md`, `api-health.md`, `ui-empty-state.md`.
+  - At `surfaces/<surface>/common/` or `<module>/common/`: (Optional) Holds shared rules for that surface or module. **Automatically hidden from VitePress sidebar if empty**.
+- **`user-flows/` Structure and Ownership Rule (Step 1 Ownership):**
+  - **No `user-flows/` at root `surfaces/` or `<surface>/`**:
+    - **System / Cross-Surface Flows**: Centrally stored under [`architecture/03-user-flows/FLOW-*.md`](../../architecture/03-user-flows/) as technical `sequenceDiagram`s.
+    - **Module User Flows**: Stored under `surfaces/<surface>/<module>/user-flows/FLOW-*.md`.
+    - **Step 1 Ownership Rule**: The module where Step 1 (the initial trigger screen) takes place owns the entire flow and its scenarios.
+    - Module `user-flows/` directories **automatically hide from the VitePress sidebar if empty**.
+- **Module Screen Hierarchy (1-Tier Flat):**
+  - All screens/features within a module reside directly at tier 1: `surfaces/<surface>/<module>/<feature-slug>/` (no multi-tier numbering like `01/01/02`).
+  - Child/secondary screens (Create, Edit, Detail, Drawer) declare access flow in §1 Overview ("Vào từ màn hình danh sách ➔ Bấm nút [Tạo mới]").
 - **Primary Stakeholders:** BA, Frontend Dev, Backend Dev, QA.
 
 ### 4. `.flowgrid/registries/` — Shared Component & Capability Registries (Workspace SSOT)

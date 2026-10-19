@@ -126,9 +126,9 @@ The Agent MUST categorize all commons into the following 4 categories:
 
 | Category | Description | Processing Rule | Docs Hub & DSL Registry Placement |
 | :--- | :--- | :--- | :--- |
-| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract as official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
-| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document project implementation and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/patterns/<id>.md`<br>+ DSL Registry (`status: implemented`) |
-| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted across 2+ locations without an abstraction (e.g. ad-hoc delete modals or duplicate pagination code). | **Common Action Plan (For New Features & Updates)**: Flag in `common-plan.md` to generate a canonical shared implementation in `shared/` for **NEW features and future updates**. **STRICTLY NEVER modify old code**. **Pre-register into DSL Registry with `status: "planned"`**. | `<LCA>/common/patterns/<id>.md` upon approval<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
+| **Category 1: Native Project Commons** | Components/services already built in the project and reused across screens/routes (e.g., custom Breadcrumb, custom Delete Flow, custom BaseService). | **Strict Code-First**: Retain existing code as SSOT. Do NOT regenerate or overwrite code. Document native contract as official spec and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 2: Tool Pattern Overlap** | A native component serves the same purpose as a FlowGrid standard common pattern (e.g. Breadcrumb, Confirm Dialog, Pagination). | **Smart Selective Choice**: **Always prioritize native project code over tool pattern**. Never overwrite project files. Document project implementation and register into DSL Registry with `status: "implemented"`. | `<LCA>/common/<id>.md`<br>+ DSL Registry (`status: implemented`) |
+| **Category 3: Duplicate Candidates** | Logic/UI copy-pasted across 2+ locations without an abstraction (e.g. ad-hoc delete modals or duplicate pagination code). | **Common Action Plan (For New Features & Updates)**: Flag in `common-plan.md` to generate a canonical shared implementation in `shared/` for **NEW features and future updates**. **STRICTLY NEVER modify old code**. **Pre-register into DSL Registry with `status: "planned"`**. | `<LCA>/common/<id>.md` upon approval<br>+ DSL Registry (`status: planned` ➔ `implemented`) |
 | **Category 4: Common Gaps** | Standard enterprise capabilities absent in the project (e.g. no standard confirmation dialog, unhandled error format). | **Adopt Tool Standard**: The pre-synced tool pattern in `surfaces/common/` is retained and cataloged as the official recommendation for the team to adopt. | Cataloged in `surfaces/common/` & inventory §5.4 |
 
 ### Selective Reconciliation Heuristic
@@ -143,7 +143,7 @@ During the deep scan, `/init` MUST generate a dedicated, actionable `common-plan
 
 > [!CRITICAL] CORE PHILOSOPHY: PREVENT FUTURE DUPLICATION — ZERO RETROACTIVE REFACTORING
 > - **Code-First & Safety First**: `"Ngăn chặn duplicate từ đây chứ không sửa duplicate code cũ."` (Prevent duplication from this point forward; strictly zero-touch on existing running code).
-> - **Existing Commons (Code có sẵn)**: Check existing components in base/shared (`shared/` or `components/Common/`). Action: Output plan to write `.md` spec ONLY (`<LCA>/common/patterns/<id>.md`) and register into DSL Registry with `status: "implemented"`. **STRICTLY DO NOT regenerate or overwrite code.**
+> - **Existing Commons (Code có sẵn)**: Check existing components in base/shared (`shared/` or `components/Common/`). Action: Output plan to write `.md` spec ONLY (`<LCA>/common/<id>.md`) and register into DSL Registry with `status: "implemented"`. **STRICTLY DO NOT regenerate or overwrite code.**
 > - **Duplicate Candidates (Code trùng lặp nhiều nơi)**: Check duplicated logic across 2+ locations lacking a shared component. Action: Plan the creation of 1 canonical implementation in `shared/` (`shared/components/` or `shared/services/`) + `.md` pattern spec. Pre-register into DSL Registry with `status: "planned"`.
 > - **Purpose of Shared Code**: To stand ready for **NEW features** and **future UPDATES** to import and consume.
 > - **IMMUTABLE SAFETY INVARIANT**: **STRICTLY NEVER modify, touch, or refactor existing code where duplicates were found!** Existing running code must remain 100% untouched to avoid regression risks on live features.
@@ -171,16 +171,16 @@ The Agent MUST generate `common-plan.md` using the following exact structure:
 - **Rule 4 (DSL Registry Integration)**: Both existing commons (`status: implemented`) and duplicate candidates (`status: planned`) are registered into DSL Registry (`design.registry.json` / `be-capabilities.registry.json`) for immediate DSL reuse by `/spec`.
 
 ## 2. Duplicate Candidates Action Plan Table
-| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`patterns/<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
+| ID | Tên thành phần & Mô tả | Code cũ bị trùng lặp (Evidence) | Surface / Owning Repo | Target Code Path (`shared/`) | Target Docs Path (`<id>.md`) | DSL Registry Target & Status | Public Contract (Props / State Matrix) | Action / Safety Boundary | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/patterns/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: Gen code at Target Code Path upon approval. STRICTLY DO NOT edit OrdersPage or AuditLogsPage. | `PENDING_APPROVAL` |
-| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/patterns/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: Gen code at Target Code Path upon approval. STRICTLY DO NOT edit legacy controllers. | `PENDING_APPROVAL` |
+| `CMN-UI-003` | Advanced Date Range Filter | • `OrdersPage.tsx:45-80`<br>• `AuditLogsPage.tsx:32-67` | `admin` (`admin-fe`) | `admin-fe/src/components/Common/DateRangeFilter.tsx` | `surfaces/admin/common/CMN-UI-003.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented`) | Props: `value`, `presets`, `onChange`<br>States: Loading, Empty, Active | **Provision Only**: Gen code at Target Code Path upon approval. STRICTLY DO NOT edit OrdersPage or AuditLogsPage. | `PENDING_APPROVAL` |
+| `CMN-API-002` | Transmission Logger | • `PreBookingController.php:12-40`<br>• `OTAController.php:88-115` | `core-api` (`core-api`) | `core-api/app/Services/Common/TransmissionLogger.php` | `surfaces/common/CMN-API-002.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-002`, `status: planned` ➔ `implemented`) | Interface: `logTransmission(payload, status)` | **Provision Only**: Gen code at Target Code Path upon approval. STRICTLY DO NOT edit legacy controllers. | `PENDING_APPROVAL` |
 
 ## 3. Existing Commons Documentation Plan Table
-| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`patterns/<id>.md`) | Target DSL Registry & Status | Action | Status |
+| ID | Tên thành phần & Mô tả | File code hiện hữu (Existing Path) | Surface / Owning Repo | Target Docs Path (`<id>.md`) | Target DSL Registry & Status | Action | Status |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/patterns/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: Generate Markdown User Stories & register. DO NOT touch code. | `READY_FOR_SPEC` |
-| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/patterns/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: Generate Markdown User Stories & register. DO NOT touch code. | `READY_FOR_SPEC` |
+| `CMN-UI-001` | Breadcrumb Navigation | `admin-fe/src/components/Breadcrumb.vue` | `admin` (`admin-fe`) | `surfaces/admin/common/CMN-UI-001.md` | `design.registry.json`<br>(Tag: `#pattern: CMN-UI-001`, `#ui: Breadcrumb`, `status: implemented`) | **Spec Only**: Generate Markdown User Stories & register. DO NOT touch code. | `READY_FOR_SPEC` |
+| `CMN-API-001` | BaseServiceImpl | `core-api/app/Services/Impl/BaseServiceImpl.php` | `core-api` (`core-api`) | `surfaces/common/CMN-API-001.md` | `be-capabilities.registry.json`<br>(Tag: `#reuse-api: CMN-API-001`, `status: implemented`) | **Spec Only**: Generate Markdown User Stories & register. DO NOT touch code. | `READY_FOR_SPEC` |
 
 ## 4. Execution Workflow
 1. **Pre-Registration**: `/init` registers Existing Commons (`status: "implemented"`) and Duplicate Candidates (`status: "planned"`) into DSL Registry.
@@ -235,7 +235,7 @@ If `common-plan.md` contains ANY common items (Existing Commons with `READY_FOR_
 1. **Path A — When User Chooses Option 1 ("Yes, execute Common Plan now"):**
    - The Agent transitions into the `/common` execution flow for all items cataloged in `common-plan.md` without requiring repeated manual prompts:
      - **For Existing Commons (`status: "implemented"`):**
-       - Auto-generate the Markdown User Stories spec file at `<LCA>/common/patterns/<CMN-ID>.md` (with 4-layer standard: contract, 4 canonical states, IoC, golden test seam).
+       - Auto-generate the Markdown User Stories spec file at `<LCA>/common/<CMN-ID>.md` (with 4-layer standard: contract, 4 canonical states, IoC, golden test seam).
        - Ensure entry in DSL Registry (`design.registry.json` or `be-capabilities.registry.json`) is confirmed with `status: "implemented"`.
        - **STRICT SAFETY INVARIANT:** Strictly NEVER modify, rewrite, or touch existing working code.
        - Update item status in `common-plan.md` to `COMPLETED`.
@@ -303,8 +303,7 @@ The Agent MUST systematically trace user flows across routers, state stores, for
 | Tier | Label | Subsection in Inventory | Target Docs Hub Path |
 | :--- | :--- | :--- | :--- |
 | **A** | Cross-surface / Org Catalog | `### A — Cross-surface (org catalog)` | `architecture/03-user-flows/FLOW-*.md` |
-| **B** | Surface-shared | `### B — Shared on one surface` | `surfaces/<surface>/user-flows/FLOW-*.md` |
-| **C** | Module / Cluster scope | `### C — Module or cluster scope` | `surfaces/.../CMP-*/user-flows/` |
+| **B** | Module User Flows (Step 1 Ownership) | `### B — Module User Flows (Step 1 Ownership)` | `surfaces/<surface>/<module>/user-flows/FLOW-*.md` |
 
 Each flow entry MUST include:
 - **ID & Title:** `FLOW-{SURF}-{DOMAIN}-{NN}` (Standardized ID + Descriptive Title)
@@ -353,25 +352,23 @@ The Agent MUST generate `inition-inventory.md` directly at the workspace root us
 ### A — Cross-surface (org catalog) → `architecture/03-user-flows/`
 - **FLOW-CUS-CHECKOUT-01**: Multi-channel Order & Checkout Flow — Surfaces: `customer-web`, `admin-portal` — CMPs: `CMP-CUS-CART-01`, `CMP-ADM-ORD-01` — Tier: **A**
 
-### B — Shared on one surface → `surfaces/<surface>/user-flows/`
-- **FLOW-ADM-DELETE-01**: Entity Safe Delete & Cascade Confirmation Flow — Surface: `admin-portal` — CMPs: `CMP-ADM-ORD-01` — Tier: **B**
-
-### C — Module / cluster scope → `…/CMP-*/user-flows/`
-- **FLOW-ADM-AUTH-RESET-01**: Password Reset with OTP Flow — Surface: `admin-portal` — CMP: `CMP-ADM-AUTH-01` — Tier: **C**
+### B — Module User Flows (Step 1 Ownership) → `surfaces/<surface>/<module>/user-flows/`
+- **FLOW-ADM-DELETE-01**: Entity Safe Delete & Cascade Confirmation Flow — Module: `admin/orders` — Tier: **B**
+- **FLOW-ADM-AUTH-RESET-01**: Password Reset with OTP Flow — Module: `admin/auth` — Tier: **B**
 
 ## 5. Common Catalog & Reconciliation
 ### 5.1 Native Project Commons (Code-First Priority — Spec Only & DSL Registry Implemented)
 > Components and services already built in the project. These are cataloged as official SSOT patterns without modifying codebase, and registered into DSL Registry with `status: "implemented"`.
-- **CMN-UI-001 (Breadcrumb)**: Native breadcrumb navigation component → Code: `admin-fe/src/components/Breadcrumb.vue` → Docs: `surfaces/admin/common/patterns/CMN-UI-001.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-001`, `status: implemented`)
-- **CMN-UI-002 (Delete Confirmation Flow)**: Reusable delete modal with confirmation input → Code: `admin-fe/src/components/Common/DeleteConfirmModal.vue` → Docs: `surfaces/admin/common/patterns/CMN-UI-002.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-002`, `status: implemented`)
-- **CMN-API-001 (Pagination Wrapper)**: Standard paginated response envelope → Code: `backend-api/src/common/dto/pagination.dto.ts` → Docs: `surfaces/common/patterns/CMN-API-001.md` → DSL Registry: `be-capabilities.registry.json` (`#reuse-api: CMN-API-001`, `status: implemented`)
+- **CMN-UI-001 (Breadcrumb)**: Native breadcrumb navigation component → Code: `admin-fe/src/components/Breadcrumb.vue` → Docs: `surfaces/admin/common/CMN-UI-001.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-001`, `status: implemented`)
+- **CMN-UI-002 (Delete Confirmation Flow)**: Reusable delete modal with confirmation input → Code: `admin-fe/src/components/Common/DeleteConfirmModal.vue` → Docs: `surfaces/admin/common/CMN-UI-002.md` → DSL Registry: `design.registry.json` (`#pattern: CMN-UI-002`, `status: implemented`)
+- **CMN-API-001 (Pagination Wrapper)**: Standard paginated response envelope → Code: `backend-api/src/common/dto/pagination.dto.ts` → Docs: `surfaces/common/CMN-API-001.md` → DSL Registry: `be-capabilities.registry.json` (`#reuse-api: CMN-API-001`, `status: implemented`)
 
 ### 5.2 Duplicate Candidates (Provisioning in `shared/` for New Features & Updates — see `common-plan.md`)
 > Duplicate logic found across 2+ locations. Requires an action plan (`common-plan.md`) to create a single shared implementation in `shared/` for **NEW features and future updates to use**. **STRICTLY NEVER modify or refactor existing code where duplicates were found**. Pre-registered in DSL Registry with `status: "planned"` for immediate `/spec` recognition.
 - **CMN-UI-003 (Advanced Date Range Filter Toolbar)**:
   - *Evidence*: `OrdersPage.tsx`, `AuditLogsPage.tsx`
   - *Target Code Path*: `admin-fe/src/components/Common/DateRangeFilter.tsx`
-  - *Target Docs Path*: `surfaces/admin/common/patterns/CMN-UI-003.md`
+  - *Target Docs Path*: `surfaces/admin/common/CMN-UI-003.md`
   - *DSL Registry Target*: `design.registry.json` (`#pattern: CMN-UI-003`, `#ui: DateRangeFilter`, `status: planned` ➔ `implemented` upon approval)
   - *Safety Boundary*: Provisioning only. Existing evidence files remain untouched.
 

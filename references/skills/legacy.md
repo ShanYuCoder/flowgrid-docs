@@ -20,10 +20,12 @@
 - **`source-legacy/` is STRICTLY READ-ONLY:** Never modify, add, or delete files within this folder.
 - **Strictly prohibit raw copy-pasting:** Never transfer legacy code directly into new repos. Re-architect logic cleanly according to project golden samples.
 - **All outputs write to `source-code/`:** New code and SSOT specs live exclusively in modern directories.
+- **External API Taxonomy (Zero Internal-External Confusion):** When discovering outbound calls to 3rd-party services (Payment, SMS, Email, OAuth, Couriers, ERP), documentation and user flows MUST explicitly state `Call External API: <Provider>`. Strictly forbidden to vaguely write "calls api" or confuse with internal `API-*`.
 
 ## Description
 - In modernization projects, the greatest challenge is preserving intricate legacy business rules while eliminating accumulated technical debt.
 - `/legacy` acts as a business logic distillation filter: reads domain behavior from legacy files, removes legacy workarounds, and outputs clean modern code.
+
 
 ---
 

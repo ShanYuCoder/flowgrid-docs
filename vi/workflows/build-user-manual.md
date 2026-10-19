@@ -9,7 +9,7 @@ Tài liệu này hướng dẫn chi tiết quy trình từ lúc sinh tài liệu
 ## 1. Điều kiện tiên quyết (Prerequisites)
 
 Trước khi tiến hành build User Manual, bạn cần đảm bảo:
-1. **Spec & Flow đã được chốt:** Đã có file User Flow (VD: `surfaces/admin/user-flows/FLOW-ADM-TENANT-SETUP.md`).
+1. **Spec & Flow đã được chốt:** Đã có file User Flow (VD: `surfaces/admin/tenant/user-flows/FLOW-ADM-TENANT-SETUP.md`).
 2. **Automation Test (Phase 4):** Automation Test (Playwright/Cypress) đã được chạy thành công và lưu ảnh chụp màn hình thực tế (Evidence) tại thư mục `qa/e2e/evidence/FLOW-ADM-TENANT-SETUP-main.png`.
 3. **Cấu hình Google Docs API:** Hệ thống cần quyền truy cập vào Google Workspace của công ty bằng Service Account. 
    - Tải file JSON Key của Service Account từ Google Cloud Console.

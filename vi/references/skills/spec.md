@@ -14,14 +14,14 @@ Quy trình chuẩn bị Phase 0: [phase-0-setup.md](../../workflows/phase-0-setu
 
 ## Input (Dữ liệu đầu vào)
 - User Prompt (mô tả yêu cầu bằng text).
-- Draft ID (ví dụ: `1-1-1`, `2-1-2`) hoặc Slug, Module ID (ví dụ: `CMP-ADM-ORD-01`).
-- File requirement dạng Markdown (nếu có) được tạo sẵn trong thư mục ứng với ID (ví dụ: `01/01/02.md`).
+- Feature Slug hoặc Screen ID (ví dụ: `order-list`, `order-create`, `W-ADM-ORD-01`).
+- File requirement dạng Markdown (nếu có) được tạo sẵn trong thư mục module hoặc feature.
 - File template mẫu toolkit: [`templates/shared/feature.bundle.yaml`](../../../templates/shared/feature.bundle.yaml) + [`bundle-authoring.md`](../../../templates/shared/bundle-authoring.md) (sau `flowgrid init` → `.flowgrid/templates/`). **`design-spec.yaml` deprecated** — không author leaf mới.
 - PRD map: harness `spec-prd-lite.md` · fields `successMetrics`, `nonGoals` (tùy chọn khi có thông tin).
 
 ## Output (Kết quả mong đợi)
-- File `*.bundle.yaml` chứa thông tin chức năng tại thư mục `surfaces/<surface>/CMP-*/<numeric-path>/`. (Tuân thủ cấu trúc [feature.bundle.yaml](../../../templates/shared/feature.bundle.yaml).)
-- Thư mục được tự động sinh dựa trên số của Draft ID.
+- File `*.bundle.yaml` chứa thông tin chức năng tại thư mục phẳng 1 cấp: `surfaces/<surface>/<module>/<feature-slug>/`. (Tuân thủ cấu trúc [feature.bundle.yaml](../../../templates/shared/feature.bundle.yaml).)
+- Thư mục được đặt theo tên feature slug phẳng trực tiếp dưới module (không lồng nhiều cấp số `01/01/02`). Màn hình con/phụ mô tả luồng truy cập trong §1 Overview.
 - Quá trình chạy tool `flowgrid split` sẽ sinh ra các file trung gian trong `ir/` và `flowgrid render` sinh ra `ir/generated/spec.md`.
 
 ## Description / Ý nghĩa

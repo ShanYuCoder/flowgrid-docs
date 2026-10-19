@@ -16,7 +16,7 @@ FlowGrid は、**Linux、macOS、Windows/WSL** を使用する世界中の開発
 - FlowGrid は、すべての開発者が gateway をインストールしていることや、特定のディレクトリに配置していることを前提としません。
 
 ### B. 事前統合された Gateway トポロジ認知 (Pre-Synthesized Knowledge)
-ホスト環境を動的に調査する代わりに、FlowGrid は標準的な Central Gateway アーキテクチャの知識を**あらかじめ統合・内蔵**しています（`docker-external` や `docker-webbeds` などの実戦実績から抽出）：
+ホスト環境を動的に調査する代わりに、FlowGrid は標準的な Central Gateway アーキテクチャの知識を**あらかじめ統合・内蔵**しています（`docker-external` や `docker-gateway` などの実戦実績から抽出）：
 - **HTTP/HTTPS ルーティングとワイルドカード TLS：** Nginx リバースプロキシ（ポート 80/443、`*.local.com` ワイルドカード証明書）。
 - **リレーショナルデータベース：** MySQL 8.4 (`mysql:3306`), MySQL 8.0 (`mysql-80:3306`), PostgreSQL 17 (`postgres:5432` / エイリアス `saas-postgres`)。
 - **キャッシュとキーバリューストア：** Redis 7 (`redis:6379`)。
@@ -206,7 +206,7 @@ x-dev-ca-env: &dev-ca-env
   SSL_CERT_FILE: /opt/gateway-certs/dev-rootCA.crt
   COMPOSER_HOME: /tmp/composer
 ```
-- コンテナ名は命名パターンに準拠：`${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>`（例: `dev_hktv_php_83`, `dev_hktv_node`, `dev_hktv_octane`, `dev_hktv_reverb`）。
+- コンテナ名は命名パターンに準拠：`${PROJECT_NAME:-dev}_${PROJECT_SLUG}_<service>`（例: `dev_portal_php_83`, `dev_portal_node`, `dev_portal_octane`, `dev_portal_reverb`）。
 
 ### B. 共有 Gateway ネットワーク
 すべてのサービスは環境変数を通じて Gateway の外部ネットワークに接続：
@@ -316,7 +316,7 @@ Central Gateway (`routes.json`) には、**開発者のブラウザから直接�
 
 ### ワークスペース Key 付きの正規 `docker/router.txt` フォーマット
 
-出力されるスニペットはワークスペースの slug（例: `"hktv"`）をルートキーとし、Gateway の `routes.json` のルートオブジェクトに直接コピー＆ペーストできるように構成します：
+出力されるスニペットはワークスペースの slug（例: `"portal"`）をルートキーとし、Gateway の `routes.json` のルートオブジェクトに直接コピー＆ペーストできるように構成します：
 
 ```json
 "${PROJECT_SLUG}": {

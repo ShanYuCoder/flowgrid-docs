@@ -10,7 +10,7 @@
 ## Input (Dữ liệu đầu vào)
 1. **`.flowgrid/config.json`**: Danh sách surfaces, repositories (`projects`), vai trò FE/BE và công nghệ.
 2. **`inition-inventory.md`** (hoặc `adoption-inventory.md`): Danh mục ánh xạ surfaces, modules (`CMP-*`), screens (`W-*`), đường dẫn mã nguồn thực tế (`source-code/` hoặc `source-legacy/`), và danh mục Common (`CMN-*`).
-3. **Hiện trạng tài liệu trong Workspace**: Cấu trúc specs tại `surfaces/<surface>/CMP-*/`, danh sách user-flows tại `architecture/03-user-flows/` hoặc `**/common/user-flows/`, data models tại `architecture/model/data-models.md` hoặc `common/db-erd.md`.
+3. **Hiện trạng tài liệu trong Workspace**: Cấu trúc specs tại `surfaces/<surface>/<module>/<feature-slug>/`, danh sách user-flows tại `architecture/03-user-flows/` hoặc `**/common/user-flows/`, data models tại `architecture/model/data-models.md` hoặc `common/db-erd.md`.
 4. **Mã nguồn thực tế (Ground Truth)**: Toàn bộ controllers, views, models, services đang chạy trong `source-code/` (hoặc `source-legacy/`).
 5. **Mô tả yêu cầu từ người dùng**: Đề bài tính năng, nội dung CR, hoặc báo cáo bug từ khách hàng/PO.
 
@@ -20,8 +20,8 @@
    - Khai thác triệt để những gì đã được quét và lập chỉ mục trong `inition-inventory.md`.
    - Đề xuất trace **càng nhiều User Flow liên quan càng tốt (đẹp nhất là TRACE TẤT CẢ)** trên cả 3 tầng:
      - **Tier A — Cross-surface:** Các luồng xuyên suốt nhiều surfaces (`architecture/03-user-flows/FLOW-*.md`).
-     - **Tier B — Surface-shared:** Các luồng dùng chung trong cùng 1 surface (`surfaces/<surface>/user-flows/FLOW-*.md`).
-     - **Tier C — Module scope:** Các luồng nội bộ cụm module (`surfaces/.../CMP-*/user-flows/`).
+     - **Tier B — Surface-shared:** Các luồng dùng chung trong cùng 1 surface (`surfaces/<surface>/<module>/user-flows/FLOW-*.md`).
+     - **Tier C — Module scope:** Các luồng nội bộ cụm module (`surfaces/<surface>/<module>/user-flows/`).
    - Duyệt trọn vẹn chuỗi quan hệ 5 mắt xích:
      1. *Upstream Trigger:* Luồng đưa user/dữ liệu tới màn hình.
      2. *Primary Flow:* Luồng thao tác chính trên màn hình.

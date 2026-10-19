@@ -29,6 +29,7 @@
 ## Important Notes
 - **Autonomous Fact-Finding Guard:** Never ask the user where files are located or what endpoints exist; inspect the codebase autonomously.
 - **5-Link User Flow Chain:** Must trace Upstream, Primary, Downstream side-effects, Failure/Rollback, and System/Security boundaries.
+- **External API Taxonomy (Zero Internal-External Confusion):** Outbound calls to 3rd-party services (Payment, SMS, Email, OAuth, Couriers, external webhooks) MUST be explicitly labeled as `Call External API: <Provider>` with dedicated lifelines `[External API] <Provider>` in sequence diagrams. Strictly forbidden to ambiguously write "calls api" or use internal `API-*`.
 - **Ground Truth Priority:** Active code execution is ground truth; document discrepancies with requirements immediately.
 - **Strict Isolation:** Inspects `source-code/` only; never touches `source-legacy/`.
 
