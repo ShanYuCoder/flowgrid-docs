@@ -237,7 +237,7 @@ pnpm docs:dev
 # or: flowgrid dev
 ```
 
-This launches the VitePress dev server at `http://localhost:5173`:
+This launches the VitePress dev server at `http://localhost:3173` (auto-allocating to 3174, 3175... when running multiple workspaces in parallel):
 - Explore Arc42 architecture, surface topologies, data models, ERDs, and API contracts as an interactive portal.
 - Realtime Hot Reload on Markdown/YAML updates made on disk by the team or AI Agents.
 - The single visual source of truth bridging BAs, Developers, and QA engineers across the project lifecycle.

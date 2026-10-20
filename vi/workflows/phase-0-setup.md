@@ -237,7 +237,7 @@ pnpm docs:dev
 # hoặc: flowgrid dev
 ```
 
-Lệnh này khởi chạy VitePress dev server tại `http://localhost:5173` giúp bạn và toàn bộ team:
+Lệnh này khởi chạy VitePress dev server tại `http://localhost:3173` (tự động phân bổ sang 3174, 3175... khi chạy song song nhiều workspace):
 - Đọc chi tiết các tài liệu kiến trúc Arc42, cấu trúc surfaces, data model, ERD và API contract dưới dạng web động.
 - Tự động cập nhật tức thì (Hot Reload) mỗi khi Agent AI hoặc team chỉnh sửa các file Markdown/YAML trên disk.
 - Là nơi đối chiếu trực quan duy nhất giữa BA, Dev và QA trong suốt vòng đời dự án.

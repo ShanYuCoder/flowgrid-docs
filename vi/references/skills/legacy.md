@@ -19,6 +19,7 @@
 ## Quy tắc bắt buộc [CỰC KỲ QUAN TRỌNG]
 - **`source-legacy/` là STRICTLY READ-ONLY:** Tuyệt đối cấm sửa đổi, thêm mới hay xóa bất kỳ file nào trong thư mục này.
 - **Cấm copy-paste rác kỹ thuật:** Không bê nguyên xi code cũ sang hệ thống mới. Chỉ kế thừa logic nghiệp vụ và viết lại theo kiến trúc mới chuẩn mực.
+- **Bắt buộc điều tra sâu tầng Model / Entity khi mapping Database:** Không dừng ở controller legacy. Phải mở trực tiếp các file Model/Entity (`app/Models/*`) và migration DDL cũ: trích xuất chính xác tên bảng, kiểu dữ liệu cột, `$fillable`, `$casts`, quan hệ liên kết (`belongsTo`, `hasMany`) và các trường ảo tính toán (`$appends`). Khai báo đầy đủ `design.dataModel.tables[]` và khối `db:` cho từng control/cột dữ liệu trên màn hình.
 - **Ghi toàn bộ vào `source-code/`:** Mọi output codegen và specs đều được lưu trữ trực tiếp vào thư mục mã nguồn mới.
 
 ## Description / Ý nghĩa

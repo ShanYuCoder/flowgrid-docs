@@ -19,6 +19,7 @@
 ## Quy tắc bắt buộc
 - **Tự giác điều tra (Autonomous Fact-Finding Guard):** Tuyệt đối không hỏi người dùng vị trí file router, controllers, hay schema nằm ở đâu; tự động rà quét và phân tích mã nguồn.
 - **Duyệt trọn vẹn Chuỗi 5 mắt xích User Flow:** Phải trace luồng Upstream (điều kiện kích hoạt), Primary (thao tác màn hình), Downstream side-effects (job ngầm, email, kho), Failure & Rollback (hủy/lỗi), và Ranh giới Bảo mật (Auth, Tenant).
+- **Bắt buộc điều tra sâu tầng Model / Entity khi mapping Database:** Tuyệt đối không dừng lại ở Controller hay Service. Agent **BẮT BUỘC phải mở và đọc sâu xuống các file Model / Entity** (`app/Models/*`, `@Entity`, etc.) và migration DDL: trích xuất chính xác tên bảng vật lý, danh sách cột (`$fillable`), kiểu dữ liệu & ép kiểu (`$casts`), quan hệ liên kết (`belongsTo`, `hasMany`) và các thuộc tính ảo (`$appends`). Khai báo đầy đủ `design.dataModel.tables[]` và khối `db:` cho từng control/cột dữ liệu trên màn hình.
 - **Thực tế code là Chân lý tối thượng:** Đoạn code đang chạy là ground truth; ghi nhận ngay các điểm mâu thuẫn giữa mô tả yêu cầu/ticket và thực tế code vào bảng đối chiếu.
 - **Chỉ đọc và ghi trên `source-code/`**: Không tìm kiếm hay đụng chạm vào thư mục `source-legacy/`.
 - Luôn giữ tính nhất quán giữa tài liệu kiến trúc SSOT và mã nguồn thực thi đang phát triển.
